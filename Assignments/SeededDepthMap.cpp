@@ -1,5 +1,9 @@
 #define Coordinate double
-#define Image char[][][]
+#define Image char**
+
+#include "CoordinateList.cpp"
+
+using namespace std;
 
 // camera focal length in meters
 const double FOCAL_LENGTH = 0.035;
@@ -11,8 +15,8 @@ const double k = 120;
 const int xResolution = 1920;
 const int yResolution = 1080;
 // coordinate triples that specify, in world (x,y,z) coordinates, the offset of the cameras relative to the lidar scanner
-const Coordinate[] rightCameraPosition;
-const Coordinate[] leftCameraPosition;
+const Coordinate rightCameraPosition[] = {1, 0, 0};
+const Coordinate leftCameraPosition[] = {-1, 0, 0};
 
 /**
  * Conducts a stereo correspondence seeded by lidar data
@@ -56,4 +60,8 @@ CoordinateList resolveDepthsLeft(InterpolatedImage interpolatedLeft, Image left,
     CoordinateList returnedList = new CoordinateList();
     // @TODO: test the disparity values
     return returnedList;
+}
+
+int main(){
+    seededCorrespondence(0, 0, 0);
 }

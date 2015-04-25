@@ -1,10 +1,14 @@
+#pragma once
+
 #define Coordinate double
+
+#include <vector>
 
 // represents a list of the coordinates of 3d points, in one of several coordinate systems
 class CoordinateList {
     public:
         // List of all coordinate triples
-        List<Coordinates[]> coordinates;
+        vector<Coordinates[]> coordinates;
         
         // Type of coordinates:
         // 0 = cartesian (x, y, z)
