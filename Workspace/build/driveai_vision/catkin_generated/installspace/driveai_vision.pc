@@ -1,0 +1,8 @@
+prefix=/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/install
+
+Name: driveai_vision
+Description: Description of driveai_vision
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/install/lib 
+Requires: 

@@ -1,0 +1,2 @@
+driveai_vision
+-DCATKIN_DEVEL_PREFIX=/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/devel -DCMAKE_INSTALL_PREFIX=/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/install -G Unix Makefiles

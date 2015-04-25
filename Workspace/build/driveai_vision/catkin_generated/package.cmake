@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "driveai_vision")
+set(driveai_vision_MAINTAINER "parthmehrotra <parthmehrotra@todo.todo>")
+set(driveai_vision_DEPRECATED "")
+set(driveai_vision_VERSION "0.0.0")
+set(driveai_vision_BUILD_DEPENDS )
+set(driveai_vision_RUN_DEPENDS )
+set(driveai_vision_BUILDTOOL_DEPENDS "catkin")

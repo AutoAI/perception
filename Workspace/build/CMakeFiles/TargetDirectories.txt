@@ -1,0 +1,7 @@
+/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/build/driveai_vision/CMakeFiles/_catkin_empty_exported_target.dir
+/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/build/CMakeFiles/clean_test_results.dir
+/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/build/CMakeFiles/doxygen.dir
+/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/build/gtest/CMakeFiles/gtest.dir
+/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/build/gtest/CMakeFiles/gtest_main.dir
+/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/build/CMakeFiles/run_tests.dir
+/home/parthmehrotra/Projects/HighPriority/DriveAI/Workspace/build/CMakeFiles/tests.dir
