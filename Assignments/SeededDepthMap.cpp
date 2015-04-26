@@ -24,8 +24,32 @@ const Coordinate leftCameraPosition[] = {-1, 0, 0};
 const int xResolution = 1920;
 const int yResolution = 1080;
 
+/**
+ * Conducts a stereo correspondence seeded by lidar data
+ * 
+ * @param left  left image to be used in correspondence
+ * @param right right image to be used in correspondence
+ * @param lidar lidar data to be used as the seed
+ * @return a Depth Map of the scene from which the data was captured
+ */
 CoordinateList seededCorrespondence(Image left, Image right, CoordinateList lidar);
+
+/**
+ * Allocates and populates a left image by interpolating input values
+ * @param left  left image to be used in correspondence
+ * @param right right image to be used in correspondence
+ * @param lidar lidar data to be used as the seed
+ * @return an x-by-y-by-2 array where [x][y][0] is the smallest disparity to test at [x][y] and [x][y][1] is the largest
+ */
 InterpolatedImage interpolateLeft(Image left, Image right, CoordinateList seed);
+
+/**
+ * Tests disparity values in left and right images as specified by a left interpolated image
+ * @param interpolatedLeft  InterpolatedImage that specifies disparity values to be tested
+ * @param left              left image to be used in correspondence
+ * @param right             right image to be used in correspondence
+ * @return a type-2 CoordinateList of the depth values determined by the algorithm
+ */
 CoordinateList resolveDepthsLeft(InterpolatedImage interpolatedLeft, Image left, Image right);
 
 CoordinateList seededCorrespondence(Image left, Image right, CoordinateList lidar) {
