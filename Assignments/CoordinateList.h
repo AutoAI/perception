@@ -1,4 +1,12 @@
 #include <vector>
+#include <cmath>
+#define Coordinate double
+#define Cartesian 0
+#define Spherical 1
+#define Perspective 2
+#define k 0
+#define f 0
+#define c 0
 
 using namespace std;
 
@@ -17,6 +25,7 @@ class CoordinateList {
         *  2 = perspective (u, v, w)
         */
         char type;
+        void addCoordinate(Coordinate coordinate);
 
         /**
         * Converts the coordinate triples to the type specified using the same origin
@@ -33,5 +42,6 @@ class CoordinateList {
          * @param offset    the offset in world coordinates from the existing origin to the new origin. It's always of length 3
          */
         void toType(int type, const Coordinate* offset);
+        CoordinateList clone();
 };
 
