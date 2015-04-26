@@ -5,11 +5,15 @@
 
 using namespace std;
 
-void CoordinateList::toType(int type) {
-    
+void CoordinateList::addCoordinate(Coordinate coordiante){
+    coordinates.push_back(coordinate);
 }
 
-void CoordinateList::toType(int type, const Coordinate* offset) {
+void CoordinateList::toType(char newType) {
+    if(type==newType)
+}
+
+void CoordinateList::toType(char newType, const Coordinate* offset) {
 
 }
 
