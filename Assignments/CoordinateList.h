@@ -30,7 +30,7 @@ class CoordinateList {
          * Converts the coodinates triples to the type specified using a new origin, offset from the previous origin by the given (x,y,z) triple
          * 
          * @param type      the type to convert the coordinates to
-         * @param offset    the offset in world coordinates from the existing origin to the new origin
+         * @param offset    the offset in world coordinates from the existing origin to the new origin. It's always of length 3
          */
         void toType(int type, const Coordinate* offset);
 };
