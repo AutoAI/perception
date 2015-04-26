@@ -50,5 +50,6 @@ CoordinateList resolveDepthsLeft(InterpolatedImage interpolatedLeft, Image left,
 int main() {
     cout << "SeededDepthMap" << endl;
 //    NdArray<int> myArray;
+    return 0;
 }
 
