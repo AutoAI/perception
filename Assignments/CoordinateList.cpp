@@ -5,64 +5,72 @@
 
 using namespace std;
 
-void CoordinateList::addCoordinate(Coordinate* coordiante){
+void CoordinateList::addCoordinate(Coordinate* coordinate){
     coordinates.push_back(coordinate);
 }
 
 void CoordinateList::toType(char newType) {
-    this.toType(newType, {0,0,0}); 
+	double d[] = {0, 0, 0};
+	
+    this->toType(newType, d); 
 }
 
 void CoordinateList::toCartesian(){
     if(type==Cartesian){
         return;
     }
-    for(std::vector<T>::iterator it = v.begin(); it != v.end(); ++it) {
-     int x,y,z;  
+	Coordinate x,y,z;  
+	Coordinate r, theta, roe;
+	Coordinate u, v, w;
+
+    for(int i = 0; i < coordinates.size(); i++) {
         if(type==Spherical){
-            r = it[0];
-            theta =  it[1];
-            roe = it[2];
+            r = coordinates[i][0];
+            theta =  coordinates[i][1];
+            roe = coordinates[i][2];
             
             x = r*sin(roe)*cos(theta);
             y = r*sin(roe)*cos(theta);
             z = r*cos(roe);
         }
         if(type==Perspective){
-            u = it[0];
-            v = it[1];
-            w = it[2];
+            u = coordinates[i][0];
+            v = coordinates[i][1];
+            w = coordinates[i][2];
 
             z = K/w;
             y = v*z/F;
             x = u*z/F;
         }
-    it[0] = x;
-    it[1] = y;
-    it[2] = z;
+    coordinates[i][0] = x;
+    coordinates[i][1] = y;
+    coordinates[i][2] = z;
     }
     type = Cartesian;
 }
 
 void CoordinateList::toType(char newType, const Coordinate* offset) {
+	Coordinate r, theta, roe;
+	Coordinate u, v, w;
+	Coordinate x, y, z;
     if(newType==type){
         return;
     }
-    this.toCartesian();
-    for(std::vector<T>::iterator it = v.begin(); it != v.end(); ++it) {
+    this->toCartesian();
+    for(int i = 0; i < coordinates.size(); i++){
        
-        int x = it[0] + offset[0];
-        int y = it[1] + offset[1];
-        int z = it[2] + offset[2];
+        x = coordinates[i][0] + offset[0];
+        y = coordinates[i][1] + offset[1];
+        z = coordinates[i][2] + offset[2];
         
         if(newType==Spherical){
-            r = sqrt(x^2+y^2+z^2);
+            r = sqrt(x*x + y*y + z*z);
             theta = atan(y/z);
             roe = atan(z/r);
 
-            it[0] = r;
-            it[1] = theta;
-            it[2] = roe;
+            coordinates[i][0] = r;
+            coordinates[i][1] = theta;
+            coordinates[i][2] = roe;
         }
 
         if(newType==Perspective){
@@ -70,18 +78,18 @@ void CoordinateList::toType(char newType, const Coordinate* offset) {
             v = y*F/z;
             w = K/z;
            
-            it[0] = u;
-            it[1] = v;
-            it[2] = w;
+            coordinates[i][0] = u;
+            coordinates[i][1] = v;
+            coordinates[i][2] = w;
         }
     }
     type = newType;
 }
 
-CopordinateList clone(){
+CoordinateList CoordinateList::clone(){
     CoordinateList ret;
-    for(std::vector<T>::iterator it = v.begin(); it != v.end(); ++it) {
-        ret.addCoordinate(it);
+    for(int i = 0; i < coordinates.size(); i++) {
+        ret.addCoordinate(coordinates[i]);
     }
     return ret;
 }

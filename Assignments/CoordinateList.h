@@ -1,13 +1,11 @@
 #include <vector>
 #include <cmath>
-#define Coordinate double
 #define Cartesian 0
 #define Spherical 1
 #define Perspective 2
 #define K 120
 #define F 0.035
 #define C 75590.55
-//NIGGER^ALERT
 
 using namespace std;
 
@@ -17,7 +15,7 @@ using namespace std;
 class CoordinateList {
     public:
         // List of all coordinate triples
-        vector<Coordinate[]> coordinates;
+        vector<Coordinate*> coordinates;
 
         /*
         *  Type of coordinates:
