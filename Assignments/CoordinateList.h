@@ -4,9 +4,10 @@
 #define Cartesian 0
 #define Spherical 1
 #define Perspective 2
-#define k 0
-#define f 0
-#define c 0
+#define K 120
+#define F 0.035
+#define C 75590.55
+//NIGGER^ALERT
 
 using namespace std;
 
@@ -16,7 +17,7 @@ using namespace std;
 class CoordinateList {
     public:
         // List of all coordinate triples
-        vector<Coordinate*> coordinates;
+        vector<Coordinate[]> coordinates;
 
         /*
         *  Type of coordinates:
@@ -25,14 +26,14 @@ class CoordinateList {
         *  2 = perspective (u, v, w)
         */
         char type;
-        void addCoordinate(Coordinate coordinate);
+        void addCoordinate(Coordinate* coordinate);
 
         /**
         * Converts the coordinate triples to the type specified using the same origin
         *
         * @param type the type to convert the coordinates to
         */
-        void toType(int type);
+        void toType(char newType);
 
         //TODO pass a length
          /**
@@ -41,7 +42,8 @@ class CoordinateList {
          * @param type      the type to convert the coordinates to
          * @param offset    the offset in world coordinates from the existing origin to the new origin. It's always of length 3
          */
-        void toType(int type, const Coordinate* offset);
+        void toType(char newType, const Coordinate* offset);
         CoordinateList clone();
+    private:
+        void toCartesian();
 };
-
