@@ -5,12 +5,16 @@
 
 using namespace std;
 
+CoordinateList::CoordinateList(char type) {
+    this->type = type;
+}
+
 void CoordinateList::addCoordinate(Coordinate* coordinate){
     coordinates.push_back(coordinate);
 }
 
 void CoordinateList::toType(char newType) {
-	double d[] = {0, 0, 0};
+	Coordinate d[] = {0, 0, 0};
 	
     this->toType(newType, d); 
 }
@@ -42,14 +46,14 @@ void CoordinateList::toCartesian(){
             y = v*z/F;
             x = u*z/F;
         }
-    coordinates[i][0] = x;
-    coordinates[i][1] = y;
-    coordinates[i][2] = z;
+        coordinates[i][0] = x;
+        coordinates[i][1] = y;
+        coordinates[i][2] = z;
     }
     type = Cartesian;
 }
 
-void CoordinateList::toType(char newType, const Coordinate* offset) {
+void CoordinateList::toType(char newType, Coordinate* offset) {
 	Coordinate r, theta, roe;
 	Coordinate u, v, w;
 	Coordinate x, y, z;
@@ -86,8 +90,12 @@ void CoordinateList::toType(char newType, const Coordinate* offset) {
     type = newType;
 }
 
+Coordinate* CoordinateList::getCoordinate(int index) {
+    return coordinates[index];
+}
+
 CoordinateList CoordinateList::clone(){
-    CoordinateList ret;
+    CoordinateList ret(this->type);
     for(int i = 0; i < coordinates.size(); i++) {
         ret.addCoordinate(coordinates[i]);
     }

@@ -6,6 +6,7 @@
 #define K 120
 #define F 0.035
 #define C 75590.55
+#define Coordinate float
 
 using namespace std;
 
@@ -14,6 +15,7 @@ using namespace std;
 */
 class CoordinateList {
     public:
+
         // List of all coordinate triples
         vector<Coordinate*> coordinates;
 
@@ -24,6 +26,7 @@ class CoordinateList {
         *  2 = perspective (u, v, w)
         */
         char type;
+        CoordinateList(char type);
         void addCoordinate(Coordinate* coordinate);
 
         /**
@@ -40,7 +43,8 @@ class CoordinateList {
          * @param type      the type to convert the coordinates to
          * @param offset    the offset in world coordinates from the existing origin to the new origin. It's always of length 3
          */
-        void toType(char newType, const Coordinate* offset);
+        void toType(char newType, Coordinate* offset);
+        Coordinate* getCoordinate(int index);
         CoordinateList clone();
     private:
         void toCartesian();
