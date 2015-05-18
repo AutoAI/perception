@@ -8,14 +8,15 @@ NdArray<T>::NdArray(char numDimensions, char* dimensions) {
     sizes = new unsigned long[numDimensions];
     length = 1;
     for (char i = 0; i < numDimensions; i++) {
+        length *= dimensions[i];
         if (i == 0) {
             sizes[i] = 1;
         } else {
             sizes[i] = dimensions[i - 1] * sizes[i - 1];
         }
-        this->numDimensions = numDimensions;
-        array = new T[length];
     }
+    this->numDimensions = numDimensions;
+    array = new T[length];
 }
 
 template<typename T>
@@ -35,4 +36,3 @@ T NdArray<T>::get(char* dimensions) {
     }
     return array[index];
 }
-
