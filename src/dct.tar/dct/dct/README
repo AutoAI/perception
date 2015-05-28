@@ -1,0 +1,32 @@
+The program implements the worst-case optimal divide-and-conquer Delaunay 
+triangulation algorithm as described in:
+
+	Guibas, L. and Stolfi, J., "Primitives for the Manipulation
+	of General Subdivisions and the Computation of Voronoi Diagrams, ",
+	ACT TOG, 4(2), April, 1985.
+
+The algorithm is O(nlogn) time and O(n) space.
+
+Some changes have been made (for speed).  The InCircle test is different
+to the one described in the paper and the winged-edge structure is used 
+instead of the quad-edge data structure.  
+
+To triangulate 1 Megapoints takes about 6 minutes CPU time on a 50Mhz SPARC 
+machine.  About half of that time is i/o (binary i/o would reduce it).
+
+The input/output model is simple: "dct < file1 > file2".
+The first line of input must be the number of points in the file.
+Each point, one per line with x and y separated by a space, should follow.
+
+The default output is the edges of the triangulation.  If the triangles
+of the triangulation are sought use "dct -t < file1 > file2".
+
+The program (still) suffers from numerical problems, and this area of the
+implementation needs further work.  It will crash at times, guaranteed.  
+
+Comments, advice, bug reports, etc. welcome.
+
+Geoff Leach
+Department of Computer Science
+RMIT.
+gl@cs.rmit.edu.au
