@@ -83,42 +83,49 @@ void testNdArray() {
 }
 
 void testCoordinateList() {
+    cout << "CoordinateList Test\n\n";
+
     CoordinateList list(Cartesian);
 
-    Coordinate coordinate1[3] = {1, 0, 0};
+    Coordinate coordinate1[3] = {1, 0, 10};
     list.addCoordinate(coordinate1);
     
     Coordinate coordinate2[3] = {1, 1, 1};
     list.addCoordinate(coordinate2);
 
-    for (int x = 0; x < 2; x++) {
-        for (int y = 0; y < 3; y++) {
-            Coordinate* a = list.getCoordinate(x);
-            cout << a[y] << " ";
-        }
-        cout << endl;
+    
+    list.toType(Spherical);
+    Coordinate* a; 
+    a = list.getCoordinate(0);
+    if(a[0]-sqrt(101)<0.0001 && a[1]-0<0.0001 && a[2]-acos(10/sqrt(101))<0.0001)
+    {
+        cout << "PASS\n";
     }
 
-    list.toType(1);
-
-    for (int x = 0; x < 2; x++) {
-        for (int y = 0; y < 3; y++) {
-            Coordinate* a = list.getCoordinate(x);
-            cout << a[y] << " ";
-        }
-        cout << endl;
+    a = list.getCoordinate(1);
+    if(a[0]-sqrt(3)<0.0001 && a[1]-atan(1)<0.00001 && a[2]-acos(1/sqrt(3))<0.0001)
+    {
+        cout << "PASS\n";
     }
+    
 
-    list.toType(2);
 
-    for (int x = 0; x < 2; x++) {
-        for (int y = 0; y < 3; y++) {
-            Coordinate* a = list.getCoordinate(x);
-            cout << a[y] << " ";
-        }
-        cout << endl;
-    }
+
     cout << endl;
+    
+    list.toType(Perspective);
+     a = list.getCoordinate(0);
+    if(a[0]-F/10<0.0001 && a[1]-0<0.0001 && a[2]-K/10<0.0001)
+    {
+        cout << "PASS\n";
+    }
+
+    a = list.getCoordinate(1);
+    if(a[0]-F <0.0001 && a[1]-F <0.00001 && a[2]-K <0.0001)
+    {
+        cout << "PASS\n";
+    }
+      
 }
 
 int main() {
