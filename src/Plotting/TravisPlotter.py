@@ -22,9 +22,17 @@ class InterpolatedImage:
 		# number of values that have been stored at each index
 		self.lengths = numpy.zeros((s, s), numpy.int32)
 
-	def processPoint(self, x, y, z):
-		for i in range(int(max(x-self.r,0)), int(min(x+self.r, self.s - 1))):
-			for j in range(int(max(y-self.r, 0)), int(min(y+self.r, self.s - 1))):
+	def processPointSquare(self, x, y, z):
+		for i in range(int(max(round(x)-self.r,0)), int(min(round(x)+self.r, self.s))):
+			for j in range(int(max(round(y)-self.r, 0)), int(min(round(y)+self.r, self.s))):
+				self.img[i][j][self.lengths[i][j]] = z
+				self.lengths[i][j] += 1
+
+	def processPointCircle(self, x, y, z):
+		for i in range(int(max(round(x)-self.r,0)), int(min(round(x)+self.r, self.s))):
+			print "r:", self.r
+			print "dx: ", (i-x)**2
+			for j in range(int(max(round(y)-math.sqrt(self.r**2 - (i-x)**2), 0)), int(min(round(y)+math.sqrt(self.r**2 - (i-x)**2), self.s))):
 				self.img[i][j][self.lengths[i][j]] = z
 				self.lengths[i][j] += 1
 
@@ -73,7 +81,7 @@ for i in range(0, n):
 d = 30
 img1 = InterpolatedImage(d, n, 2)
 for i in range(0, n):
-	img1.processPoint(coordToImg(x[i], m, d), coordToImg(y[i], m, d), coordToImg(z[i], m, d))
+	img1.processPointCircle(coordToImg(x[i], m, d), coordToImg(y[i], m, d), coordToImg(z[i], m, d))
 
 # Making the plot
 fig = p.figure()
