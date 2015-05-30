@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  genmsg
   message_generation
 )
 
@@ -162,3 +163,10 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_executable(talker src/Test.cpp)
+target_link_libraries(talker ${catkin_LIBRARIES})
+add_dependencies(talker Perception_generate_messages_cpp)
