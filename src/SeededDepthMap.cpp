@@ -2,6 +2,7 @@
 #define Coordinate double
 #define Image char**
 
+#include "ros/ros.h"
 #include <iostream>
 #include "NdArray.cpp"
 #include "CoordinateList.cpp"
@@ -10,18 +11,18 @@
 using namespace std;
 
 // Camera focal length in meters
-const Coordinate FOCAL_LENGTH = 0.035;
+Coordinate FOCAL_LENGTH = 0.035;
 // Pixels per u-coordinate (per meter): 75590.55118811 for a 1" 1080p sensor
-const Coordinate c = 75590.55;
+Coordinate c = 75590.55;
 // Range constant (farthest range that can be represented): zw = k
-const Coordinate k = 120;
+Coordinate k = 120;
 
-const Coordinate rightCameraPosition[] = {1, 0, 0};
-const Coordinate leftCameraPosition[] = {-1, 0, 0};
+Coordinate rightCameraPosition[] = {1, 0, 0};
+Coordinate leftCameraPosition[] = {-1, 0, 0};
 
 // Camera Resultions
-const int xResolution = 1920;
-const int yResolution = 1080;
+int xResolution = 1920;
+int yResolution = 1080;
 
 /**
  * Conducts a stereo correspondence seeded by lidar data
@@ -65,13 +66,23 @@ InterpolatedImage interpolateLeft(Image left, Image right, CoordinateList seed) 
 }
 
 CoordinateList resolveDepthsLeft(InterpolatedImage interpolatedLeft, Image left, Image right) {
-    CoordinateList returnedList;
+    //TODO constructro didn't exist, I just added it
+    CoordinateList returnedList(0);
 
     return returnedList;
 }
 
-int main() {
-    cout << "SeededDepthMap" << endl;
+int main(int argc, char **argv){ 
+    ros::init(argc, argv, "Run");
+    ros::NodeHandle n;
+
+    ros::spinOnce();
+
+    if (ros::ok()) {
+        ROS_INFO("Running");
+
+        ROS_INFO("SeededDepthMap");
+    }
     return 0;
 }
 

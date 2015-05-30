@@ -20,9 +20,9 @@ include_directories(
 )
 
 
-add_executable(Run src/Run.cpp)
+add_executable(Run src/SeededDepthMap.cpp)
 target_link_libraries(Run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
-add_dependencies(Run Perception_run_cpp)
+add_dependencies(Run Perception_seededdepthmap_cpp)
 
 catkin_add_gtest(utest src/test/utest.cpp)
 target_link_libraries(utest ${catkin_LIBRARIES})        
