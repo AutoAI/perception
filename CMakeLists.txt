@@ -3,17 +3,10 @@ project(Perception)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  rospy
   std_msgs
-  genmsg
-  message_generation
 )
 
-
- generate_messages(
-   DEPENDENCIES
-   std_msgs
- )
+find_package(GTest REQUIRED)
 
 catkin_package(
   DEPENDS system_lib
@@ -21,12 +14,15 @@ catkin_package(
 )
 
 include_directories(
+  include/${PROJECT_NAME}
   ${catkin_INCLUDE_DIRS}
+  ${GTEST_INCLUDE_DIRS}
 )
 
 
-include_directories(include ${catkin_INCLUDE_DIRS})
-
 add_executable(Test src/Test.cpp)
-target_link_libraries(Test ${catkin_LIBRARIES})
+target_link_libraries(Test ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
 add_dependencies(Test Perception_test_cpp)
+
+catkin_add_gtest(utest src/test/utest.cpp src/Foo.cpp)
+target_link_libraries(utest ${catkin_LIBRARIES})        

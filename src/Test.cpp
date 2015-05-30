@@ -1,10 +1,8 @@
-#include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "Test.h"
 
-#include "NdArray.cpp"
-#include <string>
-
-#include <sstream>
+int Test::add(int a, int b) {
+    return a+b;
+}
 
 using namespace std;
 void testNdArray() {
