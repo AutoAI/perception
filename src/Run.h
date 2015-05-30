@@ -2,7 +2,6 @@
 #include "std_msgs/String.h"
 
 #include "NdArray.cpp"
-#include "Foo.cpp"
 #include <string>
 
 #include <sstream>

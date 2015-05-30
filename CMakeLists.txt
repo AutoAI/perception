@@ -20,9 +20,9 @@ include_directories(
 )
 
 
-add_executable(Test src/Test.cpp)
-target_link_libraries(Test ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
-add_dependencies(Test Perception_test_cpp)
+add_executable(Run src/Run.cpp)
+target_link_libraries(Run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
+add_dependencies(Run Perception_run_cpp)
 
-catkin_add_gtest(utest src/test/utest.cpp src/Foo.cpp)
+catkin_add_gtest(utest src/test/utest.cpp)
 target_link_libraries(utest ${catkin_LIBRARIES})        

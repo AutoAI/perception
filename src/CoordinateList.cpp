@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector> 
 #include "CoordinateList.h"
 
 using namespace std;
@@ -14,8 +13,8 @@ void CoordinateList::addCoordinate(Coordinate* coordinate){
 }
 
 void CoordinateList::toType(char newType) {
-	Coordinate d[] = {0, 0, 0};
-	
+    Coordinate d[] = {0, 0, 0};
+    
     this->toType(newType, d); 
 }
 
@@ -23,19 +22,19 @@ void CoordinateList::toCartesian(){
     if(type==Cartesian){
         return;
     }
-	Coordinate x,y,z;  
-	Coordinate r, theta, roe;
-	Coordinate u, v, w;
+    Coordinate x,y,z;  
+    Coordinate r, theta, phi;
+    Coordinate u, v, w;
 
     for(int i = 0; i < coordinates.size(); i++) {
         if(type==Spherical){
             r = coordinates[i][0];
             theta =  coordinates[i][1];
-            roe = coordinates[i][2];
+            phi = coordinates[i][2];
             
-            x = r*sin(roe)*cos(theta);
-            y = r*sin(roe)*cos(theta);
-            z = r*cos(roe);
+            x = r*sin(phi)*cos(theta);
+            y = r*sin(phi)*sin(theta);
+            z = r*cos(phi);
         }
         if(type==Perspective){
             u = coordinates[i][0];
@@ -54,9 +53,9 @@ void CoordinateList::toCartesian(){
 }
 
 void CoordinateList::toType(char newType, Coordinate* offset) {
-	Coordinate r, theta, roe;
-	Coordinate u, v, w;
-	Coordinate x, y, z;
+    Coordinate r, theta, phi;
+    Coordinate u, v, w;
+    Coordinate x, y, z;
     if(newType==type){
         return;
     }
@@ -69,12 +68,12 @@ void CoordinateList::toType(char newType, Coordinate* offset) {
         
         if(newType==Spherical){
             r = sqrt(x*x + y*y + z*z);
-            theta = atan(y/z);
-            roe = atan(z/r);
+            theta = atan(y/x);
+            phi = acos(z/r);
 
             coordinates[i][0] = r;
             coordinates[i][1] = theta;
-            coordinates[i][2] = roe;
+            coordinates[i][2] = phi;
         }
 
         if(newType==Perspective){
@@ -101,4 +100,3 @@ CoordinateList CoordinateList::clone(){
     }
     return ret;
 }
-
