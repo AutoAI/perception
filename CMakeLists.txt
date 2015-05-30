@@ -29,4 +29,4 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(Test src/Test.cpp)
 target_link_libraries(Test ${catkin_LIBRARIES})
-add_dependencies(Test Perception_generate_messages_cpp)
+add_dependencies(Test Perception_test_cpp)
