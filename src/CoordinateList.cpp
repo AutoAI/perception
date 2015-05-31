@@ -24,18 +24,18 @@ void CoordinateList::toCartesian(){
         return;
     }
 	Coordinate x,y,z;  
-	Coordinate r, theta, roe;
+	Coordinate r, theta, phi;
 	Coordinate u, v, w;
 
     for(int i = 0; i < coordinates.size(); i++) {
         if(type==Spherical){
             r = coordinates[i][0];
             theta =  coordinates[i][1];
-            roe = coordinates[i][2];
+            phi = coordinates[i][2];
             
-            x = r*sin(roe)*cos(theta);
-            y = r*sin(roe)*cos(theta);
-            z = r*cos(roe);
+            x = r*sin(phi)*cos(theta);
+            y = r*sin(phi)*sin(theta);
+            z = r*cos(phi);
         }
         if(type==Perspective){
             u = coordinates[i][0];
@@ -54,7 +54,7 @@ void CoordinateList::toCartesian(){
 }
 
 void CoordinateList::toType(char newType, Coordinate* offset) {
-	Coordinate r, theta, roe;
+	Coordinate r, theta, phi;
 	Coordinate u, v, w;
 	Coordinate x, y, z;
     if(newType==type){
@@ -69,12 +69,12 @@ void CoordinateList::toType(char newType, Coordinate* offset) {
         
         if(newType==Spherical){
             r = sqrt(x*x + y*y + z*z);
-            theta = atan(y/z);
-            roe = atan(z/r);
+            theta = atan(y/x);
+            phi = acos(z/r);
 
             coordinates[i][0] = r;
             coordinates[i][1] = theta;
-            coordinates[i][2] = roe;
+            coordinates[i][2] = phi;
         }
 
         if(newType==Perspective){
