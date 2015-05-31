@@ -97,35 +97,34 @@ void testCoordinateList() {
     list.toType(Spherical);
     Coordinate* a; 
     a = list.getCoordinate(0);
-    if(a[0]-sqrt(101)<0.0001 && a[1]-0<0.0001 && a[2]-acos(10/sqrt(101))<0.0001)
+    if(abs(a[0]-sqrt(101))<0.0001 && abs(a[1]-0)<0.0001 && abs(a[2]-acos(10/sqrt(101)))<0.0001)
     {
         cout << "PASS\n";
     }
 
     a = list.getCoordinate(1);
-    if(a[0]-sqrt(3)<0.0001 && a[1]-atan(1)<0.00001 && a[2]-acos(1/sqrt(3))<0.0001)
+    if(abs(a[0]-sqrt(3))<0.0001 && abs(a[1]-atan(1))<0.00001 && abs(a[2]-acos(1/sqrt(3)))<0.0001)
     {
         cout << "PASS\n";
     }
     
 
 
-
+    
     cout << endl;
     
     list.toType(Perspective);
      a = list.getCoordinate(0);
-    if(a[0]-F/10<0.0001 && a[1]-0<0.0001 && a[2]-K/10<0.0001)
+    if(abs(a[0]-F/10)<0.0001 && abs(a[1]-0)<0.0001 && abs(a[2]-K/10)<0.0001)
     {
-        cout << "PASS\n";
+      cout << "PASS\n";
     }
-
+    
     a = list.getCoordinate(1);
-    if(a[0]-F <0.0001 && a[1]-F <0.00001 && a[2]-K <0.0001)
+    if(abs(a[0]-F) <0.0001 && abs(a[1]-F) <0.00001 && abs(a[2]-K) <0.0001)
     {
-        cout << "PASS\n";
+       cout << "PASS\n";
     }
-      
 }
 
 int main() {
