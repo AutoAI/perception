@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from TestingPlotter import *
 from numpy import *
 import pylab as p
