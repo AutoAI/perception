@@ -1,5 +1,8 @@
-__pycache__/
-*.py[cod]
 *.swp
-*.db
-*celerybeat-schedule*
+*.swo
+cmake_install.cmake
+build/
+bin/
+lib/
+msg_gen/
+srv_gen/
