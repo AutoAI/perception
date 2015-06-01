@@ -77,7 +77,7 @@ TEST(NdArray, testCase6) {
     EXPECT_EQ(value.compare(array.get(location)), 0);
 }
 
-TEST(CoordinateList, stestCase1) {
+TEST (CoordinateList, stestCase1) {
     CoordinateList list(0);
 
     Coordinate coordinate1[3] = {1, 0, 10};
