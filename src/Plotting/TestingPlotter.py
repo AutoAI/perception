@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from numpy import *
 from matplotlib import pyplot as p
 import matplotlib
