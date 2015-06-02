@@ -1,54 +1,32 @@
 #!/usr/bin/env python
 
 from numpy import *
-from matplotlib import pyplot as p
+from matplotlib import pyplot as plt
 import matplotlib
 import mpl_toolkits.mplot3d.axes3d as p3
 from fractions import *
 from matplotlib import *
 from scipy.interpolate import *
+from scipy.spatial import Delaunay
+from scipy.spatial import Voronoi
 
 import math
 import random
 
-class InterpolatedImage:
-	def __init__(self, s, n, r):
-		# dimension of image
-		self.s = s
-		# number of points that are going to be processed
-		self.n = n
-		# inradius of the square around which points will be drawn
-		self.r = r
-		# values that will be stored from points
-		self.img = numpy.zeros((s, s, n))
-		# number of values that have been stored at each index
-		self.lengths = numpy.zeros((s, s), numpy.int32)
+# make a list for each point of all its neighbors
+def find_neighbors(tess, points):
 
-	def processPointSquare(self, x, y, z):
-		for i in range(int(max(round(x)-self.r,0)), int(min(round(x)+self.r, self.s))):
-			for j in range(int(max(round(y)-self.r, 0)), int(min(round(y)+self.r, self.s))):
-				self.img[i][j][self.lengths[i][j]] = z
-				self.lengths[i][j] += 1
+	neighbors = []
 
-	def processPointCircle(self, x, y, z):
-		for i in range(int(max(round(x)-self.r,0)), int(min(round(x)+self.r, self.s))):
-			print "r:", self.r
-			print "dx: ", (i-x)**2
-			for j in range(int(max(round(y)-math.sqrt(self.r**2 - (i-x)**2), 0)), int(min(round(y)+math.sqrt(self.r**2 - (i-x)**2), self.s))):
-				self.img[i][j][self.lengths[i][j]] = z
-				self.lengths[i][j] += 1
+	for point in range(points.shape[0]):
+		neighbors[point] = []
 
-	def plotAll(self, ax):
-		x = []
-		y = []
-		z = []
-		for i in range(0, self.s):
-			for j in range(0, self.s):
-				for k in range(0, self.lengths[i][j]):
-					x.append(i)
-					y.append(j)
-					z.append(self.img[i][j][k])
-		ax.scatter(x, y, z)
+	for simplex in tess.simplices:
+		neighbors[simplex[0]].add([simplex[1],simplex[2]])
+		neighbors[simplex[1]].add([simplex[2],simplex[0]])
+		neighbors[simplex[2]].add([simplex[0],simplex[1]])
+
+	return neighbors
 
 def f(x, y):
 	d = math.sqrt(x**2 + y**2)
@@ -66,9 +44,12 @@ def imgToCoord(x, m, d):
 def coordToImg(x, m, d):
 	return (x+m)*d/(2*m)
 
+def drawLine(startX, startY, startZ, endX, endY, endZ, c):
+	ax.plot([startX, endX], [startY, endY],zs=[startZ, endZ], color=c)
+
 # Setting up the input
-n = 80
-m = 6.28
+n = 40
+m = 4.71
 # n random x values between -m and m
 x = [random.random()*2*m-m for _ in range(0, n)]
 # n random y values between -m and m
@@ -78,19 +59,25 @@ z = []
 for i in range(0, n):
 	z.append(f(x[i], y[i]))
 
-# Setting up the image
-# image is d-by-d pixels
-d = 30
-img1 = InterpolatedImage(d, n, 2)
-for i in range(0, n):
-	img1.processPointCircle(coordToImg(x[i], m, d), coordToImg(y[i], m, d), coordToImg(z[i], m, d))
+p = []
+for i in range(0,n):
+	p.append([x[i], y[i]])
 
-# Making the plot
-fig = p.figure()
-ax = p3.Axes3D(fig)
-# ax.scatter(x,y,z) # use this to plot input
-img1.plotAll(ax)
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_zlabel('Z')
-p.show()
+# dat triangulation tho
+tri = Delaunay(p)
+
+# Plot it up
+plot_points = False
+plot_triangulation = True
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection = '3d')
+if(plot_points):
+	for i in range(0,n):
+		ax.scatter(x, y, z, c = 'k')
+for simplex in tri.vertices:
+	if(plot_triangulation):
+		drawLine(x[simplex[0]], y[simplex[0]], z[simplex[0]], x[simplex[1]], y[simplex[1]], z[simplex[1]], 'g')
+		drawLine(x[simplex[1]], y[simplex[1]], z[simplex[1]], x[simplex[2]], y[simplex[2]], z[simplex[2]], 'g')
+		drawLine(x[simplex[2]], y[simplex[2]], z[simplex[2]], x[simplex[0]], y[simplex[0]], z[simplex[0]], 'g')
+plt.show()
