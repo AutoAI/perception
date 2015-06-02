@@ -1,15 +1,35 @@
 #!/usr/bin/env python
 
 from numpy import *
-from matplotlib import pyplot as p
+from matplotlib import pyplot as plt
 import matplotlib
 import mpl_toolkits.mplot3d.axes3d as p3
 from fractions import *
 from matplotlib import *
 from scipy.interpolate import *
+from scipy.spatial import Delaunay
 
 import math
 import random
+
+# make a list for each point of all its neighbors
+def find_neighbors(tess, points):
+
+	neighbors = []
+
+	for point in range(points.shape[0]):
+		neighbors[point] = []
+
+	for simplex in tess.simplices:
+		neighbors[simplex[0]].add([simplex[1],simplex[2]])
+		neighbors[simplex[1]].add([simplex[2],simplex[0]])
+		neighbors[simplex[2]].add([simplex[0],simplex[1]])
+
+	return neighbors
+
+def f(x, y):
+	d = math.sqrt(x**2 + y**2)
+	return math.cos(d)*math.exp(-d/4)
 
 def dist2(t1, t2):
 	return (t1[0]-t2[0])**2 + (t1[1]-t2[1])**2
@@ -23,6 +43,9 @@ def imgToCoord(x, m, d):
 def coordToImg(x, m, d):
 	return (x+m)*d/(2*m)
 
+def drawLine(startX, startY, startZ, endX, endY, endZ):
+	ax.plot([startX, endX], [startY, endY],zs=[startZ, endZ])
+
 # Setting up the input
 n = 80
 m = 6.28
@@ -35,19 +58,18 @@ z = []
 for i in range(0, n):
 	z.append(f(x[i], y[i]))
 
-# Setting up the image
-# image is d-by-d pixels
-d = 30
-img1 = InterpolatedImage(d, n, 2)
-for i in range(0, n):
-	img1.processPointCircle(coordToImg(x[i], m, d), coordToImg(y[i], m, d), coordToImg(z[i], m, d))
+p = []
+for i in range(0,n):
+	p.append([x[i], y[i]])
 
-# Making the plot
-fig = p.figure()
-ax = p3.Axes3D(fig)
-# ax.scatter(x,y,z) # use this to plot input
-img1.plotAll(ax)
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_zlabel('Z')
-p.show()
+# dat triangulation tho
+tri = Delaunay(p)
+
+# Plot it up
+fig = plt.figure()
+ax = fig.add_subplot(111, projection = '3d')
+for simplex in tri.vertices:
+	drawLine(x[simplex[0]], y[simplex[0]], z[simplex[0]], x[simplex[1]], y[simplex[1]], z[simplex[1]])
+	drawLine(x[simplex[1]], y[simplex[1]], z[simplex[1]], x[simplex[2]], y[simplex[2]], z[simplex[2]])
+	drawLine(x[simplex[2]], y[simplex[2]], z[simplex[2]], x[simplex[0]], y[simplex[0]], z[simplex[0]])
+plt.show()
