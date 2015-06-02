@@ -8,6 +8,7 @@ from fractions import *
 from matplotlib import *
 from scipy.interpolate import *
 from scipy.spatial import Delaunay
+from scipy.spatial import Voronoi
 
 import math
 import random
@@ -43,12 +44,12 @@ def imgToCoord(x, m, d):
 def coordToImg(x, m, d):
 	return (x+m)*d/(2*m)
 
-def drawLine(startX, startY, startZ, endX, endY, endZ):
-	ax.plot([startX, endX], [startY, endY],zs=[startZ, endZ])
+def drawLine(startX, startY, startZ, endX, endY, endZ, c):
+	ax.plot([startX, endX], [startY, endY],zs=[startZ, endZ], color=c)
 
 # Setting up the input
-n = 80
-m = 6.28
+n = 40
+m = 4.71
 # n random x values between -m and m
 x = [random.random()*2*m-m for _ in range(0, n)]
 # n random y values between -m and m
@@ -66,10 +67,17 @@ for i in range(0,n):
 tri = Delaunay(p)
 
 # Plot it up
+plot_points = False
+plot_triangulation = True
+
 fig = plt.figure()
 ax = fig.add_subplot(111, projection = '3d')
+if(plot_points):
+	for i in range(0,n):
+		ax.scatter(x, y, z, c = 'k')
 for simplex in tri.vertices:
-	drawLine(x[simplex[0]], y[simplex[0]], z[simplex[0]], x[simplex[1]], y[simplex[1]], z[simplex[1]])
-	drawLine(x[simplex[1]], y[simplex[1]], z[simplex[1]], x[simplex[2]], y[simplex[2]], z[simplex[2]])
-	drawLine(x[simplex[2]], y[simplex[2]], z[simplex[2]], x[simplex[0]], y[simplex[0]], z[simplex[0]])
+	if(plot_triangulation):
+		drawLine(x[simplex[0]], y[simplex[0]], z[simplex[0]], x[simplex[1]], y[simplex[1]], z[simplex[1]], 'g')
+		drawLine(x[simplex[1]], y[simplex[1]], z[simplex[1]], x[simplex[2]], y[simplex[2]], z[simplex[2]], 'g')
+		drawLine(x[simplex[2]], y[simplex[2]], z[simplex[2]], x[simplex[0]], y[simplex[0]], z[simplex[0]], 'g')
 plt.show()
