@@ -31,6 +31,21 @@ int main(int argc, char **argv){
 			points.set(i+1, static_cast<float>(rand())/(static_cast<float>(RAND_MAX/(2*pointRange)))-pointRange);
 		}
 
+		// choose seed point, sort others accorinding to distance from seed
+		
+
+		// construct initial convex hull (right-hand), determine circum-circle center
+
+
+		// re-sort points according to distance from circum-circle center
+
+
+		// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
+
+
+		// iteratively 'flip' triangles until no more triangles need be flipped
+
+
 		return 0;
 	}
 }
