@@ -1,47 +1,37 @@
 #pragma once
 
-#include "NdArray.h"
+#include "LinkedArray.h"
 
 template<typename T>
-NdArray<T>::NdArray(char numDimensions, size_t* dimensions) {
-    sizes = new size_t[numDimensions];
-    length = 1;
-    for (char i = 0; i < numDimensions; i++) {
-        length *= dimensions[i];
-        if (i == 0) {
-            sizes[i] = 1;
-        } else {
-            sizes[i] = dimensions[i - 1] * sizes[i - 1];
-        }
-    }
-    this->numDimensions = numDimensions;
+LinkedArray<T>::LinkedArray(size_t length) {
     array = new T[length];
+    pointers = new size_t[length];
+    head = 0;
+    this->length = length;
 }
 
 template<typename T>
-void NdArray<T>::set(size_t* dimensions, T value) {
-    char index = 0;
-    for (char i = 0; i < numDimensions; i++) {
-        index += dimensions[i] * sizes[i];
-    }
-    array[index] = value;
+void LinkedArray<T>::set(size_t index, T value) {
+    size_t resultIndex = head;
+    for(size_t i = 0; i < index; i++)
+        resultIndex = pointers[resultIndex];
+    array[resultIndex] = value;
 }
 
 template<typename T>
-void NdArray<T>::set(size_t index, T value) {
-    array[index] = value;
+void LinkedArray<T>::setAbsolute(size_t index, T value) {
+    array[index] = T;
 }
 
 template<typename T>
-T NdArray<T>::get(size_t* dimensions) {
-    char index = 0;
-    for (char i = 0; i < numDimensions; i++) {
-        index += dimensions[i] * sizes[i];
-    }
-    return array[index];
+T LinkedArray<T>::get(size_t index) {
+    size_t resultIndex = head;
+    for(size_t i = 0; i < index; i++)
+        resultIndex = pointers[resultIndex];
+    return array[resultIndex];
 }
 
 template<typename T>
-T NdArray<T>::get(size_t index) {
+T LinkedArray<T>::getAbsolute(size_t index) {
     return array[index];
 }

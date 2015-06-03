@@ -5,6 +5,7 @@ class LinkedArray {
     public:
         T* array;
         size_t* pointers;
+        size_t head;
         size_t swap;
         size_t length;
 
