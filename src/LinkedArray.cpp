@@ -24,6 +24,11 @@ void LinkedArray<T>::setAbsolute(size_t index, T value) {
 }
 
 template<typename T>
+void LinkedArray<T>::reset() {
+    state = 0;
+}
+
+template<typename T>
 T LinkedArray<T>::get(size_t index) {
     size_t resultIndex = head;
     for(size_t i = 0; i < index; i++)
@@ -34,4 +39,19 @@ T LinkedArray<T>::get(size_t index) {
 template<typename T>
 T LinkedArray<T>::getAbsolute(size_t index) {
     return array[index];
+}
+
+template<typename T>
+T LinkedArray<T>::next() {
+    T result = array[state];
+    state = pointers[state];
+    return result;
+}
+
+template<typename T>
+void LinkedArray<T>::sort {
+}
+
+template<typename T>
+void LinkedArray<T>::resort {
 }
