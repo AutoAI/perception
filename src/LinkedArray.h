@@ -19,5 +19,8 @@ class LinkedArray {
         T get(size_t index);
         T getAbsolute(size_t index);
         T next();
+
+        void sort();
+        void resort();
 };
 

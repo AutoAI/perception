@@ -6,6 +6,8 @@
 
 #include "../CoordinateList.cpp"
 
+#include "../LinkedArray.cpp"
+
 using namespace std;
 
 TEST(NdArray, testCase1) {

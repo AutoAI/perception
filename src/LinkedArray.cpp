@@ -20,7 +20,7 @@ void LinkedArray<T>::set(size_t index, T value) {
 
 template<typename T>
 void LinkedArray<T>::setAbsolute(size_t index, T value) {
-    array[index] = T;
+    array[index] = value;
 }
 
 template<typename T>
@@ -49,9 +49,9 @@ T LinkedArray<T>::next() {
 }
 
 template<typename T>
-void LinkedArray<T>::sort {
+void LinkedArray<T>::sort() {
 }
 
 template<typename T>
-void LinkedArray<T>::resort {
+void LinkedArray<T>::resort() {
 }
