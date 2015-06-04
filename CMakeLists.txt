@@ -25,5 +25,9 @@ add_executable(Run src/SeededDepthMap.cpp)
 target_link_libraries(Run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
 add_dependencies(Run Perception_seededdepthmap_cpp)
 
+add_executable(Delaunay src/Delaunay-sHull.cpp)
+target_link_libraries(Delaunay ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
+add_dependencies(Delaunay Perception_delaunay_cpp)
+
 catkin_add_gtest(utest src/test/utest.cpp)
 target_link_libraries(utest ${catkin_LIBRARIES})        
