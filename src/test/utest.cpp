@@ -9,20 +9,20 @@
 using namespace std;
 
 TEST(NdArray, testCase1) {
-    char bounds[3] = {3, 3, 3};
+    size_t bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    char location[3] = {0, 0, 0};
+    size_t location[3] = {0, 0, 0};
     string value = "asdf";
     array.set(location, value);
     EXPECT_EQ(value.compare(array.get(location)), 0);
 }
 
 TEST(NdArray, testCase2) {
-    char bounds[3] = {3, 3, 3};
+    size_t bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    char location[3] = {0, 2, 0};
+    size_t location[3] = {0, 2, 0};
     string value = "sdflj";
     array.set(location, value);
 
@@ -30,10 +30,10 @@ TEST(NdArray, testCase2) {
 }
 
 TEST(NdArray, testCase3) {
-    char bounds[3] = {3, 3, 3};
+    size_t bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    char location[3] = {2, 0, 2};
+    size_t location[3] = {2, 0, 2};
     string value = "asldfkjsd";
     array.set(location, value);
 
@@ -41,10 +41,10 @@ TEST(NdArray, testCase3) {
 }
 
 TEST(NdArray, testCase4) {
-    char bounds[3] = {3, 3, 3};
+    size_t bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    char location[3] = {0, 0, 0};
+    size_t location[3] = {0, 0, 0};
     string value = "sdkjsfks";
 
     array.set(location, value);
@@ -54,10 +54,10 @@ TEST(NdArray, testCase4) {
 }
 
 TEST(NdArray, testCase5) {
-    char bounds[3] = {3, 3, 3};
+    size_t bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    char location[3] = {2, 0, 1};
+    size_t location[3] = {2, 0, 1};
     string value = "adfklsjdfksdflkjsdf";
 
     array.set(location, value);
@@ -66,10 +66,10 @@ TEST(NdArray, testCase5) {
 }
 
 TEST(NdArray, testCase6) {
-    char bounds[3] = {3, 3, 3};
+    size_t bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    char location[3] = {1, 3, 1};
+    size_t location[3] = {1, 3, 1};
     string value = "ksdflkjsdf";
 
     array.set(location, value);
