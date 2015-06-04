@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector> 
 #include "CoordinateList.h"
 
 using namespace std;
@@ -14,8 +13,8 @@ void CoordinateList::addCoordinate(Coordinate* coordinate){
 }
 
 void CoordinateList::toType(char newType) {
-	Coordinate d[] = {0, 0, 0};
-	
+    Coordinate d[] = {0, 0, 0};
+    
     this->toType(newType, d); 
 }
 
@@ -54,9 +53,11 @@ void CoordinateList::toCartesian(){
 }
 
 void CoordinateList::toType(char newType, Coordinate* offset) {
+
 	Coordinate r, theta, phi;
 	Coordinate u, v, w;
 	Coordinate x, y, z;
+
     if(newType==type){
         return;
     }
@@ -101,4 +102,3 @@ CoordinateList CoordinateList::clone(){
     }
     return ret;
 }
-
