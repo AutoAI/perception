@@ -1,57 +1,55 @@
+// LinkedArray.cpp
+// Travis Vanderstad
+
+// If you're looking for the comments, they're in LinkedArray.h
+
 #pragma once
 
 #include "LinkedArray.h"
 
-template<typename T>
-LinkedArray<T>::LinkedArray(size_t length) {
-    array = new T[length];
+LinkedArray::LinkedArray(size_t length) {
+    array = new Triple[length];
     pointers = new size_t[length];
     head = 0;
     this->length = length;
 }
 
-template<typename T>
-void LinkedArray<T>::set(size_t index, T value) {
+void LinkedArray::set(size_t index, Triple value) {
     size_t resultIndex = head;
     for(size_t i = 0; i < index; i++)
         resultIndex = pointers[resultIndex];
     array[resultIndex] = value;
 }
 
-template<typename T>
-void LinkedArray<T>::setAbsolute(size_t index, T value) {
+void LinkedArray::setAbsolute(size_t index, Triple value) {
     array[index] = value;
 }
 
-template<typename T>
-void LinkedArray<T>::reset() {
-    state = 0;
+void LinkedArray::reset() {
+    state = head;
 }
 
-template<typename T>
-T LinkedArray<T>::get(size_t index) {
+Triple LinkedArray::get(size_t index) {
     size_t resultIndex = head;
     for(size_t i = 0; i < index; i++)
         resultIndex = pointers[resultIndex];
     return array[resultIndex];
 }
 
-template<typename T>
-T LinkedArray<T>::getAbsolute(size_t index) {
+Triple LinkedArray::getAbsolute(size_t index) {
     return array[index];
 }
 
-template<typename T>
-T LinkedArray<T>::next() {
-    T result = array[state];
+Triple LinkedArray::next() {
+    Triple result = array[state];
     state = pointers[state];
     return result;
 }
 
-template<typename T>
-void LinkedArray<T>::sort() {
+void LinkedArray::sort(Triple t) {
+    
 }
 
-template<typename T>
-void LinkedArray<T>::resort() {
+void LinkedArray::resort(Triple t) {
+    
 }

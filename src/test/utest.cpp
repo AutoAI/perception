@@ -122,7 +122,7 @@ TEST(CoordinateList, stestCase2) {
 }
 
 TEST(LinkedArray, testCase1) {
-    
+    EXPECT_TRUE(true);
 }
 
 
