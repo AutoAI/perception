@@ -14,6 +14,10 @@ LinkedArray::LinkedArray(size_t length) {
     this->length = length;
 }
 
+size_t LinkedArray::getLength() {
+    return length;
+}
+
 void LinkedArray::set(size_t index, Triple value) {
     size_t resultIndex = head;
     for(size_t i = 0; i < index; i++)

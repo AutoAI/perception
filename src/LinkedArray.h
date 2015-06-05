@@ -1,5 +1,5 @@
 // LinkedArray.cpp
-// Travis Vanderstad
+// @author: Travis Vanderstad
 
 // LinkedArray is a hybrid LinkedList-ArrayList that supports both types of indexing
 // This allows for fast reordering and random access, but the list is fixed in size
@@ -15,9 +15,6 @@ struct Triple {
 
 class LinkedArray {
     public:
-        // the capacity of the array (not the number of actual elements stored)
-        size_t length;
-
         // the index of the current element for iterating. use reset to make it the first element again
         size_t state;
 
@@ -53,7 +50,12 @@ class LinkedArray {
         // straightens out the array so that the ith element of the list is array[i] (for 0(1) access in order)
         void straighten();
 
+        size_t getLength();
+
     private:
+        // the capacity of the array (not the number of actual elements stored)
+        size_t length;
+
         // the data stored in the structure
         Triple* array;
         
