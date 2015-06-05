@@ -12,6 +12,8 @@ LinkedArray::LinkedArray(size_t length) {
     pointers = new size_t[length];
     head = 0;
     this->length = length;
+    for(size_t i = 0; i < length; i++)
+        pointers[i] = i + 1;
 }
 
 void LinkedArray::set(size_t index, Triple value) {
@@ -47,9 +49,9 @@ Triple LinkedArray::next() {
 }
 
 void LinkedArray::sort(Triple t) {
-    
+
 }
 
 void LinkedArray::resort(Triple t) {
-    
+
 }
