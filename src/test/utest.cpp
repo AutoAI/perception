@@ -135,6 +135,19 @@ TEST(LinkedArray, testSize) {
     EXPECT_EQ(t_length, test.getLength());
 }
 
+TEST(LinkedArray, testSize) {
+    size_t t_length = rand();
+    Triple t[t_length];
+
+    for (int i = 0; i < t_length; i++) {
+        t[i].x = float(rand()) / rand(); 
+        t[i].y = float(rand()) / rand();
+        t[i].z = float(rand()) / rand();
+    }
+
+    LinkedArray test(t_length);
+    EXPECT_EQ(t_length, test.getLength());
+}
 
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
