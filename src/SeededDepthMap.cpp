@@ -1,5 +1,4 @@
 #define InterpolatedImage char***
-#define Coordinate double
 #define Image char**
 
 #include "ros/ros.h"

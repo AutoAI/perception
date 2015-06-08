@@ -1,4 +1,4 @@
-#include "Run.h"
+#include "ros/ros.h"
 
 #include "NdArray.cpp"
 #include "CoordinateList.cpp"
@@ -6,7 +6,7 @@
 using namespace std;
 
 int main(int argc, char **argv){ 
-    ros::init(argc, argv, "Run");
+    ros::init(argc, argv, "Perception_Run");
     ros::NodeHandle n;
 
     ros::spinOnce();
