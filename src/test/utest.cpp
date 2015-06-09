@@ -135,19 +135,32 @@ TEST(LinkedArray, testSize) {
     EXPECT_EQ(t_length, test.getLength());
 }
 
-TEST(LinkedArray, testSize) {
-    size_t t_length = rand();
-    Triple t[t_length];
+// TEST(LinkedArray, testSort) {
+//     size_t t_length = 1000000;
+//     Triple t[t_length];
 
-    for (int i = 0; i < t_length; i++) {
-        t[i].x = float(rand()) / rand(); 
-        t[i].y = float(rand()) / rand();
-        t[i].z = float(rand()) / rand();
-    }
+//     for (size_t i = 0; i < t_length; i++) {
+//         t[i].x = float(rand()) / rand(); 
+//         t[i].y = float(rand()) / rand();
+//         t[i].z = float(rand()) / rand();
+//     }
 
-    LinkedArray test(t_length);
-    EXPECT_EQ(t_length, test.getLength());
-}
+//     LinkedArray test(t_length);
+
+//     Triple c;
+//     c.x = float(rand()) / rand();
+//     c.y = float(rand()) / rand();
+//     c.z = float(rand()) / rand();
+
+//     test.sort(c);
+
+//     bool good = true;
+
+//     for(size_t i = 1; i < t_length; i++)
+//         if((test.get(i).x - c.x)*(test.get(i).x - c.x)+(test.get(i).y - c.y)*(test.get(i).y - c.y)<(test.get(i-1).x - c.x)*(test.get(i-1).x - c.x)+(test.get(i-1).y - c.y)*(test.get(i-1).y - c.y))
+//             good = false;
+//     EXPECT_TRUE(good);
+// }
 
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
