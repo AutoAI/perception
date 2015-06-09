@@ -8,7 +8,7 @@
 #define K 120
 #define F 0.035
 #define C 75590.55
-#define Coordinate float
+#define Coordinate double
 
 using namespace std;
 

@@ -21,13 +21,13 @@ include_directories(
 )
 
 
-add_executable(Run src/SeededDepthMap.cpp)
-target_link_libraries(Run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
-add_dependencies(Run Perception_seededdepthmap_cpp)
+add_executable(Perception_Run src/Run.cpp)
+target_link_libraries(Perception_Run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
+add_dependencies(Perception_Run Perception_Run_cpp)
 
 add_executable(Delaunay src/Delaunay-sHull.cpp)
 target_link_libraries(Delaunay ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
 add_dependencies(Delaunay Perception_delaunay_cpp)
 
-catkin_add_gtest(utest src/test/utest.cpp)
-target_link_libraries(utest ${catkin_LIBRARIES})        
+catkin_add_gtest(Perception_utest src/test/utest.cpp)
+target_link_libraries(Perception_utest ${catkin_LIBRARIES})        
