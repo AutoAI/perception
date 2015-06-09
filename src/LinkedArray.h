@@ -1,5 +1,5 @@
 // LinkedArray.cpp
-// Travis Vanderstad
+// @author: Travis Vanderstad
 
 // LinkedArray is a hybrid LinkedList-ArrayList that supports both types of indexing
 // This allows for fast reordering and random access, but the list is fixed in size
@@ -38,7 +38,11 @@ class LinkedArray {
         // metric is vector distance to parameter to 2D
         void resort(Triple t);
 
+        size_t getLength();
     private:
+        // the capacity of the array (not the number of actual elements stored)
+        size_t length;
+
         // the data stored in the structure
         Triple* array;
 

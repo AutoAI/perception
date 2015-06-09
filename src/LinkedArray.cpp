@@ -13,6 +13,10 @@ LinkedArray::LinkedArray(size_t length) {
     array = new Triple[length];
 }
 
+size_t LinkedArray::getLength() {
+    return length;
+}
+
 void LinkedArray::set(size_t index, Triple value) {
     array[index] = value;
 }
