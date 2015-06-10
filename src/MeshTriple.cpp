@@ -5,6 +5,6 @@
 
 class MeshTriple : public Triple {
 	public:
-		vector<Triangle> neighborTriangles;
-		vector<MeshTriple> neighborPoints;
+		vector<Triangle> triangles;
+		vector<MeshTriple> neighborPoints();
 };
