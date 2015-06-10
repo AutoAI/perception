@@ -1,10 +1,10 @@
-#pragma once 
+#pragma once
 
-#include <vector>
 #include "Triangle.cpp"
+#include "Triple.cpp"
 
-class MeshTriple : public Triple {
+class MeshTriple {
 	public:
 		vector<Triangle> triangles;
-		vector<MeshTriple> neighborPoints();
+		Triple* triple;
 };
