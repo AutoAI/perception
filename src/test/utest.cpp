@@ -1,3 +1,5 @@
+#include "ros/ros.h"
+#include "ros/console.h"
 #include <gtest/gtest.h>
 #include <climits>
 
@@ -5,8 +7,6 @@
 #include <string>
 
 #include "../CoordinateList.cpp"
-
-#include "../LinkedArray.cpp"
 
 using namespace std;
 
@@ -79,48 +79,118 @@ TEST(NdArray, testCase6) {
     EXPECT_EQ(value.compare(array.get(location)), 0);
 }
 
-TEST(CoordinateList, stestCase1) {
-    CoordinateList list(0);
+TEST(CoordinateList, toCartesian) {
+    CoordinateList list(Spherical, 1);
 
-    Coordinate coordinate1[3] = {1, 0, 10};
-    list.addCoordinate(coordinate1);
-    
-    Coordinate coordinate2[3] = {1, 1, 1};
-    list.addCoordinate(coordinate2);
+    Triple coordinate1;
+    coordinate1.x = 1;
+    coordinate1.y = 3.14159;
+    coordinate1.z = 0;
 
+    list.toType(Cartesian);
+    Triple a; 
+
+    a = list.get(0);
+    EXPECT_LT(abs(a.x-(-1)), 0.0001);
+    EXPECT_LT(abs(a.y-0), 0.0001);
+    EXPECT_LT(abs(a.z-0), 0.0001);
+}
+
+TEST(CoordinateList, toSpherical) {
+    CoordinateList list(Cartesian, 2);
+
+    Triple coordinate1, coordinate2;
+    coordinate1.x = 1;
+    coordinate1.y = 0;
+    coordinate1.z = 10;
+    coordinate2.x = 1;
+    coordinate2.y = 1;
+    coordinate2.z = 1;
     
     list.toType(Spherical);
-    Coordinate* a; 
+    Triple a; 
 
-    a = list.getCoordinate(0);
-    EXPECT_TRUE(abs(a[0]-sqrt(101))<0.0001 && abs(a[1]-0)<0.0001 && abs(a[2]-acos(10/sqrt(101)))<0.0001);
+    a = list.get(0);
+    EXPECT_LT(abs(a.x-sqrt(101)), 0.0001);
+    EXPECT_LT(abs(a.y-0), 0.0001);
+    EXPECT_LT(abs(a.z-acos(10/sqrt(101))), 0.0001);
 
-    a = list.getCoordinate(1);
-    EXPECT_TRUE(abs(a[0]-sqrt(3))<0.0001 && abs(a[1]-atan(1))<0.00001 && abs(a[2]-acos(1/sqrt(3)))<0.0001);
+    a = list.get(1);
+    EXPECT_LT(abs(a.x-sqrt(3)), 0.0001);
+    EXPECT_LT(abs(a.y-atan(1)), 0.0001);
+    EXPECT_LT(abs(a.z-acos(1/sqrt(3))), 0.0001);
 
 }
 
  
-TEST(CoordinateList, stestCase2) {
-    CoordinateList list(0);
+TEST(CoordinateList, toPerspective) {
+    CoordinateList list(0, 2);
 
-    Coordinate coordinate1[3] = {1, 0, 10};
-    list.addCoordinate(coordinate1);
+    Triple coordinate1, coordinate2;
+    coordinate1.x = 1;
+    coordinate1.y = 0;
+    coordinate1.z = 10;
+    coordinate2.x = 1;
+    coordinate2.y = 1;
+    coordinate2.z = 1;
     
-    Coordinate coordinate2[3] = {1, 1, 1};
-    list.addCoordinate(coordinate2);
-
-    
-    Coordinate* a; 
+    Triple a; 
     list.toType(Perspective);
     
-    a = list.getCoordinate(0);
-    EXPECT_TRUE(abs(a[0]-F/10)<0.0001 && abs(a[1]-0)<0.0001 && abs(a[2]-K/10)<0.0001);
+    a = list.get(0);
+    EXPECT_LT(abs(a.x-F/10), 0.0001);
+    EXPECT_LT(abs(a.y-0), 0.0001);
+    EXPECT_LT(abs(a.z-K/10), 0.0001);
     
-    a = list.getCoordinate(1);
-    EXPECT_TRUE(abs(a[0]-F) <0.0001 && abs(a[1]-F) <0.00001 && abs(a[2]-K) <0.0001);
+    a = list.get(1);
+    EXPECT_LT(abs(a.x-F), 0.0001);
+    EXPECT_LT(abs(a.y-F), 0.00001);
+    EXPECT_LT(abs(a.z-K), 0.0001);
 }
 
+TEST(CoordinateList, testSize) {
+    size_t t_length = 20;
+    Triple t[t_length];
+
+    CoordinateList test(0, t_length);
+    EXPECT_EQ(t_length, test.getLength());
+}
+
+TEST(CoordinateList, testSort) {
+    size_t t_length = 6;
+    Triple t[t_length];
+
+    for (size_t i = 0; i < t_length; i++) {
+        t[i].x = float(rand()) / rand(); 
+        t[i].y = float(rand()) / rand();
+        t[i].z = float(rand()) / rand();
+    }
+
+    CoordinateList test(0, t_length);
+    for (size_t i = 0; i < t_length; i++) {
+        test.set(i, t[i]);
+    }
+    Triple c;
+    c.x = float(rand()) / rand();
+    c.y = float(rand()) / rand();
+    c.z = float(rand()) / rand();
+
+    test.sort(c);
+
+    bool good = true;
+
+    for(size_t i = 1; i < t_length; i++){
+        float dxi = test.get(i).x - c.x;
+        float dyi = test.get(i).y - c.y;
+        float dximinus1 = test.get(i-1).x - c.x;
+        float dyiminus1 = test.get(i-1).y - c.y;
+        if(dxi*dxi+dyi*dyi < dximinus1*dximinus1+dyiminus1*dyiminus1){
+            ROS_INFO("%f > %f", dxi*dxi+dyi*dyi, dximinus1*dximinus1+dyiminus1*dyiminus1);
+            good = false;
+        }
+    }
+    EXPECT_TRUE(good);
+}
 
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
