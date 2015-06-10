@@ -94,3 +94,11 @@ int Mesh::orientation(Triple p, Triple q, Triple r){
     if (val == 0) return 0;
     return (val > 0)? 1: 2;
 }
+
+vector<Triple> Mesh::getNeighboringTriples(MeshTriple t) {
+	vector<Triple> neighborTriangles = t.triangles;
+	vector<triple> neighborPoints;
+	for (int i = 0; i < neighborTriangles.size(); i++) {
+		
+	}
+}
