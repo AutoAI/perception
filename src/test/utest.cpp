@@ -7,9 +7,58 @@
 #include <string>
 
 #include "../CoordinateList.cpp"
+
 #include "../Triple.cpp"
 
 using namespace std;
+
+TEST(Triple, equalityTrue) {
+	Triple a;
+	Triple b;
+	
+	a.x = 1;
+	a.y = 1;
+	a.z = 1;
+
+	b.x = 1;
+	b.y = 1;
+	b.z = 1;
+
+	EXPECT_TRUE(a==b);
+}
+
+TEST(Triple, equalityFalse) {
+	Triple a;
+	Triple b;
+	
+	a.x = 1;
+	a.y = 1;
+	a.z = 1;
+
+	b.x = 1;
+	b.y = 2;
+	b.z = 1;
+
+	EXPECT_FALSE(a==b);
+}
+
+TEST(Triple, unequalityTrue) {
+	Triple a(1, 1, 3);
+	Triple b;
+
+	b.x = 1;
+	b.y = 1;
+	b.z = 1;
+
+	EXPECT_TRUE(a!=b);
+}
+
+TEST(Triple, unequalityFalse) {
+	Triple a(1, 2, 2);
+	Triple b(1, 2, 2);
+
+	EXPECT_FALSE(a!=b);
+}
 
 TEST(NdArray, testCase1) {
     size_t bounds[3] = {3, 3, 3};
@@ -83,10 +132,7 @@ TEST(NdArray, testCase6) {
 TEST(CoordinateList, toCartesian) {
     CoordinateList list(Spherical, 1);
 
-    Triple coordinate1;
-    coordinate1.x = 1;
-    coordinate1.y = 3.14159;
-    coordinate1.z = 0;
+    Triple coordinate1(1, 3.14159, 0);
 
     list.set(0, coordinate1);
 
@@ -102,13 +148,14 @@ TEST(CoordinateList, toCartesian) {
 TEST(CoordinateList, toSpherical) {
     CoordinateList list(Cartesian, 2);
 
-    Triple coordinate1, coordinate2;
-    coordinate1.x = 1;
-    coordinate1.y = 0;
-    coordinate1.z = 10;
-    coordinate2.x = 1;
-    coordinate2.y = 1;
-    coordinate2.z = 1;
+    Triple coordinate1(1, 0, 10);
+	Triple coordinate2(1, 1, 1);
+    //coordinate1.x = 1;
+    //coordinate1.y = 0;
+    //coordinate1.z = 10;
+    //coordinate2.x = 1;
+    //coordinate2.y = 1;
+    //coordinate2.z = 1;
 
     list.set(0, coordinate1);
     list.set(1, coordinate2);
@@ -132,15 +179,10 @@ TEST(CoordinateList, toSpherical) {
 TEST(CoordinateList, toPerspective) {
     CoordinateList list(0, 2);
 
-    Triple coordinate1, coordinate2;
-    coordinate1.x = 1;
-    coordinate1.y = 0;
-    coordinate1.z = 10;
-    coordinate2.x = 1;
-    coordinate2.y = 1;
-    coordinate2.z = 1;
+    Triple coordinate1(1, 0, 10);
+	Triple coordinate2(1, 1, 1);
     
-    list.set(0, coordinate1);
+	list.set(0, coordinate1);
     list.set(1, coordinate2);
 
     list.toType(Perspective);
@@ -180,10 +222,7 @@ TEST(CoordinateList, testSort) {
     for (size_t i = 0; i < t_length; i++) {
         test.set(i, t[i]);
     }
-    Triple c;
-    c.x = float(rand()) / rand();
-    c.y = float(rand()) / rand();
-    c.z = float(rand()) / rand();
+    Triple c (float(rand()) / rand(), float(rand()) / rand(), float(rand()) / rand());
 
     test.sort(c);
 

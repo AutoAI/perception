@@ -2,8 +2,11 @@
 
 class Triple {
 	public:
+		Triple();
+		Triple(float x, float y, float z);
 		float x;
 		float y; 
 		float z;
-		friend bool operator==(const Triple &t1, const Triple &t2);
+		bool operator==(const Triple &t1);
+		bool operator!=(const Triple &t1);
 };
