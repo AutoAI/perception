@@ -5,5 +5,7 @@ class Mesh {
 		Mesh(CoordinateList c);
 
 	private:
-		vector<MeshTriple> hull;
+		vector<Triple> hull;
+		vector<MeshTriple> verts;
+		vector<Triangle> tris;
 };
