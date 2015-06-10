@@ -87,13 +87,15 @@ TEST(CoordinateList, toCartesian) {
     coordinate1.y = 3.14159;
     coordinate1.z = 0;
 
+    list.set(0, coordinate1);
+
     list.toType(Cartesian);
     Triple a; 
 
     a = list.get(0);
-    EXPECT_LT(abs(a.x-(-1)), 0.0001);
-    EXPECT_LT(abs(a.y-0), 0.0001);
-    EXPECT_LT(abs(a.z-0), 0.0001);
+    EXPECT_LT(abs(a.x-0), 0.0001);
+    EXPECT_LT(abs(a.y+0), 0.0001);
+    EXPECT_LT(abs(a.z-1), 0.0001);
 }
 
 TEST(CoordinateList, toSpherical) {
@@ -106,6 +108,9 @@ TEST(CoordinateList, toSpherical) {
     coordinate2.x = 1;
     coordinate2.y = 1;
     coordinate2.z = 1;
+
+    list.set(0, coordinate1);
+    list.set(1, coordinate2);
     
     list.toType(Spherical);
     Triple a; 
@@ -134,8 +139,12 @@ TEST(CoordinateList, toPerspective) {
     coordinate2.y = 1;
     coordinate2.z = 1;
     
-    Triple a; 
+    list.set(0, coordinate1);
+    list.set(1, coordinate2);
+
     list.toType(Perspective);
+
+    Triple a;
     
     a = list.get(0);
     EXPECT_LT(abs(a.x-F/10), 0.0001);
