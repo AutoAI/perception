@@ -54,7 +54,7 @@ Triangle Mesh::initHull(size_t index0, size_t index1, size_t index2){
 		hull.push_back(list[1]);
 	}
 	Triangle result;
-	result.
+	result.points[0] = hull()
 }
 
 // is a point 'visible' from another? (does the line between them pass through the hull?) this function answers that question
