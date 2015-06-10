@@ -1,11 +1,7 @@
 #include "ros/ros.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
-#include <algorithm>
-#include <functional>
-#include <iterator>
+#include <vector>
 
 #include "NdArray.cpp"
 
@@ -25,16 +21,8 @@ int main(int argc, char **argv){
 
 		// make some random points
 
-		// choose seed point, sort others accorinding to distance from seed
 
-		//create a ds where there are points xyz and a list of of triangls. Triangles will have a Point a, b, c
-
-		// construct initial convex hull (right-hand), determine circum-circle center
-
-		// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
-
-
-		// iteratively 'flip' triangles until no more triangles need be flipped
+		// make the triangulation
 
 
 		return 0;
