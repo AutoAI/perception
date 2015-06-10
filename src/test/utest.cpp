@@ -7,6 +7,7 @@
 #include <string>
 
 #include "../CoordinateList.cpp"
+#include "../Triple.cpp"
 
 using namespace std;
 

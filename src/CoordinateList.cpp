@@ -13,6 +13,7 @@
 #include <limits>
 #include <math.h>
 #include <string.h>
+#include <vector>
 
 #include "NdArray.cpp"
 #include "CoordinateList.h"

@@ -7,6 +7,7 @@
 #pragma once
 
 #include <vector>
+#include "Triple.cpp"
 #define Cartesian 0
 #define Spherical 1
 #define Perspective 2
@@ -15,13 +16,6 @@
 #define C 75590.55
 
 using namespace std;
-
-// represents a 3d data point
-struct Triple {
-    float x;
-    float y;
-    float z;
-};
 
 /**
 * List of all coordinate triples
