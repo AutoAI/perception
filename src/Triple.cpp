@@ -1,4 +1,5 @@
 #pragma once 
+
 class Triple {
 	public:
 		float x;
