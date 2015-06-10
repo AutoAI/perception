@@ -49,8 +49,8 @@ void CoordinateList::toCartesian(){
             x = r*sin(phi)*cos(theta);
             y = r*sin(phi)*sin(theta);
             z = r*cos(phi);
-
-            ROS_INFO("if i=%i, x=%f, y=%f, z=%f", i, x, y, z);
+			ROS_INFO("r=%f, phi=%f, theta=%f", r, phi, theta);
+            ROS_INFO("x=%f, y=%f, z=%f", x, y, z);
         }else{
             u = coordinates[i].x;
             v = coordinates[i].y;
