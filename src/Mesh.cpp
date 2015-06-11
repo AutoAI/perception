@@ -14,12 +14,13 @@
 using namespace std;
 
 Mesh::Mesh(CoordinateList list){
+	this->list = list;
 	// choose seed point, sort others accorinding to distance from seed
-	Triple s = chooseSeed();
+	Triple* s = chooseSeed();
 	list.sort(s);
 
 	// construct initial convex hull (counter-clockwise)
-	vector<MeshTriple> hull(32);
+	vector<MeshTriple*> hull(32);
 	this->hull = hull;
 	initHull(0, 1, 2);
 
@@ -30,9 +31,9 @@ Mesh::Mesh(CoordinateList list){
 
 }
 
-Triple Mesh::chooseSeed(){
+Triple* Mesh::chooseSeed(){
 	// just give 'em any old seed
-	return list[0];
+	return &list[0];
 }
 
 void Mesh::initHull(size_t index0, size_t index1, size_t index2){
@@ -45,24 +46,34 @@ void Mesh::initHull(size_t index0, size_t index1, size_t index2){
 	bool increasing = dTheta < PI;
 
 	// lets init that hull
-	hull.push_back(list[0]);
+
+	MeshTriple temp;
+	temp.triple = &list[0];
+	hull.push_back(&temp);
+
 	if(increasing){
-		hull.push_back(list[1]);
-		hull.push_back(list[2]);
+		MeshTriple temp;
+		temp.triple = &list[1];
+		hull.push_back(&temp);
+
+		MeshTriple temp;
+		temp.triple = &list[2];
+		hull.push_back(&temp);
 	}else{
-		hull.push_back(list[2]);
-		hull.push_back(list[1]);
+		MeshTriple temp;
+		temp.triple = &list[2];
+		hull.push_back(&temp);
+
+		MeshTriple temp;
+		temp.triple = &list[1];
+		hull.push_back(&temp);
 	}
 
 	// make all them connections and ish
-	Triangle t;
-	MeshTriple a, b, c;
-	result.points[0] = a;
-	result.points[1] = b;
-	result.points[2] = c;
-	a.triangles.push_back(t);
-	b.triangles.push_back(t);
-	c.triangles.push_back(t);
+	Triangle *t = new Triangle(hull[0], hull[1], hull[2]);
+	hull[0].triangles.push_back(t);
+	hull[1].triangles.push_back(t);
+	hull[2].triangles.push_back(t);
 	tris.push_back(t);
 	verts.push_back(a);
 	verts.push_back(b);
