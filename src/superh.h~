@@ -1,7 +1,3 @@
-// superh.h
-
-// this is bad. this should not exist.
-
 class CoordinateList;
 class Mesh;
 class MeshTriple;

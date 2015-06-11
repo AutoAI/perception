@@ -88,16 +88,52 @@ void Mesh::initHull(size_t index0, size_t index1, size_t index2){
 	tris.push_back(t);
 }
 
-// vector<Triple> Mesh::getNeighboringTriples(MeshTriple t) {
-// 	vector<Triple> neighborTriangles = t.triangles;
-// 	vector<triple> neighborPoints;
-// 	for (int i = 0; i < neighborTriangles.size(); i++) {
-		
-// 	}
-// }
-
 void Mesh::insertVert(Triple t){
 	
+}
+
+vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
+	vector<Triangle*> neighborTriangles = t -> triangles;
+	vector<MeshTriple*> result;
+	// iterate over triangles
+	for (int i = 0; i < neighborTriangles.size(); i++) {
+		Triangle* tri = neighborTriangles[i];
+		// iterate over each triangle's points
+		for(int j = 0; j < 3; j++){
+			bool good = true;
+			// check if we already have that point
+			for(int k = 0; k < result.size(); k++)
+				if(result[k] == tri -> points[j]){
+					good = false;
+					break;
+				}
+			// if we don't, okay, let's add it
+			if(good)
+				result.push_back(tri -> points[j]);
+		}
+	}
+}
+
+vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
+	MeshTriple** points = t -> points;
+	vector<Triangle*> result;
+	// iterate over points
+	for (int i = 0; i < 3; i++) {
+		MeshTriple* mtrip = points[i];
+		// iterate over each point's triangles
+		for(int j = 0; j < mtrip -> triangles.size(); j++){
+			bool good = true;
+			// check if we already have that triangle
+			for(int k = 0; k < result.size(); k++)
+				if(result[k] == mtrip -> triangles[j]){
+					good = false;
+					break;
+				}
+			// if we don't, okay, let's add it
+			if(good)
+				result.push_back(mtrip -> triangles[j]);
+		}
+	}
 }
 
 // is a point 'visible' from another? does the line between them pass through the hull? this function answers these questions

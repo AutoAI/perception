@@ -1,6 +1,6 @@
 #pragma once
 
-// class MeshTriple; // forward declaration. MeshTriple references Triangle, so we can't just #include
+// class MeshTriple; // forward declaration. MeshTriple references Triangle, so we can't just #include (reinstate after removing superh.h)
 
 class Triangle {
 	public:
