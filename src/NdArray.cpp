@@ -1,3 +1,8 @@
+// NdArray.cpp
+// @author: Travis Vanderstad, Steven Russo
+
+// If you're looking for the documentation, its in NdArray.h
+
 #pragma once
 
 #include "NdArray.h"

@@ -1,3 +1,8 @@
+// NdArray.cpp
+// @author: Travis Vanderstad, Steven Russo
+
+// NdArray represents an n-dimensional array of whatever type you like
+
 #pragma once
 
 template <typename T>
@@ -15,5 +20,7 @@ class NdArray {
 
         T get(size_t* dimensions);
         T get(size_t index);
+    private:
+        // TODO: make things that should be private private and make necessary setters + getters
 };
 

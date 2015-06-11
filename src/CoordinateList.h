@@ -1,13 +1,14 @@
 // CoordinateList.h
-// @author: Travis Vanderstad
+// @author: Travis Vanderstad, Parth Mehrotra, Matthew Bowyer
 
-// CoordinateList is an coordinateslist of coordinates
+// CoordinateList is a list of coordinates
 // Supports changing coodrinate system of all coordinates and sorting base on 2D distance from a point
 
 #pragma once
 
 #include <vector>
-#include "Triple.cpp"
+#include "Triple.h"
+
 #define Cartesian 0
 #define Spherical 1
 #define Perspective 2
@@ -17,9 +18,8 @@
 
 using namespace std;
 
-/**
-* List of all coordinate triples
-*/
+//List of all coordinate triples
+
 class CoordinateList {
     public:
         // type of the coodinates (as #define'd)
@@ -39,6 +39,9 @@ class CoordinateList {
 
         // returns a particular element by its list index
         Triple get(size_t index);
+
+        // returns a reference to a particular element by its list index
+        Triple* getPtr(size_t index);
 
         // performs an 0(n) bucket sort. good for when the coordinates is a mess
         // metric is vector distance to parameter in 2D

@@ -1,21 +1,18 @@
 // CoordinateList.cpp
-// Travis Vanderstad
+// @author: Travis Vanderstad, Parth Mehrotra, Matthew Bowyer
 
-// If you're looking for the comments, they're in CoordinateList.h
+// If you're looking for the documentation, its in CoordinateList.h
 
 #pragma once
-
-#include "ros/ros.h"
-#include "ros/console.h"
 
 #include <stdio.h>
 #include <algorithm>
 #include <limits>
 #include <math.h>
 #include <string.h>
-#include <vector>
 
-#include "NdArray.cpp"
+#include "NdArray.h"
+
 #include "CoordinateList.h"
 
 using namespace std;
@@ -110,6 +107,10 @@ Triple CoordinateList::get(size_t index) {
     return coordinates[index];
 }
 
+Triple* CoordinateList::getPtr(size_t index) {
+    return &coordinates[index];
+}
+
 void CoordinateList::set(size_t index, Triple value) {
     coordinates[index] = value;
 }
@@ -185,9 +186,9 @@ void CoordinateList::sort(Triple origin) {
     }
 }
 
-void CoordinateList::log_distances(Triple origin){
-    stringstream out;
-    out << dist2(coordinates[0], origin);
-    for(size_t i = 1; i < length; i++)
-        out << " " << dist2(coordinates[i],origin);
-}
+// void CoordinateList::log_distances(Triple origin){
+//     stringstream out;
+//     out << dist2(coordinates[0], origin);
+//     for(size_t i = 1; i < length; i++)
+//         out << " " << dist2(coordinates[i],origin);
+// }

@@ -1,21 +1,18 @@
 #include "ros/ros.h"
 #include "ros/console.h"
 #include <gtest/gtest.h>
+
 #include <climits>
-
-#include "../NdArray.cpp"
 #include <string>
-
-#include "../CoordinateList.cpp"
-
-#include "../Triple.cpp"
-
-#include "../Triangle.cpp"
-
-#include "../Mesh.cpp"
 #include <vector>
 
-using namespace std;
+// #include "../NdArray.h"
+// #include "../CoordinateList.h"
+// #include "../Triple.h"
+// #include "../Triangle.h"
+// #include "../Mesh.h"
+
+#include "../superh.h"
 
 TEST(NdArray, testCase1) {
     size_t bounds[3] = {3, 3, 3};

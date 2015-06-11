@@ -1,23 +1,25 @@
+// Mesh.cpp
+// @author: Travis Vanderstad, Parth Mehrotra
+
+// If you're looking for the documentation, its in Mesh.h
+
 #pragma once
 
-#include <vector>
+#define _USE_MATH_DEFINES
+
 #include <math.h>
 
-#include "Triangle.cpp"
-#include "MeshTriple.cpp"
-#include "CoordinateList.cpp"
+#include "CoordinateList.h"
 
 #include "Mesh.h"
 
-#define start_size 5;
-
 using namespace std;
 
-Mesh::Mesh(CoordinateList list){
-	this->list = list;
+Mesh::Mesh(CoordinateList* cList){
+	list = cList;
 	// choose seed point, sort others accorinding to distance from seed
-	Triple* s = chooseSeed();
-	list.sort(s);
+	MeshTriple* s = chooseSeed();
+	(*list).sort(*(s -> triple));
 
 	// construct initial convex hull (counter-clockwise)
 	vector<MeshTriple*> hull(32);
@@ -31,58 +33,68 @@ Mesh::Mesh(CoordinateList list){
 
 }
 
-Triple* Mesh::chooseSeed(){
+MeshTriple* Mesh::chooseSeed(){
 	// just give 'em any old seed
-	return &list[0];
+	MeshTriple* returned = new MeshTriple();
+	returned -> triple -> x = (*list).get(0).x;
+	returned -> triple -> y = (*list).get(0).y;
+	returned -> triple -> z = (*list).get(0).z;
+	return returned;
 }
 
 void Mesh::initHull(size_t index0, size_t index1, size_t index2){
 	// check angle 0 to see which way the verts should be ordered to make the triangle counter-clockwise
-	float dTheta = atan2(list[2].y-list[0].y, list[2].x-list[0].x)-atan2(list[1].y-list[0].y, list[1].x-list[0].x);
-	if(dTheta > 2*PI)
-		dTheta -= PI;
+	float dTheta = atan2((*list).get(2).y-(*list).get(0).y, (*list).get(2).x-(*list).get(0).x)-atan2((*list).get(1).y-(*list).get(0).y, (*list).get(1).x-(*list).get(0).x);
+	if(dTheta > 2*M_PI)
+		dTheta -= M_PI;
 	else if(dTheta < 0)
-		dTheta += PI;
-	bool increasing = dTheta < PI;
+		dTheta += M_PI;
+	bool increasing = dTheta < M_PI;
 
 	// lets init that hull
 
-	MeshTriple temp;
-	temp.triple = &list[0];
-	hull.push_back(&temp);
+	MeshTriple temp0;
+	temp0.triple = (*list).getPtr(0);
+	verts.push_back(&temp0);
+	hull.push_back(&temp0);
 
 	if(increasing){
-		MeshTriple temp;
-		temp.triple = &list[1];
-		hull.push_back(&temp);
+		MeshTriple temp1;
+		temp1.triple = (*list).getPtr(1);
+		verts.push_back(&temp1);
+		hull.push_back(&temp1);
 
-		MeshTriple temp;
-		temp.triple = &list[2];
-		hull.push_back(&temp);
+		MeshTriple temp2;
+		temp2.triple = (*list).getPtr(2);
+		verts.push_back(&temp2);
+		hull.push_back(&temp2);
 	}else{
-		MeshTriple temp;
-		temp.triple = &list[2];
-		hull.push_back(&temp);
+		MeshTriple temp2;
+		temp2.triple = (*list).getPtr(2);
+		verts.push_back(&temp2);
+		hull.push_back(&temp2);
 
-		MeshTriple temp;
-		temp.triple = &list[1];
-		hull.push_back(&temp);
+		MeshTriple temp1;
+		temp1.triple = (*list).getPtr(1);
+		verts.push_back(&temp1);
+		hull.push_back(&temp1);
 	}
 
 	// make all them connections and ish
 	Triangle *t = new Triangle(hull[0], hull[1], hull[2]);
-	hull[0].triangles.push_back(t);
-	hull[1].triangles.push_back(t);
-	hull[2].triangles.push_back(t);
+	hull[0] -> triangles.push_back(t);
+	hull[1] -> triangles.push_back(t);
+	hull[2] -> triangles.push_back(t);
+	tris.push_back(t);
 }
 
-vector<Triple> Mesh::getNeighboringTriples(MeshTriple t) {
-	vector<Triple> neighborTriangles = t.triangles;
-	vector<triple> neighborPoints;
-	for (int i = 0; i < neighborTriangles.size(); i++) {
+// vector<Triple> Mesh::getNeighboringTriples(MeshTriple t) {
+// 	vector<Triple> neighborTriangles = t.triangles;
+// 	vector<triple> neighborPoints;
+// 	for (int i = 0; i < neighborTriangles.size(); i++) {
 		
-	}
-}
+// 	}
+// }
 
 void Mesh::insertVert(Triple t){
 	
@@ -91,10 +103,10 @@ void Mesh::insertVert(Triple t){
 // is a point 'visible' from another? does the line between them pass through the hull? this function answers these questions
 bool Mesh::isVisible(Triple& a, Triple& d){
 	bool result = true;
-	if(testIntersect(hull[hull.size()-1], hull[0], a, d))
+	if(testIntersect(*(hull[hull.size()-1] -> triple), *(hull[0] -> triple), a, d))
 		return false;
 	for(size_t i = 1; i < hull.size(); i++)
-		if(testIntersect(hull[i-1], hull[i], a, d)){
+		if(testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)){
 			result = false;
 			break;
 		}
