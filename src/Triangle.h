@@ -2,7 +2,8 @@
 
 class Triangle {
 	public:
-		MeshTriple points[3];
+		Triangle(MeshTriple& v1, MeshTriple& v2 MeshTriple& v3);
+		MeshTriple& points[3];
 		bool operator==(const Triple &t1);
 		bool operator!=(const Triple &t1);
 };

@@ -10,7 +10,13 @@
 
 #include "../Triple.cpp"
 
+#include "../Triangle.cpp"
+
 using namespace std;
+
+Test(Triangle, equalityTrue) {
+
+}
 
 TEST(Triple, equalityTrue) {
 	Triple a;
