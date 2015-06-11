@@ -21,7 +21,7 @@ Mesh::Mesh(CoordinateList list){
 	// construct initial convex hull (counter-clockwise)
 	vector<MeshTriple> hull(32);
 	this->hull = hull;
-	Triangle t = initHull(0, 1, 2);
+	initHull(0, 1, 2);
 
 	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
 
@@ -35,7 +35,7 @@ Triple Mesh::chooseSeed(){
 	return list[0];
 }
 
-Triangle Mesh::initHull(size_t index0, size_t index1, size_t index2){
+void Mesh::initHull(size_t index0, size_t index1, size_t index2){
 	// check angle 0 to see which way the verts should be ordered to make the triangle counter-clockwise
 	float dTheta = atan2(list[2].y-list[0].y, list[2].x-list[0].x)-atan2(list[1].y-list[0].y, list[1].x-list[0].x);
 	if(dTheta > 2*PI)
@@ -53,17 +53,41 @@ Triangle Mesh::initHull(size_t index0, size_t index1, size_t index2){
 		hull.push_back(list[2]);
 		hull.push_back(list[1]);
 	}
-	Triangle result;
-	result.points[0] = hull()
+
+	// make all them connections and ish
+	Triangle t;
+	MeshTriple a, b, c;
+	result.points[0] = a;
+	result.points[1] = b;
+	result.points[2] = c;
+	a.triangles.push_back(t);
+	b.triangles.push_back(t);
+	c.triangles.push_back(t);
+	tris.push_back(t);
+	verts.push_back(a);
+	verts.push_back(b);
+	verts.push_back(c);
 }
 
-// is a point 'visible' from another? (does the line between them pass through the hull?) this function answers that question
-bool Mesh::isVisible(Triple origin, Triple destination){
+vector<Triple> Mesh::getNeighboringTriples(MeshTriple t) {
+	vector<Triple> neighborTriangles = t.triangles;
+	vector<triple> neighborPoints;
+	for (int i = 0; i < neighborTriangles.size(); i++) {
+		
+	}
+}
+
+void Mesh::insertVert(Triple t){
+	
+}
+
+// is a point 'visible' from another? does the line between them pass through the hull? this function answers these questions
+bool Mesh::isVisible(Triple a, Triple d){
 	bool result = true;
-	if(testIntersect(hull[hull.size()-1], hull[0], origin, destination))
+	if(testIntersect(hull[hull.size()-1], hull[0], a, d))
 		return false;
 	for(size_t i = 1; i < hull.size(); i++)
-		if(testIntersect(hull[i-1], hull[i], origin, destination)){
+		if(testIntersect(hull[i-1], hull[i], a, d)){
 			result = false;
 			break;
 		}
@@ -91,14 +115,7 @@ bool Mesh::onSegment(Triple p, Triple q, Triple r){
 // dont worry about this one either
 int Mesh::orientation(Triple p, Triple q, Triple r){
     int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-    if (val == 0) return 0;
+    if (val == 0)
+    	return 0;
     return (val > 0)? 1: 2;
-}
-
-vector<Triple> Mesh::getNeighboringTriples(MeshTriple t) {
-	vector<Triple> neighborTriangles = t.triangles;
-	vector<triple> neighborPoints;
-	for (int i = 0; i < neighborTriangles.size(); i++) {
-		
-	}
 }
