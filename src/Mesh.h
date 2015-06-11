@@ -39,7 +39,10 @@ class Mesh {
 		void initHull(size_t index0, size_t index1, size_t index2);
 
 		// add a vertex to the triangulation. this is called for each entry in list
-		void insertVert(Triple t);
+		void insertVert(Triple* v);
+
+		// do what needs to be done to remove a triangle
+		void removeTri(Triangle* t);
 
 		// get a list of a vertex's neighboring vertices
 		vector<MeshTriple*> getNeighbors(MeshTriple* t);

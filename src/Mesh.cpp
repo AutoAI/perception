@@ -27,7 +27,9 @@ Mesh::Mesh(CoordinateList* cList){
 	initHull(0, 1, 2);
 
 	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
-	
+	for(size_t i = 0; i < list -> getLength(); i++){
+		insertVert(list -> getPtr(i));
+	}
 
 	// iteratively 'flip' triangles until no more triangles need be flipped
 
@@ -88,8 +90,52 @@ void Mesh::initHull(size_t index0, size_t index1, size_t index2){
 	tris.push_back(t);
 }
 
-void Mesh::insertVert(Triple t){
-	
+void Mesh::insertVert(Triple* v){
+	// insert a meshtriple for the vert
+	MeshTriple* t = new MeshTriple();
+	t -> triple = v;
+	// add any visible verts on the hull to a list. edges will be made to all of these
+	// (remember where the most clockwise and most counter-clockwise verts are)
+	vector<MeshTriple*> connectorTriples;
+	int c;
+	int cc;
+	for(int i = 0; i < hull.size(); i++)
+		if(isVisible(*(t -> triple), *(hull[i] -> triple))){
+			connectorTriples.push_back(hull[i]);
+			if((i == 0 && !isVisible(*(t -> triple), *(hull[hull.size()-1] -> triple))) || (i != 0 && !isVisible(*(t -> triple), *(hull[i-1] -> triple))))
+				c = i;
+			else if((i == hull.size()-1 && !isVisible(*(t -> triple), *(hull[0] -> triple))) || (i != 0 && !isVisible(*(t -> triple), *(hull[i+1] -> triple))))
+				cc = i;
+		}
+	// make triangles, starting with the most clockwise pair of points and working counter-clockwise
+	for(int i = c; (i+1)%hull.size() <= cc; i = (i+1)%hull.size()){
+		Triangle* temp = new Triangle(hull[i], hull[i+1], t);
+		hull[i] -> triangles.push_back(temp);
+		hull[i+1] -> triangles.push_back(temp);
+		t -> triangles.push_back(temp);
+	}
+	// trim the hull. of those verts visible to t, only the most clockwise and most counter-clockwise verts will remain
+	int initialHullSize = hull.size();
+	for(int i = (c+1)%initialHullSize; (i+1)%initialHullSize <= cc; cc = (cc-1+initialHullSize)%initialHullSize)
+		hull.erase(hull.begin()+i);
+	//insert the new point in-between the most clockwise and most counter-clockwise verts
+	hull.insert(hull.begin()+cc, t);
+}
+
+void Mesh::removeTri(Triangle* t){
+	// remove references to t from all its verts
+	for(char i = 0; i < 3; i++)
+		for(int j = 0; j < t -> points[i] -> triangles.size(); j++)
+			if(t -> points[i] -> triangles[j] == t){
+				t -> points[i] -> triangles.erase(t -> points[i] -> triangles.begin()+j);
+				break;
+			}
+	// remove reference to t from this mesh
+	for(size_t i = 0; i < tris.size(); i++)
+		if(tris[i] == t){
+			tris.erase(tris.begin()+i);
+			return;
+		}
 }
 
 vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
