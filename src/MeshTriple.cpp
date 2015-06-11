@@ -1,10 +1,8 @@
 #pragma once
 
+#include "MeshTriple.h"
+
 #include "Triangle.cpp"
 #include "Triple.cpp"
 
-class MeshTriple {
-	public:
-		vector<Triangle*> triangles;
-		Triple* triple;
-};
+#include <vector>

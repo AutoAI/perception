@@ -12,59 +12,10 @@
 
 #include "../Triangle.cpp"
 
+#include "../Mesh.cpp"
+#include <vector>
+
 using namespace std;
-
-Test(Triangle, equalityTrue) {
-
-}
-
-TEST(Triple, equalityTrue) {
-	Triple a;
-	Triple b;
-	
-	a.x = 1;
-	a.y = 1;
-	a.z = 1;
-
-	b.x = 1;
-	b.y = 1;
-	b.z = 1;
-
-	EXPECT_TRUE(a==b);
-}
-
-TEST(Triple, equalityFalse) {
-	Triple a;
-	Triple b;
-	
-	a.x = 1;
-	a.y = 1;
-	a.z = 1;
-
-	b.x = 1;
-	b.y = 2;
-	b.z = 1;
-
-	EXPECT_FALSE(a==b);
-}
-
-TEST(Triple, unequalityTrue) {
-	Triple a(1, 1, 3);
-	Triple b;
-
-	b.x = 1;
-	b.y = 1;
-	b.z = 1;
-
-	EXPECT_TRUE(a!=b);
-}
-
-TEST(Triple, unequalityFalse) {
-	Triple a(1, 2, 2);
-	Triple b(1, 2, 2);
-
-	EXPECT_FALSE(a!=b);
-}
 
 TEST(NdArray, testCase1) {
     size_t bounds[3] = {3, 3, 3};
@@ -245,6 +196,10 @@ TEST(CoordinateList, testSort) {
         }
     }
     EXPECT_TRUE(good);
+}
+
+TEST(Mesh, test) {
+	EXPECT_TRUE(true);
 }
 
 int main(int argc, char **argv) {

@@ -25,7 +25,7 @@ Mesh::Mesh(CoordinateList list){
 	initHull(0, 1, 2);
 
 	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
-
+	
 
 	// iteratively 'flip' triangles until no more triangles need be flipped
 
@@ -74,10 +74,6 @@ void Mesh::initHull(size_t index0, size_t index1, size_t index2){
 	hull[0].triangles.push_back(t);
 	hull[1].triangles.push_back(t);
 	hull[2].triangles.push_back(t);
-	tris.push_back(t);
-	verts.push_back(a);
-	verts.push_back(b);
-	verts.push_back(c);
 }
 
 vector<Triple> Mesh::getNeighboringTriples(MeshTriple t) {
@@ -93,7 +89,7 @@ void Mesh::insertVert(Triple t){
 }
 
 // is a point 'visible' from another? does the line between them pass through the hull? this function answers these questions
-bool Mesh::isVisible(Triple a, Triple d){
+bool Mesh::isVisible(Triple& a, Triple& d){
 	bool result = true;
 	if(testIntersect(hull[hull.size()-1], hull[0], a, d))
 		return false;
