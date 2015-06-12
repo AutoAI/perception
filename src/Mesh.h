@@ -61,4 +61,12 @@ class Mesh {
 
 		// helper-helper function for function above above function
 		int orientation(Triple p, Triple q, Triple r);
+
+		bool inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p);
+
+		float det(float a, float b, float c, float d, float e, float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p);
+
+		float det(float a, float b, float c, float d, float e, float f, float g, float h, float i);
+
+		float det(float a, float b, float c, float d);
 };

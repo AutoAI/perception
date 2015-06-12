@@ -228,7 +228,7 @@ bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
 
 // determinant of a 4x4 matrix; first row is a b c d; first column is a e i m
 float Mesh::det(float a, float b, float c, float d, float e, float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p){
-	return a*det(f, g, h, j, k, l, n, o, p) + b*det(g, h, e, k, l, i, o, p, m) + c*det(h, e, f, l, i, j, p, m, n) = d*det(e, f, g, i, j, k, m, n, o);
+	return a*det(f, g, h, j, k, l, n, o, p) + b*det(g, h, e, k, l, i, o, p, m) + c*det(h, e, f, l, i, j, p, m, n) + d*det(e, f, g, i, j, k, m, n, o);
 }
 
 // determinant of a 3x3 matrix; first row is a b c; first column is a d g
@@ -237,6 +237,6 @@ float Mesh::det(float a, float b, float c, float d, float e, float f, float g, f
 }
 
 // determinant of a 2x2 matrix; first row is a b; first column is a c
-float Mest::det(float a, float b, float c, float d){
+float Mesh::det(float a, float b, float c, float d){
 	return a*d - b*c;
 }
