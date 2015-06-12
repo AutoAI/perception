@@ -234,17 +234,17 @@ int Mesh::orientation(Triple p, Triple q, Triple r){
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
 bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
-	float[4][4] matrix = {
+	float matrix[4][4] = {
 		{1, 1, 1, 1},
-		{t0 -> x, t1 -> x, t2 -> x, t3 -> x},
-		{t0 -> y, t1 -> y, t2 -> y, t3 -> y},
-		{t0 -> x * t0 -> x + t0 -> y * t0 -> y, t1 -> x * t1 -> x + t1 -> y * t1 -> y, t2 -> x * t2 -> x + t2 -> y * t2 -> y, t3 -> x * t3 -> x + t3 -> y * t3 -> y}
+		{t0 -> x, t1 -> x, t2 -> x, p -> x},
+		{t0 -> y, t1 -> y, t2 -> y, p -> y},
+		{t0 -> x * t0 -> x + t0 -> y * t0 -> y, t1 -> x * t1 -> x + t1 -> y * t1 -> y, t2 -> x * t2 -> x + t2 -> y * t2 -> y, p -> x * p -> x + p -> y * p -> y}
 	};
-	return matrix_det(matrix, 4);
+	return Mesh::det(matrix, 4);
 }
 
 // from http://cboard.cprogramming.com/cplusplus-programming/30001-determinant-calculation.html
-float Mesh::det(float **in_matrix, int n){
+float Mesh::det(float in_matrix[][], int n){
 	int i, j, k;
 	float **matrix;
 	float det = 1;

@@ -63,10 +63,7 @@ class Mesh {
 		int orientation(Triple p, Triple q, Triple r);
 
 		bool inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p);
+	
+		static float det(float **in_matrix, int n);
 
-		static float det(float a, float b, float c, float d, float e, float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p);
-
-		static float det(float a, float b, float c, float d, float e, float f, float g, float h, float i);
-
-		static float det(float a, float b, float c, float d);
 };
