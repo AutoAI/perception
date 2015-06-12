@@ -7,9 +7,12 @@
 
 #define _USE_MATH_DEFINES
 
+#include "ros/ros.h"
+
 #include <stdexcept>
 #include <math.h>
 #include <stddef.h>
+#include <iostream>
 
 #include "CoordinateList.h"
 
@@ -256,42 +259,34 @@ bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
 	return Mesh::det(matrix, 4);
 }
 
-// from http://cboard.cprogramming.com/cplusplus-programming/30001-determinant-calculation.html
-float Mesh::det(float** in_matrix, int n){
-	int i, j, k;
-	float **matrix;
-	float det = 1;
-	matrix = new float *[n];
-	for (i = 0; i < n; i++)
-		matrix[i] = new float[n];
-	for (i = 0; i < n; i++) {
-		for ( j = 0; j < n; j++ )
-			matrix[i][j] = in_matrix[i][j];
+float Mesh::det(float** m, int n){
+	if(n == 2)
+		return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+	float*** sub = new float**[n];
+	for(int i = 0; i < n; i++)
+		sub[i] = new float*[n-1];
+	for(int i = 0; i < n; i++)
+		for(int j = 0; j < n-1; j++)
+			sub[i][j] = new float[n-1];
+	for(int i = 0; i < n; i++){
+		int s = 0;
+		for(int j = 0; j < n-1; j++){
+			if(j == i)
+				s++;
+			for(int k = 1; k < n; k++)
+				sub[i][j][k-1] = m[s][k];
+			s++;
+		}
 	}
-	for (k = 0; k < n; k++) {
-	 	if (matrix[k][k] == 0) {
-	 		bool ok = false;
-	 		for (j = k; j < n; j++) {
-	 			if (matrix[j][k] != 0)
-	 				ok = true;
-	 		}
-	 		if (!ok)
-	 			return 0;
-	 		for (i = k; i < n; i++)
-	 			std::swap ( matrix[i][j], matrix[i][k] );
-	 		det = -det;
-	 	}
-	 	det *= matrix[k][k];
-	 	if (k + 1 < n) {
-	 		for (i = k + 1; i < n; i++) {
-	 			for (j = k + 1; j < n; j++)
-	 				matrix[i][j] = matrix[i][j] - matrix[i][k] * 
-	 				matrix[k][j] / matrix[k][k];
-	 		}
-	 	}
+
+	float sum = 0;
+	bool add = true;
+	for(int i = 0; i < n; i++){
+		if(add)
+			sum += m[i][0] * det(sub[i], n-1);
+		else
+			sum -= m[i][0] * det(sub[i], n-1);
+		add = !add;
 	}
-	for (i = 0; i < n; i++)
-		delete [] matrix[i];
-	delete [] matrix;
-	return det;
+	return sum;
 }

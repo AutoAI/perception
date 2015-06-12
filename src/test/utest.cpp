@@ -207,36 +207,67 @@ TEST(Mesh, testConstructor2) {
 }
 
 TEST(Mesh, det22) {
-	float input[2][2] = {
-		{3, -32}, 
-		{2, 1}};
+    float** matrix = new float*[2];
+    for(int i = 0; i < 2; i++)
+        matrix[i] = new float[2];
+    matrix[0][0] = 3;
+    matrix[0][1] = -32;
+    matrix[1][0] = 2;
+    matrix[1][1] = 1;
 
 	float ans = 67;
+    float out = Mesh::det(matrix, 2);
 
-	EXPECT_LT(abs(Mesh::det(input, 2) - ans), 0.0001);
+	EXPECT_LT(abs(out - ans), 0.0001);
 }
 
 TEST(Mesh, det33) {
-	 float input = {
-		{3,  1,  4}, 
-	 	{2, 3, 43},
-	 	{4, -4,  2}};
+    float** matrix = new float*[3];
+    for(int i = 0; i < 3; i++)
+        matrix[i] = new float[3];
+    matrix[0][0] = 3;
+    matrix[0][1] = 1;
+    matrix[0][2] = 4;
+    matrix[1][0] = 2;
+    matrix[1][1] = 3;
+    matrix[1][2] = 43;
+    matrix[2][0] = 4;
+    matrix[2][1] = -4;
+    matrix[2][2] = 2;
 
-	 float ans = -59.11999999999999;
+	float ans = 622;
+    float out = Mesh::det(matrix, 3);
 	
-	EXPECT_LT(abs(Mesh::det(input, 3) - ans), 0.0001);
+	EXPECT_LT(abs(out - ans), 0.0001);
 }
 
 TEST(Mesh, det44) {
-	float input[4][4] = {
-		{23, -12, -0.32, 23},
-		{12, 0, 65, 1},
-		{2, 1, 2, 5},
-		{0.43, 32, -32, 54}};
+    float** matrix = new float*[4];
+    for(int i = 0; i < 4; i++)
+        matrix[i] = new float[4];
+    matrix[0][0] = 1;
+    matrix[0][1] = 2;
+    matrix[0][2] = 0;
+    matrix[0][3] = 1;
+    matrix[1][0] = 2;
+    matrix[1][1] = 1;
+    matrix[1][2] = 1;
+    matrix[1][3] = 0;
+    matrix[2][0] = -1;
+    matrix[2][1] = 1;
+    matrix[2][2] = -2;
+    matrix[2][3] = 1;
+    matrix[3][0] = 1;
+    matrix[3][1] = 1;
+    matrix[3][2] = 2;
+    matrix[3][3] = 2;
 
-	float ans = 43358.22760000001;
+	float ans = 5;
+    float out = Mesh::det(matrix, 4);
 
-	EXPECT_LT(abs(Mesh::det(input, 4) - ans), 0.0001);
+	EXPECT_LT(abs(out - ans), 0.0001);
+
+
 }
 
 int main(int argc, char **argv) {
