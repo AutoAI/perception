@@ -207,53 +207,36 @@ TEST(Mesh, testConstructor2) {
 }
 
 TEST(Mesh, det22) {
-	float a = 3;
-	float b = -32;
-	float c = 2;
-	float d = 1;
+	float input[2][2] = {
+		{3, -32}, 
+		{2, 1}};
 
 	float ans = 67;
 
-	EXPECT_LT(abs(Mesh::det(a, b, c, d) - ans), 0.0001);
+	EXPECT_LT(abs(Mesh::det(input, 2) - ans), 0.0001);
 }
 
 TEST(Mesh, det33) {
-	float a = 3;
-	float b = 1; 
-	float c = 4;
-	float d = 2; 
-	float e = 3; 
-	float f = 0.43;
-	float g = 4;
-	float h = -4;
-	float i = 2;
+	 float input = {
+		{3,  1,  4}, 
+	 	{2, 3, 43},
+	 	{4, -4,  2}};
 
-	float ans = -59.11999999999999;
+	 float ans = -59.11999999999999;
 	
-	EXPECT_LT(abs(Mesh::det(a, b, c, d, e, f, g, h, i) - ans), 0.0001);
+	EXPECT_LT(abs(Mesh::det(input, 3) - ans), 0.0001);
 }
 
 TEST(Mesh, det44) {
-	float a = 23;
-	float b = -12;
-	float c = -0.32;
-	float d = 23;
-	float e = 12;
-	float f = 0; 
-	float g = 65; 
-	float h = 1;
-	float i = 2;
-	float j = 1;
-	float k = 2;
-	float l = 5;
-	float m = 0.43;
-	float n = 32;
-	float o = -32;
-	float p = 54;
+	float input[4][4] = {
+		{23, -12, -0.32, 23},
+		{12, 0, 65, 1},
+		{2, 1, 2, 5},
+		{0.43, 32, -32, 54}};
 
 	float ans = 43358.22760000001;
 
-	EXPECT_LT(abs(Mesh::det(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) - ans), 0.0001);
+	EXPECT_LT(abs(Mesh::det(input, 4) - ans), 0.0001);
 }
 
 int main(int argc, char **argv) {
