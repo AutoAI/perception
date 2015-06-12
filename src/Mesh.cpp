@@ -234,7 +234,7 @@ int Mesh::orientation(Triple p, Triple q, Triple r){
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
 bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
-	float** matrix;
+	float[4][4] matrix;
 	matrix[0][0] = 1;
 	matrix[0][1] = 1;
 	matrix[0][2] = 1;
