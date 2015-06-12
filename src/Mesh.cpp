@@ -234,17 +234,30 @@ int Mesh::orientation(Triple p, Triple q, Triple r){
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
 bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
-	float matrix[4][4] = {
-		{1, 1, 1, 1},
-		{t0 -> x, t1 -> x, t2 -> x, p -> x},
-		{t0 -> y, t1 -> y, t2 -> y, p -> y},
-		{t0 -> x * t0 -> x + t0 -> y * t0 -> y, t1 -> x * t1 -> x + t1 -> y * t1 -> y, t2 -> x * t2 -> x + t2 -> y * t2 -> y, p -> x * p -> x + p -> y * p -> y}
-	};
+	float** matrix = new float*[4];
+	for(int i = 0; i < 4; i++)
+		matrix[i] = new float[4];
+	matrix[0][0] = 1;
+	matrix[0][1] = 1;
+	matrix[0][2] = 1;
+	matrix[0][3] = 1;
+	matrix[1][0] = t0 -> x;
+	matrix[1][1] = t1 -> x;
+	matrix[1][2] = t2 -> x;
+	matrix[1][3] = p -> x;
+	matrix[2][0] = t0 -> y;
+	matrix[2][1] = t1 -> y;
+	matrix[2][2] = t2 -> y;
+	matrix[2][3] = p -> y;
+	matrix[3][0] = t0 -> x * t0 -> x + t0 -> y * t0 -> y;
+	matrix[3][1] = t1 -> x * t1 -> x + t1 -> y * t1 -> y;
+	matrix[3][2] = t2 -> x * t2 -> x + t2 -> y * t2 -> y;
+	matrix[3][3] = p -> x * p -> x + p -> y * p -> y;
 	return Mesh::det(matrix, 4);
 }
 
 // from http://cboard.cprogramming.com/cplusplus-programming/30001-determinant-calculation.html
-float Mesh::det(float in_matrix[][], int n){
+float Mesh::det(float** in_matrix, int n){
 	int i, j, k;
 	float **matrix;
 	float det = 1;
