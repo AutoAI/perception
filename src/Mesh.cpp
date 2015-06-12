@@ -244,7 +244,7 @@ bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
 }
 
 // from http://cboard.cprogramming.com/cplusplus-programming/30001-determinant-calculation.html
-float Mesh::det(float in_matrix[][], int n){
+float Mesh::det(float **in_matrix, int n){
 	int i, j, k;
 	float **matrix;
 	float det = 1;
