@@ -1,6 +1,11 @@
+#define private public
+
+#include <stddef.h>
+
 #include "ros/ros.h"
 #include "ros/console.h"
 #include <gtest/gtest.h>
+#include <stddef.h>
 
 #include <climits>
 #include <string>
@@ -193,8 +198,39 @@ TEST(CoordinateList, testSort) {
     EXPECT_TRUE(good);
 }
 
-TEST(Mesh, test) {
-	EXPECT_TRUE(true);
+TEST(Mesh, testConstructor) {
+	EXPECT_THROW(Mesh(NULL), std::invalid_argument);
+}
+
+TEST(Mesh, testConstructor2) {
+	EXPECT_THROW(Mesh(new CoordinateList(0, 0)), std::invalid_argument);
+}
+
+TEST(Mesh, det33) {
+	float a = 3;
+	float b = -32;
+	float c = 2;
+	float d = 1;
+
+	float ans = 67;
+
+	EXPECT_LT(abs(Mesh::det(a, b, c, d) - ans), 0.0001);
+}
+
+TEST(Mesh, det44) {
+	float a = 3;
+	float b = 1; 
+	float c = 4;
+	float d = 2; 
+	float e = 3; 
+	float f = 0.43;
+	float g = 4;
+	float h = -4;
+	float i = 2;
+
+	float ans = -59.11999999999999;
+	
+	EXPECT_LT(abs(Mesh::det(a, b, c, d, e, f, g, h, i) - ans), 0.0001);
 }
 
 int main(int argc, char **argv) {
