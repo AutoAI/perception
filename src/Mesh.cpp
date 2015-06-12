@@ -234,23 +234,12 @@ int Mesh::orientation(Triple p, Triple q, Triple r){
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
 bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
-	float[4][4] matrix;
-	matrix[0][0] = 1;
-	matrix[0][1] = 1;
-	matrix[0][2] = 1;
-	matrix[0][3] = 1;
-	matrix[1][0] = t0 -> x;
-	matrix[1][1] = t1 -> x;
-	matrix[1][2] = t2 -> x;
-	matrix[1][3] = t3 -> x;
-	matrix[2][0] = t0 -> y;
-	matrix[2][1] = t1 -> y;
-	matrix[2][2] = t2 -> y;
-	matrix[2][3] = t3 -> y;
-	matrix[3][0] = t0 -> x * t0 -> x + t0 -> y * t0 -> y;
-	matrix[3][1] = t1 -> x * t1 -> x + t1 -> y * t1 -> y;
-	matrix[3][2] = t2 -> x * t2 -> x + t2 -> y * t2 -> y;
-	matrix[3][3] = t3 -> x * t3 -> x + t3 -> y * t3 -> y;
+	float[4][4] matrix = {
+		{1, 1, 1, 1},
+		{t0 -> x, t1 -> x, t2 -> x, t3 -> x},
+		{t0 -> y, t1 -> y, t2 -> y, t3 -> y},
+		{t0 -> x * t0 -> x + t0 -> y * t0 -> y, t1 -> x * t1 -> x + t1 -> y * t1 -> y, t2 -> x * t2 -> x + t2 -> y * t2 -> y, t3 -> x * t3 -> x + t3 -> y * t3 -> y}
+	};
 	return matrix_det(matrix, 4);
 }
 
