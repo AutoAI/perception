@@ -220,3 +220,23 @@ int Mesh::orientation(Triple p, Triple q, Triple r){
     	return 0;
     return (val > 0)? 1: 2;
 }
+
+// formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
+bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
+	return det(1, t0->x, t0->y, t0->x * t0->x + t0->y * t0->y, 1, t1->x, t1->y, t1->x * t1->x + t1->y * t1->y, 1, t2->x, t2->y, t2->x * t2->x + t2->y * t2->y, 1, p->x, p->y, p->x * p->x + p->y * p->y) * det(1, t0->x, t0->y, 1, t1->x, t1->y, 1, t2->x, t2->y) < 0;
+}
+
+// determinant of a 4x4 matrix; first row is a b c d; first column is a e i m
+float Mesh::det(float a, float b, float c, float d, float e, float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p){
+	return a*det(f, g, h, j, k, l, n, o, p) + b*det(g, h, e, k, l, i, o, p, m) + c*det(h, e, f, l, i, j, p, m, n) = d*det(e, f, g, i, j, k, m, n, o);
+}
+
+// determinant of a 3x3 matrix; first row is a b c; first column is a d g
+float Mesh::det(float a, float b, float c, float d, float e, float f, float g, float h, float i){
+	return a*det(e, f, h, i) + b*det(f, d, i, g) + c*det(d, e, g, h);
+}
+
+// determinant of a 2x2 matrix; first row is a b; first column is a c
+float Mest::det(float a, float b, float c, float d){
+	return a*d - b*c;
+}
