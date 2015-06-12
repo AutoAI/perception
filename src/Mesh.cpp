@@ -145,9 +145,9 @@ void Mesh::removeTri(Triangle* t){
 		}
 }
 
- void Mesh::flipTriangle(Triangle* t){
+// void Mesh::flipTriangle(Triangle* t){
  	
- }
+// }
 
 vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 	vector<Triangle*> neighborTriangles = t -> triangles;
@@ -234,20 +234,62 @@ int Mesh::orientation(Triple p, Triple q, Triple r){
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
 bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
-	return det(1, t0->x, t0->y, t0->x * t0->x + t0->y * t0->y, 1, t1->x, t1->y, t1->x * t1->x + t1->y * t1->y, 1, t2->x, t2->y, t2->x * t2->x + t2->y * t2->y, 1, p->x, p->y, p->x * p->x + p->y * p->y) * det(1, t0->x, t0->y, 1, t1->x, t1->y, 1, t2->x, t2->y) < 0;
+	float** matrix;
+	matrix[0][0] = 1;
+	matrix[0][1] = 1;
+	matrix[0][2] = 1;
+	matrix[0][3] = 1;
+	matrix[1][0] = t0 -> x;
+	matrix[1][1] = t1 -> x;
+	matrix[1][2] = t2 -> x;
+	matrix[1][3] = t3 -> x;
+	matrix[2][0] = t0 -> y;
+	matrix[2][1] = t1 -> y;
+	matrix[2][2] = t2 -> y;
+	matrix[2][3] = t3 -> y;
+	matrix[3][0] = t0 -> x * t0 -> x + t0 -> y * t0 -> y;
+	matrix[3][1] = t1 -> x * t1 -> x + t1 -> y * t1 -> y;
+	matrix[3][2] = t2 -> x * t2 -> x + t2 -> y * t2 -> y;
+	matrix[3][3] = t3 -> x * t3 -> x + t3 -> y * t3 -> y;
+	return matrix_det(matrix, 4);
 }
 
-// determinant of a 4x4 matrix; first row is a b c d; first column is a e i m
-float Mesh::det(float a, float b, float c, float d, float e, float f, float g, float h, float i, float j, float k, float l, float m, float n, float o, float p){
-	return a*det(f, g, h, j, k, l, n, o, p) + b*det(g, h, e, k, l, i, o, p, m) + c*det(h, e, f, l, i, j, p, m, n) + d*det(e, f, g, i, j, k, m, n, o);
-}
-
-// determinant of a 3x3 matrix; first row is a b c; first column is a d g
-float Mesh::det(float a, float b, float c, float d, float e, float f, float g, float h, float i){
-	return a*det(e, f, h, i) + b*det(f, d, i, g) + c*det(d, e, g, h);
-}
-
-// determinant of a 2x2 matrix; first row is a b; first column is a c
-float Mesh::det(float a, float b, float c, float d){
-	return a*d - b*c;
+// from http://cboard.cprogramming.com/cplusplus-programming/30001-determinant-calculation.html
+float Mesh::det(float **in_matrix, int n){
+	int i, j, k;
+	float **matrix;
+	float det = 1;
+	matrix = new float *[n];
+	for (i = 0; i < n; i++)
+		matrix[i] = new float[n];
+	for (i = 0; i < n; i++) {
+		for ( j = 0; j < n; j++ )
+			matrix[i][j] = in_matrix[i][j];
+	}
+	for (k = 0; k < n; k++) {
+	 	if (matrix[k][k] == 0) {
+	 		bool ok = false;
+	 		for (j = k; j < n; j++) {
+	 			if (matrix[j][k] != 0)
+	 				ok = true;
+	 		}
+	 		if (!ok)
+	 			return 0;
+	 		for (i = k; i < n; i++)
+	 			std::swap ( matrix[i][j], matrix[i][k] );
+	 		det = -det;
+	 	}
+	 	det *= matrix[k][k];
+	 	if (k + 1 < n) {
+	 		for (i = k + 1; i < n; i++) {
+	 			for (j = k + 1; j < n; j++)
+	 				matrix[i][j] = matrix[i][j] - matrix[i][k] * 
+	 				matrix[k][j] / matrix[k][k];
+	 		}
+	 	}
+	}
+	for (i = 0; i < n; i++)
+		delete [] matrix[i];
+	delete [] matrix;
+	return det;
 }
