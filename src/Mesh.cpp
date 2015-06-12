@@ -27,7 +27,7 @@ Mesh::Mesh(CoordinateList* cList){
 	initHull(0, 1, 2);
 
 	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
-	for(size_t i = 0; i < list -> getLength(); i++){
+	for(unsigned long i = 0; i < list -> getLength(); i++){
 		insertVert(list -> getPtr(i));
 	}
 
@@ -44,7 +44,7 @@ MeshTriple* Mesh::chooseSeed(){
 	return returned;
 }
 
-void Mesh::initHull(size_t index0, size_t index1, size_t index2){
+void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long index2){
 	// check angle 0 to see which way the verts should be ordered to make the triangle counter-clockwise
 	float dTheta = atan2((*list).get(2).y-(*list).get(0).y, (*list).get(2).x-(*list).get(0).x)-atan2((*list).get(1).y-(*list).get(0).y, (*list).get(1).x-(*list).get(0).x);
 	if(dTheta > 2*M_PI)
@@ -131,7 +131,7 @@ void Mesh::removeTri(Triangle* t){
 				break;
 			}
 	// remove reference to t from this mesh
-	for(size_t i = 0; i < tris.size(); i++)
+	for(unsigned long i = 0; i < tris.size(); i++)
 		if(tris[i] == t){
 			tris.erase(tris.begin()+i);
 			return;
@@ -187,7 +187,7 @@ bool Mesh::isVisible(Triple& a, Triple& d){
 	bool result = true;
 	if(testIntersect(*(hull[hull.size()-1] -> triple), *(hull[0] -> triple), a, d))
 		return false;
-	for(size_t i = 1; i < hull.size(); i++)
+	for(unsigned long i = 1; i < hull.size(); i++)
 		if(testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)){
 			result = false;
 			break;

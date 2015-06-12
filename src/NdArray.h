@@ -9,18 +9,17 @@ template <typename T>
 class NdArray {
     public:
         T* array;
-        size_t* sizes;
-        size_t length;
+        unsigned long* sizes;
+        unsigned long length;
         char numDimensions;
 
-        NdArray(char numDimensions, size_t* dimensions);
+        NdArray(char numDimensions, unsigned long* dimensions);
 
-        void set(size_t* dimensions, T value);
-        void set(size_t index, T value);
+        void set(unsigned long* dimensions, T value);
+        void set(unsigned long index, T value);
 
-        T get(size_t* dimensions);
-        T get(size_t index);
-    private:
+        T get(unsigned long* dimensions);
+        T get(unsigned long index);
         // TODO: make things that should be private private and make necessary setters + getters
 };
 

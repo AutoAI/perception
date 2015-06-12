@@ -29,5 +29,13 @@ add_executable(Delaunay src/Delaunay-sHull.cpp)
 target_link_libraries(Delaunay ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
 add_dependencies(Delaunay Perception_delaunay_cpp)
 
-catkin_add_gtest(Perception_utest src/test/utest.cpp)
+catkin_add_gtest(Perception_utest 
+	src/NdArray.cpp
+	src/CoordinateList.cpp
+	src/Mesh.cpp
+	src/MeshTriple.h
+	src/Triangle.cpp
+	src/Triple.cpp
+	src/test/utest.cpp
+	)
 target_link_libraries(Perception_utest ${catkin_LIBRARIES})        

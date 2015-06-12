@@ -6,10 +6,11 @@
 #pragma once
 
 #include "NdArray.h"
+#include <string>
 
 template<typename T>
-NdArray<T>::NdArray(char numDimensions, size_t* dimensions) {
-    sizes = new size_t[numDimensions];
+NdArray<T>::NdArray(char numDimensions, unsigned long* dimensions) {
+    sizes = new unsigned long[numDimensions];
     length = 1;
     for (char i = 0; i < numDimensions; i++) {
         length *= dimensions[i];
@@ -24,7 +25,7 @@ NdArray<T>::NdArray(char numDimensions, size_t* dimensions) {
 }
 
 template<typename T>
-void NdArray<T>::set(size_t* dimensions, T value) {
+void NdArray<T>::set(unsigned long* dimensions, T value) {
     char index = 0;
     for (char i = 0; i < numDimensions; i++) {
         index += dimensions[i] * sizes[i];
@@ -33,12 +34,12 @@ void NdArray<T>::set(size_t* dimensions, T value) {
 }
 
 template<typename T>
-void NdArray<T>::set(size_t index, T value) {
+void NdArray<T>::set(unsigned long index, T value) {
     array[index] = value;
 }
 
 template<typename T>
-T NdArray<T>::get(size_t* dimensions) {
+T NdArray<T>::get(unsigned long* dimensions) {
     char index = 0;
     for (char i = 0; i < numDimensions; i++) {
         index += dimensions[i] * sizes[i];
@@ -47,6 +48,9 @@ T NdArray<T>::get(size_t* dimensions) {
 }
 
 template<typename T>
-T NdArray<T>::get(size_t index) {
+T NdArray<T>::get(unsigned long index) {
     return array[index];
 }
+
+template class NdArray<std::string>;
+template class NdArray<float>;

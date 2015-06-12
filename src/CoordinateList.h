@@ -26,7 +26,7 @@ class CoordinateList {
         char type;
 
         // contruct using a type and initial length
-        CoordinateList(char type, size_t length);
+        CoordinateList(char type, unsigned long length);
 
         // converts all coordinates to the specified type
         void toType(char newType);
@@ -35,29 +35,29 @@ class CoordinateList {
         void toType(char newType, Triple offset);
 
         // set a particular element by its list index
-        void set(size_t index, Triple value);
+        void set(unsigned long index, Triple value);
 
         // returns a particular element by its list index
-        Triple get(size_t index);
+        Triple get(unsigned long index);
 
         // returns a reference to a particular element by its list index
-        Triple* getPtr(size_t index);
+        Triple* getPtr(unsigned long index);
 
         // performs an 0(n) bucket sort. good for when the coordinates is a mess
         // metric is vector distance to parameter in 2D
-        void sortThatDoesntWorkYet(Triple t);
+        //void sortThatDoesntWorkYet(Triple t);
 
         // performs an n^2 insertion sort. good for when the list is mostly in order
         // metric is vector distance to parameter in 2D
         void sort(Triple t);
 
-        size_t getLength();
+        unsigned long getLength();
     private:
         // helper method for toType()'s
         void toCartesian();
 
         // the capacity of the coordinates (not the number of actual elements stored)
-        size_t length;
+        unsigned long length;
 
         // the data stored in the structure
         Triple* coordinates;

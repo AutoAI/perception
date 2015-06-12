@@ -6,29 +6,27 @@
 #include <string>
 #include <vector>
 
-// #include "../NdArray.h"
-// #include "../CoordinateList.h"
-// #include "../Triple.h"
-// #include "../Triangle.h"
-// #include "../Mesh.h"
-
-#include "../superh.h"
+#include "../CoordinateList.h"
+#include "../NdArray.h"
+#include "../Triple.h"
+#include "../Triangle.h"
+#include "../Mesh.h"
 
 TEST(NdArray, testCase1) {
-    size_t bounds[3] = {3, 3, 3};
+    unsigned long bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    size_t location[3] = {0, 0, 0};
+    unsigned long location[3] = {0, 0, 0};
     string value = "asdf";
     array.set(location, value);
     EXPECT_EQ(value.compare(array.get(location)), 0);
 }
 
 TEST(NdArray, testCase2) {
-    size_t bounds[3] = {3, 3, 3};
+    unsigned long bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    size_t location[3] = {0, 2, 0};
+    unsigned long location[3] = {0, 2, 0};
     string value = "sdflj";
     array.set(location, value);
 
@@ -36,10 +34,10 @@ TEST(NdArray, testCase2) {
 }
 
 TEST(NdArray, testCase3) {
-    size_t bounds[3] = {3, 3, 3};
+    unsigned long bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    size_t location[3] = {2, 0, 2};
+    unsigned long location[3] = {2, 0, 2};
     string value = "asldfkjsd";
     array.set(location, value);
 
@@ -47,10 +45,10 @@ TEST(NdArray, testCase3) {
 }
 
 TEST(NdArray, testCase4) {
-    size_t bounds[3] = {3, 3, 3};
+    unsigned long bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    size_t location[3] = {0, 0, 0};
+    unsigned long location[3] = {0, 0, 0};
     string value = "sdkjsfks";
 
     array.set(location, value);
@@ -60,10 +58,10 @@ TEST(NdArray, testCase4) {
 }
 
 TEST(NdArray, testCase5) {
-    size_t bounds[3] = {3, 3, 3};
+    unsigned long bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    size_t location[3] = {2, 0, 1};
+    unsigned long location[3] = {2, 0, 1};
     string value = "adfklsjdfksdflkjsdf";
 
     array.set(location, value);
@@ -72,10 +70,10 @@ TEST(NdArray, testCase5) {
 }
 
 TEST(NdArray, testCase6) {
-    size_t bounds[3] = {3, 3, 3};
+    unsigned long bounds[3] = {3, 3, 3};
     NdArray<string> array(3, bounds);
 
-    size_t location[3] = {1, 3, 1};
+    unsigned long location[3] = {1, 3, 1};
     string value = "ksdflkjsdf";
 
     array.set(location, value);
@@ -155,7 +153,7 @@ TEST(CoordinateList, toPerspective) {
 }
 
 TEST(CoordinateList, testSize) {
-    size_t t_length = 20;
+    unsigned long t_length = 20;
     Triple t[t_length];
 
     CoordinateList test(0, t_length);
@@ -163,17 +161,17 @@ TEST(CoordinateList, testSize) {
 }
 
 TEST(CoordinateList, testSort) {
-    size_t t_length = 6;
+    unsigned long t_length = 6;
     Triple t[t_length];
 
-    for (size_t i = 0; i < t_length; i++) {
+    for (unsigned long i = 0; i < t_length; i++) {
         t[i].x = float(rand()) / rand(); 
         t[i].y = float(rand()) / rand();
         t[i].z = float(rand()) / rand();
     }
 
     CoordinateList test(0, t_length);
-    for (size_t i = 0; i < t_length; i++) {
+    for (unsigned long i = 0; i < t_length; i++) {
         test.set(i, t[i]);
     }
     Triple c (float(rand()) / rand(), float(rand()) / rand(), float(rand()) / rand());
@@ -182,7 +180,7 @@ TEST(CoordinateList, testSort) {
 
     bool good = true;
 
-    for(size_t i = 1; i < t_length; i++){
+    for(unsigned long i = 1; i < t_length; i++){
         float dxi = test.get(i).x - c.x;
         float dyi = test.get(i).y - c.y;
         float dximinus1 = test.get(i-1).x - c.x;
