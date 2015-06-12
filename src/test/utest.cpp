@@ -206,7 +206,7 @@ TEST(Mesh, testConstructor2) {
 	EXPECT_THROW(Mesh(new CoordinateList(0, 0)), std::invalid_argument);
 }
 
-TEST(Mesh, det33) {
+TEST(Mesh, det22) {
 	float a = 3;
 	float b = -32;
 	float c = 2;
@@ -217,7 +217,7 @@ TEST(Mesh, det33) {
 	EXPECT_LT(abs(Mesh::det(a, b, c, d) - ans), 0.0001);
 }
 
-TEST(Mesh, det44) {
+TEST(Mesh, det33) {
 	float a = 3;
 	float b = 1; 
 	float c = 4;
@@ -231,6 +231,29 @@ TEST(Mesh, det44) {
 	float ans = -59.11999999999999;
 	
 	EXPECT_LT(abs(Mesh::det(a, b, c, d, e, f, g, h, i) - ans), 0.0001);
+}
+
+TEST(Mesh, det44) {
+	float a = 23;
+	float b = -12;
+	float c = -0.32;
+	float d = 23;
+	float e = 12;
+	float f = 0; 
+	float g = 65; 
+	float h = 1;
+	float i = 2;
+	float j = 1;
+	float k = 2;
+	float l = 5;
+	float m = 0.43;
+	float n = 32;
+	float o = -32;
+	float p = 54;
+
+	float ans = 43358.22760000001;
+
+	EXPECT_LT(abs(Mesh::det(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) - ans), 0.0001);
 }
 
 int main(int argc, char **argv) {
