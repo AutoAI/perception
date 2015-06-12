@@ -138,6 +138,10 @@ void Mesh::removeTri(Triangle* t){
 		}
 }
 
+ void Mesh::flipTriangle(Triangle* t){
+ 	
+ }
+
 vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 	vector<Triangle*> neighborTriangles = t -> triangles;
 	vector<MeshTriple*> result;
