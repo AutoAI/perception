@@ -206,7 +206,7 @@ TEST(Mesh, testConstructor2) {
 	EXPECT_THROW(Mesh(new CoordinateList(0, 0)), std::invalid_argument);
 }
 
-TEST(Mesh, det22) {
+TEST(Mesh, det2x2) {
     float** matrix = new float*[2];
     for(int i = 0; i < 2; i++)
         matrix[i] = new float[2];
@@ -221,7 +221,7 @@ TEST(Mesh, det22) {
 	EXPECT_LT(abs(out - ans), 0.0001);
 }
 
-TEST(Mesh, det33) {
+TEST(Mesh, det3x3) {
     float** matrix = new float*[3];
     for(int i = 0; i < 3; i++)
         matrix[i] = new float[3];
@@ -241,7 +241,7 @@ TEST(Mesh, det33) {
 	EXPECT_LT(abs(out - ans), 0.0001);
 }
 
-TEST(Mesh, det44) {
+TEST(Mesh, det4x4) {
     float** matrix = new float*[4];
     for(int i = 0; i < 4; i++)
         matrix[i] = new float[4];
@@ -266,8 +266,117 @@ TEST(Mesh, det44) {
     float out = Mesh::det(matrix, 4);
 
 	EXPECT_LT(abs(out - ans), 0.0001);
+}
 
+TEST(Mesh, det10x10){
+    float** matrix = new float*[10];
+    for(int i = 0; i < 10; i++)
+        matrix[i] = new float[10];
+    matrix[0][0] = 1;
+    matrix[0][1] = 2;
+    matrix[0][2] = 0;
+    matrix[0][3] = 1;
+    matrix[0][4] = 2;
+    matrix[0][5] = 1;
+    matrix[0][6] = 1;
+    matrix[0][7] = 0;
+    matrix[0][8] = -1;
+    matrix[0][9] = 1;
+    matrix[1][0] = 1;
+    matrix[1][1] = 2;
+    matrix[1][2] = 0;
+    matrix[1][3] = 1;
+    matrix[1][4] = 2;
+    matrix[1][5] = 1;
+    matrix[1][6] = 1;
+    matrix[1][7] = 0;
+    matrix[1][8] = -1;
+    matrix[1][9] = -1;
+    matrix[2][0] = 1;
+    matrix[2][1] = 2;
+    matrix[2][2] = 0;
+    matrix[2][3] = 1;
+    matrix[2][4] = 2;
+    matrix[2][5] = 1;
+    matrix[2][6] = 1;
+    matrix[2][7] = 0;
+    matrix[2][8] = -1;
+    matrix[2][9] = -1;
+    matrix[3][0] = 1;
+    matrix[3][1] = 2;
+    matrix[3][2] = 0;
+    matrix[3][3] = 1;
+    matrix[3][4] = 2;
+    matrix[3][5] = 1;
+    matrix[3][6] = 1;
+    matrix[3][7] = 0;
+    matrix[3][8] = -1;
+    matrix[3][9] = -1;
+    matrix[4][0] = 1;
+    matrix[4][1] = 2;
+    matrix[4][2] = 0;
+    matrix[4][3] = 1;
+    matrix[4][4] = 2;
+    matrix[4][5] = 1;
+    matrix[4][6] = 1;
+    matrix[4][7] = 0;
+    matrix[4][8] = -1;
+    matrix[4][9] = -1;
+    matrix[5][0] = 1;
+    matrix[5][1] = 2;
+    matrix[5][2] = 0;
+    matrix[5][3] = 1;
+    matrix[5][4] = 2;
+    matrix[5][5] = 1;
+    matrix[5][6] = 1;
+    matrix[5][7] = 0;
+    matrix[5][8] = -1;
+    matrix[5][9] = -1;
+    matrix[6][0] = 1;
+    matrix[6][1] = 2;
+    matrix[6][2] = 0;
+    matrix[6][3] = 1;
+    matrix[6][4] = 2;
+    matrix[6][5] = 1;
+    matrix[6][6] = 1;
+    matrix[6][7] = 0;
+    matrix[6][8] = -1;
+    matrix[6][9] = -1;
+    matrix[7][0] = 1;
+    matrix[7][1] = 2;
+    matrix[7][2] = 0;
+    matrix[7][3] = 1;
+    matrix[7][4] = 2;
+    matrix[7][5] = 1;
+    matrix[7][6] = 1;
+    matrix[7][7] = 0;
+    matrix[7][8] = -1;
+    matrix[7][9] = -1;
+    matrix[8][0] = 1;
+    matrix[8][1] = 2;
+    matrix[8][2] = 0;
+    matrix[8][3] = 1;
+    matrix[8][4] = 2;
+    matrix[8][5] = 1;
+    matrix[8][6] = 1;
+    matrix[8][7] = 0;
+    matrix[8][8] = -1;
+    matrix[8][9] = -1;
+    matrix[9][0] = -1;
+    matrix[9][1] = -2;
+    matrix[9][2] = 0;
+    matrix[9][3] = -1;
+    matrix[9][4] = -2;
+    matrix[9][5] = -1;
+    matrix[9][6] = -1;
+    matrix[9][7] = 0;
+    matrix[9][8] = 1;
+    matrix[9][9] = -1;
 
+    float ans = 0;
+    float out = Mesh::det(matrix, 10);
+
+    EXPECT_LT(abs(out - ans), 0.0001);
 }
 
 int main(int argc, char **argv) {

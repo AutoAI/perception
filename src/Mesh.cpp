@@ -42,7 +42,15 @@ Mesh::Mesh(CoordinateList* cList){
 	}
 
 	// iteratively 'flip' triangles until no more triangles need be flipped
-
+	int maxIterations = 12;
+	for(int i = 0; i < maxIterations; i++){
+		int sumFlips = 0;
+		for(int j = 0; j < tris.size(); j++){
+			sumFlips += flip(tris[j]);
+		}
+		if(sumFlips == 0)
+			break;
+	}
 }
 
 MeshTriple* Mesh::chooseSeed(){
@@ -94,9 +102,6 @@ void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long in
 
 	// make all them connections and ish
 	Triangle *t = new Triangle(hull[0], hull[1], hull[2]);
-	hull[0] -> triangles.push_back(t);
-	hull[1] -> triangles.push_back(t);
-	hull[2] -> triangles.push_back(t);
 	tris.push_back(t);
 }
 
@@ -118,12 +123,8 @@ void Mesh::insertVert(Triple* v){
 				cc = i;
 		}
 	// make triangles, starting with the most clockwise pair of points and working counter-clockwise
-	for(int i = c; (i+1)%hull.size() <= cc; i = (i+1)%hull.size()){
+	for(int i = c; (i+1)%hull.size() <= cc; i = (i+1)%hull.size())
 		Triangle* temp = new Triangle(hull[i], hull[i+1], t);
-		hull[i] -> triangles.push_back(temp);
-		hull[i+1] -> triangles.push_back(temp);
-		t -> triangles.push_back(temp);
-	}
 	// trim the hull. of those verts visible to t, only the most clockwise and most counter-clockwise verts will remain
 	int initialHullSize = hull.size();
 	for(int i = (c+1)%initialHullSize; (i+1)%initialHullSize <= cc; cc = (cc-1+initialHullSize)%initialHullSize)
@@ -148,9 +149,58 @@ void Mesh::removeTri(Triangle* t){
 		}
 }
 
-// void Mesh::flipTriangle(Triangle* t){
- 	
-// }
+// flips necessary edges of a triangle, returns number of edges flipped
+int Mesh::flip(Triangle* t){
+	int flipCount = 0;
+	// for each neighbor
+	vector<Triangle*> neighbors = getNeighbors(t);
+	for(int i = 0; i < neighbors.size(); i++){
+		Triangle* neighbor = neighbors[i];
+	 	// find all points between the pair of triangles
+	 	vector<MeshTriple*> allPoints;
+	 	for(int i = 0; i < 3; i++){
+	 		allPoints.push_back(t -> points[i]);
+	 		allPoints.push_back(neighbor -> points[i]);
+	 	}
+	 	for(int i = 0; i < allPoints.size(); i++)
+	 		for(int j = 0; j < i; j++)
+	 			if(allPoints[i] == allPoints[j]){
+	 				allPoints.erase(allPoints.begin()+i);
+	 				i--;
+	 			}
+		// find the two points they have in common
+	 	int i1, i2;
+	 	bool n = false;
+	 	for(int i = 0; i < allPoints.size(); i++)
+	 		for(int j = 0; j < 3; j++)
+	 			for(int k = 0; k < 3; k++)
+	 				if(t -> points[j] == allPoints[i] && neighbor -> points[k] == allPoints[i]){
+	 					if(n){
+	 						i1 = i;
+	 						n = true;
+	 					}else
+	 						i2 = i;
+	 				}
+	 	// find the two points they don't
+	 	int i3, i4;
+	 	for(int i = 0; i < allPoints.size(); i++)
+	 		if(i != i1 && i != i2)
+	 			if(n){
+	 				i3 = i;
+	 				n = false;
+	 			}else
+	 				i4 = i;
+		// if the pair is not locally delaunay, flip it
+	 	if(inCircumCirc(allPoints[i1] -> triple, allPoints[i2] -> triple, allPoints[i3] -> triple, allPoints[i4] -> triple)){
+	 		removeTri(t);
+	 		removeTri(neighbor);
+	 		Triangle* new1 = new Triangle(allPoints[i1], allPoints[i3], allPoints[i4]);
+	 		Triangle* new2 = new Triangle(allPoints[i2], allPoints[i3], allPoints[i4]);
+	 		flipCount++;
+	 	}
+	}
+	return flipCount;
+}
 
 vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 	vector<Triangle*> neighborTriangles = t -> triangles;
@@ -194,9 +244,23 @@ vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 				result.push_back(mtrip -> triangles[j]);
 		}
 	}
+	// if any triangles don't share 2 points with the first, they are not a neighbor
+	for(int i = 0; i < result.size(); i++){
+		Triangle* temp = result[i];
+		int numPoints = 0;
+		for(int j = 0; j < 3; j++)
+			for(int k = 0; k < 3; k++)
+				if(t -> points[j] == temp -> points[k])
+					numPoints++;
+		if(numPoints != 2){
+			result.erase(result.begin()+i);
+			i--;
+		}
+	}
+	return result;
 }
 
-// is a point 'visible' from another? does the line between them pass through the hull? this function answers these questions
+// is a point 'visible' from another? that is, does the line between them pass through the hull? this function answers these questions
 bool Mesh::isVisible(Triple& a, Triple& d){
 	bool result = true;
 	if(testIntersect(*(hull[hull.size()-1] -> triple), *(hull[0] -> triple), a, d))
@@ -237,28 +301,43 @@ int Mesh::orientation(Triple p, Triple q, Triple r){
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
 bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
-	float** matrix = new float*[4];
+	float** delta = new float*[4];
 	for(int i = 0; i < 4; i++)
-		matrix[i] = new float[4];
-	matrix[0][0] = 1;
-	matrix[0][1] = 1;
-	matrix[0][2] = 1;
-	matrix[0][3] = 1;
-	matrix[1][0] = t0 -> x;
-	matrix[1][1] = t1 -> x;
-	matrix[1][2] = t2 -> x;
-	matrix[1][3] = p -> x;
-	matrix[2][0] = t0 -> y;
-	matrix[2][1] = t1 -> y;
-	matrix[2][2] = t2 -> y;
-	matrix[2][3] = p -> y;
-	matrix[3][0] = t0 -> x * t0 -> x + t0 -> y * t0 -> y;
-	matrix[3][1] = t1 -> x * t1 -> x + t1 -> y * t1 -> y;
-	matrix[3][2] = t2 -> x * t2 -> x + t2 -> y * t2 -> y;
-	matrix[3][3] = p -> x * p -> x + p -> y * p -> y;
-	return Mesh::det(matrix, 4);
+		delta[i] = new float[4];
+	delta[0][0] = 1;
+	delta[0][1] = 1;
+	delta[0][2] = 1;
+	delta[0][3] = 1;
+	delta[1][0] = t0 -> x;
+	delta[1][1] = t1 -> x;
+	delta[1][2] = t2 -> x;
+	delta[1][3] = p -> x;
+	delta[2][0] = t0 -> y;
+	delta[2][1] = t1 -> y;
+	delta[2][2] = t2 -> y;
+	delta[2][3] = p -> y;
+	delta[3][0] = t0 -> x * t0 -> x + t0 -> y * t0 -> y;
+	delta[3][1] = t1 -> x * t1 -> x + t1 -> y * t1 -> y;
+	delta[3][2] = t2 -> x * t2 -> x + t2 -> y * t2 -> y;
+	delta[3][3] = p -> x * p -> x + p -> y * p -> y;
+
+	float** gamma = new float*[3];
+	for(int i = 0; i < 4; i++)
+		gamma[i] = new float[3];
+	gamma[0][0] = 1;
+	gamma[0][1] = 1;
+	gamma[0][2] = 1;
+	gamma[1][0] = t0 -> x;
+	gamma[1][1] = t1 -> x;
+	gamma[1][2] = t2 -> x;
+	gamma[2][0] = t0 -> y;
+	gamma[2][1] = t1 -> y;
+	gamma[2][2] = t2 -> y;
+
+	return det(delta, 4) * det(gamma, 3) < 0;
 }
 
+// computes a deterinant using cofactor expansion (n!)
 float Mesh::det(float** m, int n){
 	if(n == 2)
 		return m[0][0] * m[1][1] - m[0][1] * m[1][0];

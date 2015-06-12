@@ -66,4 +66,5 @@ class Mesh {
 	
 		static float det(float** in_matrix, int n);
 
+		int flip(Triangle* t);
 };
