@@ -24,7 +24,7 @@ Mesh::Mesh(CoordinateList* cList){
 	if (cList == NULL) {
 		throw std::invalid_argument("CoordinateList must not be null");
 	} else if(cList->getLength() < 3) {
-		throw std::invalid_argument("CoordinateList must contain atleast 3 points");
+		throw std::invalid_argument("CoordinateList must contain at least 3 points");
 	}
 	list = cList;
 	// choose seed point, sort others accorinding to distance from seed

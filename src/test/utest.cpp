@@ -1,4 +1,4 @@
-#define private public
+#define private public // oh my god.
 
 #include <stddef.h>
 
@@ -107,12 +107,6 @@ TEST(CoordinateList, toSpherical) {
 
     Triple coordinate1(1, 0, 10);
 	Triple coordinate2(1, 1, 1);
-    //coordinate1.x = 1;
-    //coordinate1.y = 0;
-    //coordinate1.z = 10;
-    //coordinate2.x = 1;
-    //coordinate2.y = 1;
-    //coordinate2.z = 1;
 
     list.set(0, coordinate1);
     list.set(1, coordinate2);
@@ -182,6 +176,39 @@ TEST(CoordinateList, testSort) {
     Triple c (float(rand()) / rand(), float(rand()) / rand(), float(rand()) / rand());
 
     test.sort(c);
+
+    bool good = true;
+
+    for(unsigned long i = 1; i < t_length; i++){
+        float dxi = test.get(i).x - c.x;
+        float dyi = test.get(i).y - c.y;
+        float dximinus1 = test.get(i-1).x - c.x;
+        float dyiminus1 = test.get(i-1).y - c.y;
+        if(dxi*dxi+dyi*dyi < dximinus1*dximinus1+dyiminus1*dyiminus1){
+            ROS_INFO("%f > %f", dxi*dxi+dyi*dyi, dximinus1*dximinus1+dyiminus1*dyiminus1);
+            good = false;
+        }
+    }
+    EXPECT_TRUE(good);
+}
+
+TEST(CoordinateList, testSort2) {
+    unsigned long t_length = 1000;
+    Triple t[t_length];
+
+    for (unsigned long i = 0; i < t_length; i++) {
+        t[i].x = float(rand()) / rand(); 
+        t[i].y = float(rand()) / rand();
+        t[i].z = float(rand()) / rand();
+    }
+
+    CoordinateList test(0, t_length);
+    for (unsigned long i = 0; i < t_length; i++) {
+        test.set(i, t[i]);
+    }
+    Triple c (float(rand()) / rand(), float(rand()) / rand(), float(rand()) / rand());
+
+    test.sortThatDoesntWorkYet(c);
 
     bool good = true;
 

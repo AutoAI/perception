@@ -119,56 +119,56 @@ unsigned long CoordinateList::getLength() {
     return length;
 }
 
-//void CoordinateList::sortThatDoesntWorkYet(Triple origin) {
-//    unsigned long num_buckets = 2;
-//    // Pre-calculate all distances (so we dont have to do it every comparison)
-//    float distances[length];
-//    for(unsigned long i = 0; i < length; i++)
-//        distances[i] = dist2(origin, coordinates[i]);
-//    // Find min and max distances (for bucket partitioning)
-//    float max = 0;
-//    float min = std::numeric_limits<float>::max();
-//    for(unsigned long i = 0; i < length; i++){
-//        max = (max < distances[i]) ? distances[i] : max;
-//        min = (min > distances[i]) ? distances[i] : min;
-//    }
-//    // Figure out how big each bucket is going to be
-//    unsigned long bucket_sizes[num_buckets];
-//    for(unsigned long i = 0; i < num_buckets; i++) {
-//        bucket_sizes[i] = 0;
-//    }
-//    float d = (max - min)/num_buckets;
-//    for(unsigned long i = 0; i < length; i++){
-//        bucket_sizes[(unsigned long)floor((distances[i]-min)/d)]++;
-//    }
-//    // Figure out how big the largest bucket will be
-//    unsigned long max_size = 0;
-//    for(unsigned long i = 0; i < num_buckets; i++){
-//        max_size = (max_size < bucket_sizes[i]) ? bucket_sizes[i] : max_size;
-//    }
-//    // Set up the buckets as an NdArray
-//    unsigned long bounds[2] = {num_buckets, max_size};
-//    NdArray<Triple> buckets(2, bounds);
-//    // Put things in the buckets
-//    unsigned long indices [num_buckets];
-//    for(unsigned long i = 0; i < num_buckets; i++)
-//        indices[i] = 0;
-//    for(unsigned long i = 0; i < length; i++){
-//        unsigned long bucket_index = (floor((distances[i]-min)/d) < num_buckets - 1) ? floor((distances[i]-min)/d) : num_buckets - 1;
-//        unsigned long index[2] = {bucket_index, indices[bucket_index]};
-//        buckets.set(index, coordinates[i]);
-//        indices[bucket_index]++;
-//    }
-//    // Copy the things back into the original array
-//    unsigned long i = 0;
-//    for(unsigned long j = 0; j < num_buckets; j++)
-//        for(unsigned long k = 0; k < bucket_sizes[j]; k++){
-//            unsigned long index[2] = {i, j};
-//            coordinates[i++] = buckets.get(index);
-//        }
-//    // The array is now mostly in order. Do an insertion sort.
-//    sort(origin);
-//}
+void CoordinateList::sortThatDoesntWorkYet(Triple origin) {
+   unsigned long num_buckets = 12;
+   // Pre-calculate all distances (so we dont have to do it every comparison)
+   float distances[length];
+   for(unsigned long i = 0; i < length; i++)
+       distances[i] = dist2(origin, coordinates[i]);
+   // Find min and max distances (for bucket partitioning)
+   float max = 0;
+   float min = std::numeric_limits<float>::max();
+   for(unsigned long i = 0; i < length; i++){
+       max = (max < distances[i]) ? distances[i] : max;
+       min = (min > distances[i]) ? distances[i] : min;
+   }
+   // Figure out how big each bucket is going to be
+   unsigned long bucket_sizes[num_buckets];
+   for(unsigned long i = 0; i < num_buckets; i++) {
+       bucket_sizes[i] = 0;
+   }
+   float d = (max - min)/num_buckets;
+   for(unsigned long i = 0; i < length; i++){
+       bucket_sizes[(unsigned long)floor((distances[i]-min)/d)]++;
+   }
+   // Figure out how big the largest bucket will be
+   unsigned long max_size = 0;
+   for(unsigned long i = 0; i < num_buckets; i++){
+       max_size = (max_size < bucket_sizes[i]) ? bucket_sizes[i] : max_size;
+   }
+   // Set up the buckets as an NdArray
+   unsigned long bounds[2] = {num_buckets, max_size};
+   NdArray<Triple> buckets(2, bounds);
+   // Put things in the buckets
+   unsigned long indices [num_buckets];
+   for(unsigned long i = 0; i < num_buckets; i++)
+       indices[i] = 0;
+   for(unsigned long i = 0; i < length; i++){
+       unsigned long bucket_index = (floor((distances[i]-min)/d) < num_buckets - 1) ? floor((distances[i]-min)/d) : num_buckets - 1;
+       unsigned long index[2] = {bucket_index, indices[bucket_index]};
+       buckets.set(index, coordinates[i]);
+       indices[bucket_index]++;
+   }
+   // Copy the things back into the original array
+   unsigned long i = 0;
+   for(unsigned long j = 0; j < num_buckets; j++)
+       for(unsigned long k = 0; k < bucket_sizes[j]; k++){
+           unsigned long index[2] = {j, k};
+           coordinates[i++] = buckets.get(index);
+       }
+   // The array is now mostly in order. Do an insertion sort.
+   sort(origin);
+}
 
 float CoordinateList::dist2(Triple a, Triple b){
     return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
