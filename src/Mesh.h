@@ -19,6 +19,9 @@ class Mesh {
 		// makes the triangulation. boom.
 		Mesh(CoordinateList* cList);
 
+		// result of the triangulation: an image full of interpolated values
+		NdArray* result;
+
 	private:
 		// hull for sweeping (the sweep-hull. s-hull. more on this at www.s-hull.org/)
 		vector<MeshTriple*> hull;
@@ -67,4 +70,16 @@ class Mesh {
 		static float det(float** in_matrix, int n);
 
 		int flip(Triangle* t);
+
+		MeshTriple* getNearest(Triple &t);
+
+		float dist2(Triple &a, Triple &b);
+
+		int toPixelX(float x);
+
+		int toPixelY(float y);
+
+		float toImageX(int x);
+
+		float toImageY(int y);
 };

@@ -18,6 +18,7 @@
 
 #include "Mesh.h"
 #include "MeshTriple.cpp"
+#include "GlobalConstants.h"
 
 using namespace std;
 
@@ -52,6 +53,28 @@ Mesh::Mesh(CoordinateList* cList){
 		if(sumFlips == 0)
 			break;
 	}
+
+	// set up the result - first, find max number of vert neighbors
+	char maxNeighbors = 0;
+	for(int i = 0; i < verts.size(); i++)
+		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size()) ? maxNeighbors : getNeighbors(verts[i]).size();
+
+	// init the result
+	unsigned long bounds[3] = {XRES, YRES, maxNeighbors};
+	result = new NdArray<float>(3, bounds);
+
+	// populate result
+	for(int i = 0; i < XRES; i++)
+		for(int j = 0; j < YRES; j++){
+			MeshTriple temp = *(getNearest(*(new Triple(toImageX(i), toImageY(j), 0))));
+			for(int k = 0; k < maxNeighbors; k++){
+				unsigned long[3] setIndex = {i, j, k};
+				if(k < temp.triangles.size())
+					result.set(setIndex, temp.Triple -> z);
+				else
+					result.set(setIndex, -1);
+			}
+		}
 }
 
 MeshTriple* Mesh::chooseSeed(){
@@ -69,7 +92,6 @@ void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long in
 	bool increasing = dTheta < M_PI;
 
 	// lets init that hull
-
 	MeshTriple temp0((*list).getPtr(0));
 	verts.push_back(&temp0);
 	hull.push_back(&temp0);
@@ -328,7 +350,7 @@ bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
 	return det(delta, 4) * det(gamma, 3) < 0;
 }
 
-// computes a deterinant using cofactor expansion (n!)
+// computes a determinant using cofactor expansion (n!)
 float Mesh::det(float** m, int n){
 	if(n == 2)
 		return m[0][0] * m[1][1] - m[0][1] * m[1][0];
@@ -359,4 +381,34 @@ float Mesh::det(float** m, int n){
 		add = !add;
 	}
 	return sum;
+}
+
+// returns a pointer to the nearest MeshTriple to a Triple
+MeshTriple* Mesh::getNearest(Triple &t){
+	MeshTriple* nearest = verts[0];
+	for(int i = 1; i < verts.size(); i++)
+		if(dist2(t, *(verts[i]->triple)) < dist2(t, *(nearest->triple)))
+			nearest = verts[i];
+	return nearest;
+}
+
+// returns the squared 2d distance between two Triples
+float Mesh::dist2(Triple &a, Triple &b){
+	return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
+}
+
+int Mesh::toPixelX(float x){
+	return x * XRES/S + XRES/2;
+}
+
+int Mesh::toPixelY(float y){
+	return y * XRES/S + YRES/2;
+}
+
+float Mesh::toImageX(int x){
+	return (x-XRES/2)*S/XRES;
+}
+
+float Mesh::toImageY(int y){
+	return (y-YRES/2)*S/XRES;
 }

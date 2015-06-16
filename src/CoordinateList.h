@@ -8,18 +8,15 @@
 
 #include <vector>
 #include "Triple.h"
+#include "GlobalConstants.h"
 
 #define Cartesian 0
 #define Spherical 1
 #define Perspective 2
-#define K 120
-#define F 0.035
-#define C 75590.55
 
 using namespace std;
 
 //List of all coordinate triples
-
 class CoordinateList {
     public:
         // type of the coodinates (as #define'd)
@@ -43,7 +40,7 @@ class CoordinateList {
         // returns a reference to a particular element by its list index
         Triple* getPtr(unsigned long index);
 
-        // performs an 0(n) bucket sort. good for when the coordinates is a mess
+        // performs an 0(n) bucket sort. good for when the list is a mess
         // metric is vector distance to parameter in 2D
         void sortThatDoesntWorkYet(Triple t);
 
