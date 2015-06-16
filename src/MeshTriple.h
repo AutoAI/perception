@@ -10,4 +10,6 @@ class MeshTriple {
 	public:
 		std::vector<Triangle*> triangles;
 		Triple* triple;
+		bool operator==(const MeshTriple &t1);
+		bool operator!=(const MeshTriple &t1);
 };

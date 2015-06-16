@@ -123,10 +123,8 @@ TEST(CoordinateList, toSpherical) {
     EXPECT_LT(abs(a.x-sqrt(3)), 0.0001);
     EXPECT_LT(abs(a.y-atan(1)), 0.0001);
     EXPECT_LT(abs(a.z-acos(1/sqrt(3))), 0.0001);
-
 }
 
- 
 TEST(CoordinateList, toPerspective) {
     CoordinateList list(0, 2);
 
@@ -193,6 +191,8 @@ TEST(CoordinateList, testSort) {
 }
 
 TEST(CoordinateList, testSort2) {
+	EXPECT_TRUE(false);
+	return;
     unsigned long t_length = 1000;
     Triple t[t_length];
 
@@ -404,6 +404,21 @@ TEST(Mesh, det10x10){
     float out = Mesh::det(matrix, 10);
 
     EXPECT_LT(abs(out - ans), 0.0001);
+}
+
+TEST(Mesh, constructor){
+	int length = 5;
+	CoordinateList c(0, length);
+
+	Triple t1(2, 2, 4);
+	Triple t2(5, 3, 2);
+	Triple t3(1, 4, 98);
+	Triple t4(3, 3, 7);
+	Triple t5(3, 2, -1);
+
+	Mesh m(&c);
+
+	
 }
 
 int main(int argc, char **argv) {
