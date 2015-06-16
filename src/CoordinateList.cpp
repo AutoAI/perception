@@ -3,8 +3,6 @@
 
 // If you're looking for the documentation, its in CoordinateList.h
 
-#pragma once
-
 #include <stdio.h>
 #include <algorithm>
 #include <limits>

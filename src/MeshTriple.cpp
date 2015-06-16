@@ -1,5 +1,3 @@
-#pragma once
-
 #include "MeshTriple.h"
 
 MeshTriple::MeshTriple(Triple* triple) {

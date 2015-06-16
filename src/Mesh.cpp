@@ -3,8 +3,6 @@
 
 // If you're looking for the documentation, its in Mesh.h
 
-#pragma once
-
 #define _USE_MATH_DEFINES
 
 #include "ros/ros.h"

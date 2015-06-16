@@ -3,8 +3,6 @@
 
 // If you're looking for the documentation, its in NdArray.h
 
-#pragma once
-
 #include "Triple.h"
 #include "NdArray.h"
 #include <string>
