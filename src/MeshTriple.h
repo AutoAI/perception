@@ -8,6 +8,7 @@ class Triangle; // forward declaration. Triangle references MeshTriple, so we ca
 
 class MeshTriple {
 	public:
+		MeshTriple(Triple* triple);
 		std::vector<Triangle*> triangles;
 		Triple* triple;
 		bool operator==(const MeshTriple &t1);

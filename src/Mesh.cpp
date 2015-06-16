@@ -17,6 +17,7 @@
 #include "CoordinateList.h"
 
 #include "Mesh.h"
+#include "MeshTriple.cpp"
 
 using namespace std;
 
@@ -55,11 +56,7 @@ Mesh::Mesh(CoordinateList* cList){
 
 MeshTriple* Mesh::chooseSeed(){
 	// just give 'em any old seed
-	MeshTriple* returned = new MeshTriple();
-	returned -> triple -> x = (*list).get(0).x;
-	returned -> triple -> y = (*list).get(0).y;
-	returned -> triple -> z = (*list).get(0).z;
-	return returned;
+	return new MeshTriple((*list).getPtr(0));
 }
 
 void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long index2){
@@ -73,29 +70,24 @@ void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long in
 
 	// lets init that hull
 
-	MeshTriple temp0;
-	temp0.triple = (*list).getPtr(0);
+	MeshTriple temp0((*list).getPtr(0));
 	verts.push_back(&temp0);
 	hull.push_back(&temp0);
 
 	if(increasing){
-		MeshTriple temp1;
-		temp1.triple = (*list).getPtr(1);
+		MeshTriple temp1((*list).getPtr(1));
 		verts.push_back(&temp1);
 		hull.push_back(&temp1);
 
-		MeshTriple temp2;
-		temp2.triple = (*list).getPtr(2);
+		MeshTriple temp2((*list).getPtr(2));
 		verts.push_back(&temp2);
 		hull.push_back(&temp2);
 	}else{
-		MeshTriple temp2;
-		temp2.triple = (*list).getPtr(2);
+		MeshTriple temp2((*list).getPtr(2));
 		verts.push_back(&temp2);
 		hull.push_back(&temp2);
 
-		MeshTriple temp1;
-		temp1.triple = (*list).getPtr(1);
+		MeshTriple temp1((*list).getPtr(1));
 		verts.push_back(&temp1);
 		hull.push_back(&temp1);
 	}
@@ -107,8 +99,7 @@ void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long in
 
 void Mesh::insertVert(Triple* v){
 	// insert a meshtriple for the vert
-	MeshTriple* t = new MeshTriple();
-	t -> triple = v;
+	MeshTriple* t = new MeshTriple(v);
 	// add any visible verts on the hull to a list. edges will be made to all of these
 	// (remember where the most clockwise and most counter-clockwise verts are)
 	vector<MeshTriple*> connectorTriples;

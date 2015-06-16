@@ -25,7 +25,7 @@ bool Triangle::operator==(const Triangle &tri1) {
 		} else if (points[ours] == tri1.points[1]) {
 			index1 = true;
 		} else if (points[ours] == tri1.points[2]) {
-			index 2 = true;
+			index2 = true;
 		}
 	}
 

@@ -16,6 +16,70 @@
 #include "../Triple.h"
 #include "../Triangle.h"
 #include "../Mesh.h"
+#include "../MeshTriple.h"
+
+TEST(Triple, equalityTrue) {
+	Triple a;
+	Triple b;
+	
+	a.x = 1;
+	a.y = 1;
+	a.z = 1;
+
+	b.x = 1;
+	b.y = 1;
+	b.z = 1;
+
+	EXPECT_TRUE(a==b);
+}
+
+TEST(Triple, equalityFalse) {
+	Triple a;
+	Triple b;
+	
+	a.x = 1;
+	a.y = 1;
+	a.z = 1;
+
+	b.x = 1;
+	b.y = 2;
+	b.z = 1;
+
+	EXPECT_FALSE(a==b);
+}
+
+TEST(Triple, unequalityTrue) {
+	Triple a(1, 1, 3);
+	Triple b;
+
+	b.x = 1;
+	b.y = 1;
+	b.z = 1;
+
+	EXPECT_TRUE(a!=b);
+}
+
+TEST(Triple, unequalityFalse) {
+	Triple a(1, 2, 2);
+	Triple b(1, 2, 2);
+
+	EXPECT_FALSE(a!=b);
+}
+
+TEST(Triangle, eqTrue) {
+	MeshTriple t1(new Triple(1, 1, 1));
+	MeshTriple t2(new Triple(1, 1, 2));
+	MeshTriple t3(new Triple(1, 2, 2));
+
+	MeshTriple t4(new Triple(1, 1, 1));
+	MeshTriple t5(new Triple(1, 1, 2));
+	MeshTriple t6(new Triple(1, 2, 2));
+
+	Triangle tri1(&t1, &t2, &t3);
+	Triangle tri2(&t4, &t5, &t6);
+
+	EXPECT_TRUE(tri1 == tri2);
+}
 
 TEST(NdArray, testCase1) {
     unsigned long bounds[3] = {3, 3, 3};
