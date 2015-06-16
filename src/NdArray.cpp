@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "Triple.h"
 #include "NdArray.h"
 #include <string>
 
@@ -54,3 +55,4 @@ T NdArray<T>::get(unsigned long index) {
 
 template class NdArray<std::string>;
 template class NdArray<float>;
+template class NdArray<Triple>;

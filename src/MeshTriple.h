@@ -8,6 +8,6 @@ class Triangle; // forward declaration. Triangle references MeshTriple, so we ca
 
 class MeshTriple {
 	public:
-		vector<Triangle*> triangles;
+		std::vector<Triangle*> triangles;
 		Triple* triple;
 };

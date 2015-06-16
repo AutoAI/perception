@@ -64,6 +64,7 @@ class Mesh {
 
 		bool inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p);
 	
-		static float det(float in_matrix[][], int n);
+		static float det(float** in_matrix, int n);
 
+		int flip(Triangle* t);
 };

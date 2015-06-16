@@ -45,7 +45,7 @@ class CoordinateList {
 
         // performs an 0(n) bucket sort. good for when the coordinates is a mess
         // metric is vector distance to parameter in 2D
-        //void sortThatDoesntWorkYet(Triple t);
+        void sortThatDoesntWorkYet(Triple t);
 
         // performs an n^2 insertion sort. good for when the list is mostly in order
         // metric is vector distance to parameter in 2D

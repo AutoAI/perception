@@ -7,9 +7,12 @@
 
 #define _USE_MATH_DEFINES
 
+#include "ros/ros.h"
+
 #include <stdexcept>
 #include <math.h>
 #include <stddef.h>
+#include <iostream>
 
 #include "CoordinateList.h"
 
@@ -21,7 +24,7 @@ Mesh::Mesh(CoordinateList* cList){
 	if (cList == NULL) {
 		throw std::invalid_argument("CoordinateList must not be null");
 	} else if(cList->getLength() < 3) {
-		throw std::invalid_argument("CoordinateList must contain atleast 3 points");
+		throw std::invalid_argument("CoordinateList must contain at least 3 points");
 	}
 	list = cList;
 	// choose seed point, sort others accorinding to distance from seed
@@ -39,7 +42,15 @@ Mesh::Mesh(CoordinateList* cList){
 	}
 
 	// iteratively 'flip' triangles until no more triangles need be flipped
-
+	int maxIterations = 12;
+	for(int i = 0; i < maxIterations; i++){
+		int sumFlips = 0;
+		for(int j = 0; j < tris.size(); j++){
+			sumFlips += flip(tris[j]);
+		}
+		if(sumFlips == 0)
+			break;
+	}
 }
 
 MeshTriple* Mesh::chooseSeed(){
@@ -91,9 +102,6 @@ void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long in
 
 	// make all them connections and ish
 	Triangle *t = new Triangle(hull[0], hull[1], hull[2]);
-	hull[0] -> triangles.push_back(t);
-	hull[1] -> triangles.push_back(t);
-	hull[2] -> triangles.push_back(t);
 	tris.push_back(t);
 }
 
@@ -115,12 +123,8 @@ void Mesh::insertVert(Triple* v){
 				cc = i;
 		}
 	// make triangles, starting with the most clockwise pair of points and working counter-clockwise
-	for(int i = c; (i+1)%hull.size() <= cc; i = (i+1)%hull.size()){
+	for(int i = c; (i+1)%hull.size() <= cc; i = (i+1)%hull.size())
 		Triangle* temp = new Triangle(hull[i], hull[i+1], t);
-		hull[i] -> triangles.push_back(temp);
-		hull[i+1] -> triangles.push_back(temp);
-		t -> triangles.push_back(temp);
-	}
 	// trim the hull. of those verts visible to t, only the most clockwise and most counter-clockwise verts will remain
 	int initialHullSize = hull.size();
 	for(int i = (c+1)%initialHullSize; (i+1)%initialHullSize <= cc; cc = (cc-1+initialHullSize)%initialHullSize)
@@ -145,9 +149,58 @@ void Mesh::removeTri(Triangle* t){
 		}
 }
 
-// void Mesh::flipTriangle(Triangle* t){
- 	
-// }
+// flips necessary edges of a triangle, returns number of edges flipped
+int Mesh::flip(Triangle* t){
+	int flipCount = 0;
+	// for each neighbor
+	vector<Triangle*> neighbors = getNeighbors(t);
+	for(int i = 0; i < neighbors.size(); i++){
+		Triangle* neighbor = neighbors[i];
+	 	// find all points between the pair of triangles
+	 	vector<MeshTriple*> allPoints;
+	 	for(int i = 0; i < 3; i++){
+	 		allPoints.push_back(t -> points[i]);
+	 		allPoints.push_back(neighbor -> points[i]);
+	 	}
+	 	for(int i = 0; i < allPoints.size(); i++)
+	 		for(int j = 0; j < i; j++)
+	 			if(allPoints[i] == allPoints[j]){
+	 				allPoints.erase(allPoints.begin()+i);
+	 				i--;
+	 			}
+		// find the two points they have in common
+	 	int i1, i2;
+	 	bool n = false;
+	 	for(int i = 0; i < allPoints.size(); i++)
+	 		for(int j = 0; j < 3; j++)
+	 			for(int k = 0; k < 3; k++)
+	 				if(t -> points[j] == allPoints[i] && neighbor -> points[k] == allPoints[i]){
+	 					if(n){
+	 						i1 = i;
+	 						n = true;
+	 					}else
+	 						i2 = i;
+	 				}
+	 	// find the two points they don't
+	 	int i3, i4;
+	 	for(int i = 0; i < allPoints.size(); i++)
+	 		if(i != i1 && i != i2)
+	 			if(n){
+	 				i3 = i;
+	 				n = false;
+	 			}else
+	 				i4 = i;
+		// if the pair is not locally delaunay, flip it
+	 	if(inCircumCirc(allPoints[i1] -> triple, allPoints[i2] -> triple, allPoints[i3] -> triple, allPoints[i4] -> triple)){
+	 		removeTri(t);
+	 		removeTri(neighbor);
+	 		Triangle* new1 = new Triangle(allPoints[i1], allPoints[i3], allPoints[i4]);
+	 		Triangle* new2 = new Triangle(allPoints[i2], allPoints[i3], allPoints[i4]);
+	 		flipCount++;
+	 	}
+	}
+	return flipCount;
+}
 
 vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 	vector<Triangle*> neighborTriangles = t -> triangles;
@@ -191,9 +244,23 @@ vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 				result.push_back(mtrip -> triangles[j]);
 		}
 	}
+	// if any triangles don't share 2 points with the first, they are not a neighbor
+	for(int i = 0; i < result.size(); i++){
+		Triangle* temp = result[i];
+		int numPoints = 0;
+		for(int j = 0; j < 3; j++)
+			for(int k = 0; k < 3; k++)
+				if(t -> points[j] == temp -> points[k])
+					numPoints++;
+		if(numPoints != 2){
+			result.erase(result.begin()+i);
+			i--;
+		}
+	}
+	return result;
 }
 
-// is a point 'visible' from another? does the line between them pass through the hull? this function answers these questions
+// is a point 'visible' from another? that is, does the line between them pass through the hull? this function answers these questions
 bool Mesh::isVisible(Triple& a, Triple& d){
 	bool result = true;
 	if(testIntersect(*(hull[hull.size()-1] -> triple), *(hull[0] -> triple), a, d))
@@ -234,51 +301,71 @@ int Mesh::orientation(Triple p, Triple q, Triple r){
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
 bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p){
-	float matrix[4][4] = {
-		{1, 1, 1, 1},
-		{t0 -> x, t1 -> x, t2 -> x, p -> x},
-		{t0 -> y, t1 -> y, t2 -> y, p -> y},
-		{t0 -> x * t0 -> x + t0 -> y * t0 -> y, t1 -> x * t1 -> x + t1 -> y * t1 -> y, t2 -> x * t2 -> x + t2 -> y * t2 -> y, p -> x * p -> x + p -> y * p -> y}
-	};
-	return Mesh::det(matrix, 4);
+	float** delta = new float*[4];
+	for(int i = 0; i < 4; i++)
+		delta[i] = new float[4];
+	delta[0][0] = 1;
+	delta[0][1] = 1;
+	delta[0][2] = 1;
+	delta[0][3] = 1;
+	delta[1][0] = t0 -> x;
+	delta[1][1] = t1 -> x;
+	delta[1][2] = t2 -> x;
+	delta[1][3] = p -> x;
+	delta[2][0] = t0 -> y;
+	delta[2][1] = t1 -> y;
+	delta[2][2] = t2 -> y;
+	delta[2][3] = p -> y;
+	delta[3][0] = t0 -> x * t0 -> x + t0 -> y * t0 -> y;
+	delta[3][1] = t1 -> x * t1 -> x + t1 -> y * t1 -> y;
+	delta[3][2] = t2 -> x * t2 -> x + t2 -> y * t2 -> y;
+	delta[3][3] = p -> x * p -> x + p -> y * p -> y;
+
+	float** gamma = new float*[3];
+	for(int i = 0; i < 4; i++)
+		gamma[i] = new float[3];
+	gamma[0][0] = 1;
+	gamma[0][1] = 1;
+	gamma[0][2] = 1;
+	gamma[1][0] = t0 -> x;
+	gamma[1][1] = t1 -> x;
+	gamma[1][2] = t2 -> x;
+	gamma[2][0] = t0 -> y;
+	gamma[2][1] = t1 -> y;
+	gamma[2][2] = t2 -> y;
+
+	return det(delta, 4) * det(gamma, 3) < 0;
 }
 
-// from http://cboard.cprogramming.com/cplusplus-programming/30001-determinant-calculation.html
-float Mesh::det(float **in_matrix, int n){
-	int i, j, k;
-	float **matrix;
-	float det = 1;
-	matrix = new float *[n];
-	for (i = 0; i < n; i++)
-		matrix[i] = new float[n];
-	for (i = 0; i < n; i++) {
-		for ( j = 0; j < n; j++ )
-			matrix[i][j] = in_matrix[i][j];
+// computes a deterinant using cofactor expansion (n!)
+float Mesh::det(float** m, int n){
+	if(n == 2)
+		return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+	float*** sub = new float**[n];
+	for(int i = 0; i < n; i++)
+		sub[i] = new float*[n-1];
+	for(int i = 0; i < n; i++)
+		for(int j = 0; j < n-1; j++)
+			sub[i][j] = new float[n-1];
+	for(int i = 0; i < n; i++){
+		int s = 0;
+		for(int j = 0; j < n-1; j++){
+			if(j == i)
+				s++;
+			for(int k = 1; k < n; k++)
+				sub[i][j][k-1] = m[s][k];
+			s++;
+		}
 	}
-	for (k = 0; k < n; k++) {
-	 	if (matrix[k][k] == 0) {
-	 		bool ok = false;
-	 		for (j = k; j < n; j++) {
-	 			if (matrix[j][k] != 0)
-	 				ok = true;
-	 		}
-	 		if (!ok)
-	 			return 0;
-	 		for (i = k; i < n; i++)
-	 			std::swap ( matrix[i][j], matrix[i][k] );
-	 		det = -det;
-	 	}
-	 	det *= matrix[k][k];
-	 	if (k + 1 < n) {
-	 		for (i = k + 1; i < n; i++) {
-	 			for (j = k + 1; j < n; j++)
-	 				matrix[i][j] = matrix[i][j] - matrix[i][k] * 
-	 				matrix[k][j] / matrix[k][k];
-	 		}
-	 	}
+
+	float sum = 0;
+	bool add = true;
+	for(int i = 0; i < n; i++){
+		if(add)
+			sum += m[i][0] * det(sub[i], n-1);
+		else
+			sum -= m[i][0] * det(sub[i], n-1);
+		add = !add;
 	}
-	for (i = 0; i < n; i++)
-		delete [] matrix[i];
-	delete [] matrix;
-	return det;
+	return sum;
 }

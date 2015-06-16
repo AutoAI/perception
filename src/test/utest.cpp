@@ -1,4 +1,4 @@
-#define private public
+#define private public // oh my god.
 
 #include <stddef.h>
 
@@ -107,12 +107,6 @@ TEST(CoordinateList, toSpherical) {
 
     Triple coordinate1(1, 0, 10);
 	Triple coordinate2(1, 1, 1);
-    //coordinate1.x = 1;
-    //coordinate1.y = 0;
-    //coordinate1.z = 10;
-    //coordinate2.x = 1;
-    //coordinate2.y = 1;
-    //coordinate2.z = 1;
 
     list.set(0, coordinate1);
     list.set(1, coordinate2);
@@ -198,6 +192,39 @@ TEST(CoordinateList, testSort) {
     EXPECT_TRUE(good);
 }
 
+TEST(CoordinateList, testSort2) {
+    unsigned long t_length = 1000;
+    Triple t[t_length];
+
+    for (unsigned long i = 0; i < t_length; i++) {
+        t[i].x = float(rand()) / rand(); 
+        t[i].y = float(rand()) / rand();
+        t[i].z = float(rand()) / rand();
+    }
+
+    CoordinateList test(0, t_length);
+    for (unsigned long i = 0; i < t_length; i++) {
+        test.set(i, t[i]);
+    }
+    Triple c (float(rand()) / rand(), float(rand()) / rand(), float(rand()) / rand());
+
+    test.sortThatDoesntWorkYet(c);
+
+    bool good = true;
+
+    for(unsigned long i = 1; i < t_length; i++){
+        float dxi = test.get(i).x - c.x;
+        float dyi = test.get(i).y - c.y;
+        float dximinus1 = test.get(i-1).x - c.x;
+        float dyiminus1 = test.get(i-1).y - c.y;
+        if(dxi*dxi+dyi*dyi < dximinus1*dximinus1+dyiminus1*dyiminus1){
+            ROS_INFO("%f > %f", dxi*dxi+dyi*dyi, dximinus1*dximinus1+dyiminus1*dyiminus1);
+            good = false;
+        }
+    }
+    EXPECT_TRUE(good);
+}
+
 TEST(Mesh, testConstructor) {
 	EXPECT_THROW(Mesh(NULL), std::invalid_argument);
 }
@@ -206,37 +233,177 @@ TEST(Mesh, testConstructor2) {
 	EXPECT_THROW(Mesh(new CoordinateList(0, 0)), std::invalid_argument);
 }
 
-TEST(Mesh, det22) {
-	float input[2][2] = {
-		{3, -32}, 
-		{2, 1}};
+TEST(Mesh, det2x2) {
+    float** matrix = new float*[2];
+    for(int i = 0; i < 2; i++)
+        matrix[i] = new float[2];
+    matrix[0][0] = 3;
+    matrix[0][1] = -32;
+    matrix[1][0] = 2;
+    matrix[1][1] = 1;
 
 	float ans = 67;
+    float out = Mesh::det(matrix, 2);
 
-	EXPECT_LT(abs(Mesh::det(input, 2) - ans), 0.0001);
+	EXPECT_LT(abs(out - ans), 0.0001);
 }
 
-TEST(Mesh, det33) {
-	 float input = {
-		{3,  1,  4}, 
-	 	{2, 3, 43},
-	 	{4, -4,  2}};
+TEST(Mesh, det3x3) {
+    float** matrix = new float*[3];
+    for(int i = 0; i < 3; i++)
+        matrix[i] = new float[3];
+    matrix[0][0] = 3;
+    matrix[0][1] = 1;
+    matrix[0][2] = 4;
+    matrix[1][0] = 2;
+    matrix[1][1] = 3;
+    matrix[1][2] = 43;
+    matrix[2][0] = 4;
+    matrix[2][1] = -4;
+    matrix[2][2] = 2;
 
-	 float ans = -59.11999999999999;
+	float ans = 622;
+    float out = Mesh::det(matrix, 3);
 	
-	EXPECT_LT(abs(Mesh::det(input, 3) - ans), 0.0001);
+	EXPECT_LT(abs(out - ans), 0.0001);
 }
 
-TEST(Mesh, det44) {
-	float input[4][4] = {
-		{23, -12, -0.32, 23},
-		{12, 0, 65, 1},
-		{2, 1, 2, 5},
-		{0.43, 32, -32, 54}};
+TEST(Mesh, det4x4) {
+    float** matrix = new float*[4];
+    for(int i = 0; i < 4; i++)
+        matrix[i] = new float[4];
+    matrix[0][0] = 1;
+    matrix[0][1] = 2;
+    matrix[0][2] = 0;
+    matrix[0][3] = 1;
+    matrix[1][0] = 2;
+    matrix[1][1] = 1;
+    matrix[1][2] = 1;
+    matrix[1][3] = 0;
+    matrix[2][0] = -1;
+    matrix[2][1] = 1;
+    matrix[2][2] = -2;
+    matrix[2][3] = 1;
+    matrix[3][0] = 1;
+    matrix[3][1] = 1;
+    matrix[3][2] = 2;
+    matrix[3][3] = 2;
 
-	float ans = 43358.22760000001;
+	float ans = 5;
+    float out = Mesh::det(matrix, 4);
 
-	EXPECT_LT(abs(Mesh::det(input, 4) - ans), 0.0001);
+	EXPECT_LT(abs(out - ans), 0.0001);
+}
+
+TEST(Mesh, det10x10){
+    float** matrix = new float*[10];
+    for(int i = 0; i < 10; i++)
+        matrix[i] = new float[10];
+    matrix[0][0] = 1;
+    matrix[0][1] = 2;
+    matrix[0][2] = 0;
+    matrix[0][3] = 1;
+    matrix[0][4] = 2;
+    matrix[0][5] = 1;
+    matrix[0][6] = 1;
+    matrix[0][7] = 0;
+    matrix[0][8] = -1;
+    matrix[0][9] = 1;
+    matrix[1][0] = 1;
+    matrix[1][1] = 2;
+    matrix[1][2] = 0;
+    matrix[1][3] = 1;
+    matrix[1][4] = 2;
+    matrix[1][5] = 1;
+    matrix[1][6] = 1;
+    matrix[1][7] = 0;
+    matrix[1][8] = -1;
+    matrix[1][9] = -1;
+    matrix[2][0] = 1;
+    matrix[2][1] = 2;
+    matrix[2][2] = 0;
+    matrix[2][3] = 1;
+    matrix[2][4] = 2;
+    matrix[2][5] = 1;
+    matrix[2][6] = 1;
+    matrix[2][7] = 0;
+    matrix[2][8] = -1;
+    matrix[2][9] = -1;
+    matrix[3][0] = 1;
+    matrix[3][1] = 2;
+    matrix[3][2] = 0;
+    matrix[3][3] = 1;
+    matrix[3][4] = 2;
+    matrix[3][5] = 1;
+    matrix[3][6] = 1;
+    matrix[3][7] = 0;
+    matrix[3][8] = -1;
+    matrix[3][9] = -1;
+    matrix[4][0] = 1;
+    matrix[4][1] = 2;
+    matrix[4][2] = 0;
+    matrix[4][3] = 1;
+    matrix[4][4] = 2;
+    matrix[4][5] = 1;
+    matrix[4][6] = 1;
+    matrix[4][7] = 0;
+    matrix[4][8] = -1;
+    matrix[4][9] = -1;
+    matrix[5][0] = 1;
+    matrix[5][1] = 2;
+    matrix[5][2] = 0;
+    matrix[5][3] = 1;
+    matrix[5][4] = 2;
+    matrix[5][5] = 1;
+    matrix[5][6] = 1;
+    matrix[5][7] = 0;
+    matrix[5][8] = -1;
+    matrix[5][9] = -1;
+    matrix[6][0] = 1;
+    matrix[6][1] = 2;
+    matrix[6][2] = 0;
+    matrix[6][3] = 1;
+    matrix[6][4] = 2;
+    matrix[6][5] = 1;
+    matrix[6][6] = 1;
+    matrix[6][7] = 0;
+    matrix[6][8] = -1;
+    matrix[6][9] = -1;
+    matrix[7][0] = 1;
+    matrix[7][1] = 2;
+    matrix[7][2] = 0;
+    matrix[7][3] = 1;
+    matrix[7][4] = 2;
+    matrix[7][5] = 1;
+    matrix[7][6] = 1;
+    matrix[7][7] = 0;
+    matrix[7][8] = -1;
+    matrix[7][9] = -1;
+    matrix[8][0] = 1;
+    matrix[8][1] = 2;
+    matrix[8][2] = 0;
+    matrix[8][3] = 1;
+    matrix[8][4] = 2;
+    matrix[8][5] = 1;
+    matrix[8][6] = 1;
+    matrix[8][7] = 0;
+    matrix[8][8] = -1;
+    matrix[8][9] = -1;
+    matrix[9][0] = -1;
+    matrix[9][1] = -2;
+    matrix[9][2] = 0;
+    matrix[9][3] = -1;
+    matrix[9][4] = -2;
+    matrix[9][5] = -1;
+    matrix[9][6] = -1;
+    matrix[9][7] = 0;
+    matrix[9][8] = 1;
+    matrix[9][9] = -1;
+
+    float ans = 0;
+    float out = Mesh::det(matrix, 10);
+
+    EXPECT_LT(abs(out - ans), 0.0001);
 }
 
 int main(int argc, char **argv) {
