@@ -11,6 +11,7 @@
 #include "Triple.h"
 #include "Triangle.h"
 #include "MeshTriple.h"
+#include "NdArray.h"
 
 #define start_size 5;
 
@@ -19,8 +20,8 @@ class Mesh {
 		// makes the triangulation. boom.
 		Mesh(CoordinateList* cList);
 
-		// result of the triangulation: an image full of interpolated values
-		NdArray* result;
+		// result of the triangulation: an image full of interpolation ranges
+		NdArray<float>* result;
 
 	private:
 		// hull for sweeping (the sweep-hull. s-hull. more on this at www.s-hull.org/)
@@ -70,6 +71,9 @@ class Mesh {
 		static float det(float** in_matrix, int n);
 
 		int flip(Triangle* t);
+
+		// populated with data from all neighbors of the triangulation's nearest vert
+		NdArray<float>* data;
 
 		MeshTriple* getNearest(Triple &t);
 

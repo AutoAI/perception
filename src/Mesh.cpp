@@ -54,26 +54,50 @@ Mesh::Mesh(CoordinateList* cList){
 			break;
 	}
 
-	// set up the result - first, find max number of vert neighbors
+	// set up the data array - first, find max number of vert neighbors
 	char maxNeighbors = 0;
 	for(int i = 0; i < verts.size(); i++)
 		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size()) ? maxNeighbors : getNeighbors(verts[i]).size();
 
-	// init the result
-	unsigned long bounds[3] = {XRES, YRES, maxNeighbors};
-	result = new NdArray<float>(3, bounds);
+	// init the data
+	unsigned long bounds[3] = {XRES, YRES, maxNeighbors+1};
+	data = new NdArray<float>(3, bounds);
 
-	// populate result
+	// populate data
 	for(int i = 0; i < XRES; i++)
 		for(int j = 0; j < YRES; j++){
 			MeshTriple temp = *(getNearest(*(new Triple(toImageX(i), toImageY(j), 0))));
-			for(int k = 0; k < maxNeighbors; k++){
-				unsigned long[3] setIndex = {i, j, k};
+			unsigned long setIndex[3] = {i, j, 0};
+			data -> set(setIndex, temp.triple -> z);
+			for(int k = 1; k < maxNeighbors+1; k++){
+				unsigned long setIndexTemp[3] = {i, j, k};
 				if(k < temp.triangles.size())
-					result.set(setIndex, temp.Triple -> z);
+					data -> set(setIndexTemp, temp.triple -> z);
 				else
-					result.set(setIndex, -1);
+					data -> set(setIndexTemp, -1);
 			}
+		}
+
+	// init result
+	unsigned long bounds2[3] = {XRES, YRES, 2};
+	result = new NdArray<float>(3, bounds2);
+
+	// calculate result
+	for(int i = 0; i < XRES; i++)
+		for(int j = 0; j < YRES; j++){
+			float min = -1;
+			float max = K;
+			for(int k = 0; k < maxNeighbors+1; k++){
+				unsigned long getIndex[3] = {i, j, k};
+				if(data -> get(getIndex) == -1)
+					break;
+				min = (min < data -> get(getIndex)) ? min : data -> get(getIndex);
+				max = (max > data -> get(getIndex)) ? max : data -> get(getIndex);
+			}
+			unsigned long setIndex[3] = {i, j, 0};
+			result -> set(setIndex, min);
+			unsigned long setIndex2[3] = {i, j, 1};
+			result -> set(setIndex2, max);
 		}
 }
 
@@ -217,7 +241,7 @@ int Mesh::flip(Triangle* t){
 
 vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 	vector<Triangle*> neighborTriangles = t -> triangles;
-	vector<MeshTriple*> result;
+	vector<MeshTriple*> data;
 	// iterate over triangles
 	for (int i = 0; i < neighborTriangles.size(); i++) {
 		Triangle* tri = neighborTriangles[i];
@@ -225,21 +249,21 @@ vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 		for(int j = 0; j < 3; j++){
 			bool good = true;
 			// check if we already have that point
-			for(int k = 0; k < result.size(); k++)
-				if(result[k] == tri -> points[j]){
+			for(int k = 0; k < data.size(); k++)
+				if(data[k] == tri -> points[j]){
 					good = false;
 					break;
 				}
 			// if we don't, okay, let's add it
 			if(good)
-				result.push_back(tri -> points[j]);
+				data.push_back(tri -> points[j]);
 		}
 	}
 }
 
 vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 	MeshTriple** points = t -> points;
-	vector<Triangle*> result;
+	vector<Triangle*> data;
 	// iterate over points
 	for (int i = 0; i < 3; i++) {
 		MeshTriple* mtrip = points[i];
@@ -247,43 +271,43 @@ vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 		for(int j = 0; j < mtrip -> triangles.size(); j++){
 			bool good = true;
 			// check if we already have that triangle
-			for(int k = 0; k < result.size(); k++)
-				if(result[k] == mtrip -> triangles[j]){
+			for(int k = 0; k < data.size(); k++)
+				if(data[k] == mtrip -> triangles[j]){
 					good = false;
 					break;
 				}
 			// if we don't, okay, let's add it
 			if(good)
-				result.push_back(mtrip -> triangles[j]);
+				data.push_back(mtrip -> triangles[j]);
 		}
 	}
 	// if any triangles don't share 2 points with the first, they are not a neighbor
-	for(int i = 0; i < result.size(); i++){
-		Triangle* temp = result[i];
+	for(int i = 0; i < data.size(); i++){
+		Triangle* temp = data[i];
 		int numPoints = 0;
 		for(int j = 0; j < 3; j++)
 			for(int k = 0; k < 3; k++)
 				if(t -> points[j] == temp -> points[k])
 					numPoints++;
 		if(numPoints != 2){
-			result.erase(result.begin()+i);
+			data.erase(data.begin()+i);
 			i--;
 		}
 	}
-	return result;
+	return data;
 }
 
 // is a point 'visible' from another? that is, does the line between them pass through the hull? this function answers these questions
 bool Mesh::isVisible(Triple& a, Triple& d){
-	bool result = true;
+	bool data = true;
 	if(testIntersect(*(hull[hull.size()-1] -> triple), *(hull[0] -> triple), a, d))
 		return false;
 	for(unsigned long i = 1; i < hull.size(); i++)
 		if(testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)){
-			result = false;
+			data = false;
 			break;
 		}
-	return result;
+	return data;
 }
 	 
 // helper function to find if line segments p1q1 and p2q2 intersect
