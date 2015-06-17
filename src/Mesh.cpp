@@ -41,16 +41,16 @@ Mesh::Mesh(CoordinateList* cList){
 		insertVert(list -> getPtr(i));
 	}
 
-	// // iteratively 'flip' triangles until no more triangles need be flipped
-	// int maxIterations = 12;
-	// for(int i = 0; i < maxIterations; i++){
-	// 	int sumFlips = 0;
-	// 	for(int j = 0; j < tris.size(); j++){
-	// 		sumFlips += flip(tris[j]);
-	// 	}
-	// 	if(sumFlips == 0)
-	// 		break;
-	// }
+	// iteratively 'flip' triangles until no more triangles need be flipped
+	int maxIterations = 12;
+	for(int i = 0; i < maxIterations; i++){
+		int sumFlips = 0;
+		for(int j = 0; j < tris.size(); j++){
+			sumFlips += flip(tris[j]);
+		}
+		if(sumFlips == 0)
+			break;
+	}
 
 	// set up the data array - first, find max number of vert neighbors
 	// char maxNeighbors = 0;
@@ -162,16 +162,16 @@ void Mesh::insertVert(Triple* v){
 			cc = (i+1)%hull.size();
 
 	// make triangles, starting with the most clockwise pair of points and working counter-clockwise
-	for(int i = c; (i+1)%hull.size() <= cc; i = (i+1)%hull.size()){
-		Triangle* temp = new Triangle(hull[i], hull[i+1], t);
+	for(int i = c; i != cc; i = (i+1)%hull.size()){
+		Triangle* temp = new Triangle(hull[i], hull[(i+1)%hull.size()], t);
 		tris.push_back(temp);
 	}
 	// trim the hull. of those verts visible to t, only the most clockwise and most counter-clockwise verts will remain
-	// int initialHullSize = hull.size();
-	// for(int i = (c+1)%initialHullSize; (i+1)%initialHullSize <= cc; cc = (cc-1+initialHullSize)%initialHullSize)
-	// 	hull.erase(hull.begin()+i);
-	// //insert the new point in-between the most clockwise and most counter-clockwise verts
-	// hull.insert(hull.begin()+cc, t);
+	int initialHullSize = hull.size();
+	for(int i = (c+1)%initialHullSize; (i+1)%initialHullSize <= cc; cc = (cc-1+initialHullSize)%initialHullSize)
+		hull.erase(hull.begin()+i);
+	//insert the new point in-between the most clockwise and most counter-clockwise verts
+	hull.insert(hull.begin()+cc, t);
 }
 
 void Mesh::removeTri(Triangle* t){
@@ -205,25 +205,28 @@ int Mesh::flip(Triangle* t){
 	 	}
 	 	for(int i = 0; i < allPoints.size(); i++)
 	 		for(int j = 0; j < i; j++)
-	 			if(allPoints[i] == allPoints[j]){
+				if(allPoints[i] == allPoints[j]){
 	 				allPoints.erase(allPoints.begin()+i);
 	 				i--;
 	 			}
 		// find the two points they have in common
-	 	int i1, i2;
-	 	bool n = false;
+	 	int i1 = -1;
+	 	int i2 = -1;
+	 	bool found[4] = {false, false, false, false};
 	 	for(int i = 0; i < allPoints.size(); i++)
 	 		for(int j = 0; j < 3; j++)
-	 			for(int k = 0; k < 3; k++)
-	 				if(t -> points[j] == allPoints[i] && neighbor -> points[k] == allPoints[i]){
-	 					if(n){
-	 						i1 = i;
-	 						n = true;
-	 					}else
-	 						i2 = i;
-	 				}
-	 	// find the two points they don't
-	 	int i3, i4;
+	 			found[i] = found[i] || t -> points[j] == allPoints[i];
+	 	for(int i = 0; i < allPoints.size(); i++)
+	 		for(int j = 0; j < 3; j++)
+	 			if(found[i] || neighbor -> points[j] == allPoints[i])
+	 				if(i1 == -1)
+	 					i1 = i;
+	 				else
+	 					i2 = i;
+	 	// find the two points they don't have in common
+	 	int i3 = -1;
+	 	int i4 = -1;
+	 	bool n = true;
 	 	for(int i = 0; i < allPoints.size(); i++)
 	 		if(i != i1 && i != i2)
 	 			if(n){
