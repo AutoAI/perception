@@ -10,7 +10,7 @@ We're attempting a new approach that would dramatically reduce the computational
 
 The stereo correspondance procedure is an algorithm that takes images coming from stereo cameras and creates depth-maps from these images. Making this procedure reliable is very computationally expensive.
 
-![StereoCorrespondance](readme-assets/stereo-correspondance)
+![StereoCorrespondance](readme-assets/stereo-correspondance.png)
 
 With the stereo corresponace procedure, a computer has to go through each row of pixels. It finds pairs of corresponding pixels, where a pixel in one image corresponds to the other if the pixels seem like they come from the same point in the real world. For each pair it sees what the `x` value of each pixel is and, based on the difference in `x` value, it can infer how far away the object is.
 
