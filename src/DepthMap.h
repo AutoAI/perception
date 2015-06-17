@@ -1,3 +1,6 @@
+/**
+* @author Parth Mehrotra, Travis VanDerStad
+*/
 #pragma once
 
 /**
