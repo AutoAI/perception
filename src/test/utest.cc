@@ -11,12 +11,12 @@
 #include <string>
 #include <vector>
 
-#include "../CoordinateList.h"
-#include "../NdArray.h"
-#include "../Triple.h"
-#include "../Triangle.h"
-#include "../Mesh.h"
-#include "../MeshTriple.h"
+#include "../coordinate_list.h"
+#include "../nd_array.h"
+#include "../triple.h"
+#include "../triangle.h"
+#include "../mesh.h"
+#include "../mesh_triple.h"
 
 TEST(Triple, equalityTrue) {
 	Triple a;
