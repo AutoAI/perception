@@ -376,6 +376,27 @@ TEST(Mesh, testIntersect){
     EXPECT_FALSE(Mesh::testIntersect(t2, t4, t5, t1));
 }
 
+TEST(Mesh, dist2) {
+	Triple t1(0, 0, 0);
+	Triple t2(0, 0, 1);
+
+	EXPECT_EQ(Mesh::dist2(t1, t2), 0);
+}
+
+TEST(Mesh, dist23) {
+	Triple t1(2, 2, 2);
+	Triple t2(0, 0, 0);
+
+	EXPECT_EQ(Mesh::dist2(t1, t2), 8);
+}
+
+TEST(Mesh, dist24) {
+	Triple t1(3, 4, 9);
+	Triple t2(0, 0, 0);
+
+	EXPECT_EQ(Mesh::dist2(t1, t2), 25);
+}
+
 TEST(Mesh, constructor){
 	int length = 5;
 	CoordinateList c(0, length);
