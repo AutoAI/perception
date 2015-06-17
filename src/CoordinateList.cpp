@@ -118,7 +118,8 @@ unsigned long CoordinateList::getLength() {
 }
 
 void CoordinateList::sortThatDoesntWorkYet(Triple origin) {
-   unsigned long num_buckets = 12;
+  unsigned long avg_per_bucket = 200;
+   unsigned long num_buckets = length/avg_per_bucket;
    // Pre-calculate all distances (so we dont have to do it every comparison)
    float distances[length];
    for(unsigned long i = 0; i < length; i++)

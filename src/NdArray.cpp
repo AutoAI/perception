@@ -3,6 +3,8 @@
 
 // If you're looking for the documentation, its in NdArray.h
 
+#include "ros/ros.h"
+
 #include "Triple.h"
 #include "NdArray.h"
 #include <string>
@@ -25,7 +27,7 @@ NdArray<T>::NdArray(char numDimensions, unsigned long* dimensions) {
 
 template<typename T>
 void NdArray<T>::set(unsigned long* dimensions, T value) {
-    char index = 0;
+    unsigned long index = 0;
     for (char i = 0; i < numDimensions; i++) {
         index += dimensions[i] * sizes[i];
     }
@@ -39,7 +41,7 @@ void NdArray<T>::set(unsigned long index, T value) {
 
 template<typename T>
 T NdArray<T>::get(unsigned long* dimensions) {
-    char index = 0;
+    unsigned long index = 0;
     for (char i = 0; i < numDimensions; i++) {
         index += dimensions[i] * sizes[i];
     }

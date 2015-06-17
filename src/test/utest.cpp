@@ -83,71 +83,24 @@ TEST(Triangle, eqTrue) {
 
 TEST(NdArray, testCase1) {
     unsigned long bounds[3] = {3, 3, 3};
-    NdArray<string> array(3, bounds);
-
-    unsigned long location[3] = {0, 0, 0};
-    string value = "asdf";
-    array.set(location, value);
-    EXPECT_EQ(value.compare(array.get(location)), 0);
-}
-
-TEST(NdArray, testCase2) {
-    unsigned long bounds[3] = {3, 3, 3};
-    NdArray<string> array(3, bounds);
+    NdArray<float> array(3, bounds);
 
     unsigned long location[3] = {0, 2, 0};
-    string value = "sdflj";
+    float value = 69.69;
     array.set(location, value);
 
-    EXPECT_EQ(value.compare(array.get(location)), 0);
+    EXPECT_EQ(value, array.get(location));
 }
 
-TEST(NdArray, testCase3) {
-    unsigned long bounds[3] = {3, 3, 3};
-    NdArray<string> array(3, bounds);
+TEST(NdArray, testCase2){
+    unsigned long bounds[3] = {200, 100, 6};
+    NdArray<float> array(3, bounds);
 
-    unsigned long location[3] = {2, 0, 2};
-    string value = "asldfkjsd";
+    unsigned long location[3] = {0, 1, 0};
+    float value = 69.69;
     array.set(location, value);
 
-    EXPECT_EQ(value.compare(array.get(location)), 0);
-}
-
-TEST(NdArray, testCase4) {
-    unsigned long bounds[3] = {3, 3, 3};
-    NdArray<string> array(3, bounds);
-
-    unsigned long location[3] = {0, 0, 0};
-    string value = "sdkjsfks";
-
-    array.set(location, value);
-
-    EXPECT_EQ(value.compare(array.get(location)), 0);
-
-}
-
-TEST(NdArray, testCase5) {
-    unsigned long bounds[3] = {3, 3, 3};
-    NdArray<string> array(3, bounds);
-
-    unsigned long location[3] = {2, 0, 1};
-    string value = "adfklsjdfksdflkjsdf";
-
-    array.set(location, value);
-
-    EXPECT_EQ(value.compare(array.get(location)), 0);
-}
-
-TEST(NdArray, testCase6) {
-    unsigned long bounds[3] = {3, 3, 3};
-    NdArray<string> array(3, bounds);
-
-    unsigned long location[3] = {1, 3, 1};
-    string value = "ksdflkjsdf";
-
-    array.set(location, value);
-
-    EXPECT_EQ(value.compare(array.get(location)), 0);
+    EXPECT_LT(abs(value - array.get(location)), 0.0001);
 }
 
 TEST(CoordinateList, toCartesian) {
@@ -222,7 +175,7 @@ TEST(CoordinateList, testSize) {
 }
 
 TEST(CoordinateList, testSort) {
-    unsigned long t_length = 6;
+    unsigned long t_length = 10000;
     Triple t[t_length];
 
     for (unsigned long i = 0; i < t_length; i++) {
@@ -255,9 +208,7 @@ TEST(CoordinateList, testSort) {
 }
 
 TEST(CoordinateList, testSort2) {
-	EXPECT_TRUE(false);
-	return;
-    unsigned long t_length = 1000;
+    unsigned long t_length = 10000;
     Triple t[t_length];
 
     for (unsigned long i = 0; i < t_length; i++) {

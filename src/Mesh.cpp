@@ -53,50 +53,50 @@ Mesh::Mesh(CoordinateList* cList){
 	}
 
 	// set up the data array - first, find max number of vert neighbors
-	// char maxNeighbors = 0;
-	// for(int i = 0; i < verts.size(); i++)
-	// 	maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size()) ? maxNeighbors : getNeighbors(verts[i]).size();
+	char maxNeighbors = 0;
+	for(int i = 0; i < verts.size(); i++)
+		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size()) ? maxNeighbors : getNeighbors(verts[i]).size();
 
-	// // init the data
-	// unsigned long bounds[3] = {XRES, YRES, maxNeighbors+1};
-	// data = new NdArray<float>(3, bounds);
+	// init the data
+	unsigned long bounds[3] = {XRES, YRES, maxNeighbors+1};
+	data = new NdArray<float>(3, bounds);
 
-	// // populate data
-	// for(int i = 0; i < XRES; i++)
-	// 	for(int j = 0; j < YRES; j++){
-	// 		MeshTriple temp = *(getNearest(*(new Triple(toImageX(i), toImageY(j), 0))));
-	// 		unsigned long setIndex[3] = {i, j, 0};
-	// 		data -> set(setIndex, temp.triple -> z);
-	// 		for(int k = 1; k < maxNeighbors+1; k++){
-	// 			unsigned long setIndexTemp[3] = {i, j, k};
-	// 			if(k < temp.triangles.size())
-	// 				data -> set(setIndexTemp, temp.triple -> z);
-	// 			else
-	// 				data -> set(setIndexTemp, -1);
-	// 		}
-	// 	}
+	// populate data
+	for(int i = 0; i < XRES; i++)
+		for(int j = 0; j < YRES; j++){
+			MeshTriple temp = *(getNearest(*(new Triple(toImageX(i), toImageY(j), 0))));
+			unsigned long setIndex[3] = {i, j, 0};
+			data -> set(setIndex, temp.triple -> z);
+			for(int k = 1; k < maxNeighbors+1; k++){
+				unsigned long setIndexTemp[3] = {i, j, k};
+				if(k < temp.triangles.size())
+					data -> set(setIndexTemp, temp.triple -> z);
+				else
+					data -> set(setIndexTemp, -1);
+			}
+		}
 
-	// // init result
-	// unsigned long bounds2[3] = {XRES, YRES, 2};
-	// result = new NdArray<float>(3, bounds2);
+	// init result
+	unsigned long bounds2[3] = {XRES, YRES, 2};
+	result = new NdArray<float>(3, bounds2);
 
-	// // calculate result
-	// for(int i = 0; i < XRES; i++)
-	// 	for(int j = 0; j < YRES; j++){
-	// 		float min = -1;
-	// 		float max = K;
-	// 		for(int k = 0; k < maxNeighbors+1; k++){
-	// 			unsigned long getIndex[3] = {i, j, k};
-	// 			if(data -> get(getIndex) == -1)
-	// 				break;
-	// 			min = (min < data -> get(getIndex)) ? min : data -> get(getIndex);
-	// 			max = (max > data -> get(getIndex)) ? max : data -> get(getIndex);
-	// 		}
-	// 		unsigned long setIndex[3] = {i, j, 0};
-	// 		result -> set(setIndex, min);
-	// 		unsigned long setIndex2[3] = {i, j, 1};
-	// 		result -> set(setIndex2, max);
-	// 	}
+	// calculate result
+	for(int i = 0; i < XRES; i++)
+		for(int j = 0; j < YRES; j++){
+			float min = -1;
+			float max = K;
+			for(int k = 0; k < maxNeighbors+1; k++){
+				unsigned long getIndex[3] = {i, j, k};
+				if(data -> get(getIndex) == -1)
+					break;
+				min = (min < data -> get(getIndex)) ? min : data -> get(getIndex);
+				max = (max > data -> get(getIndex)) ? max : data -> get(getIndex);
+			}
+			unsigned long setIndex[3] = {i, j, 0};
+			result -> set(setIndex, min);
+			unsigned long setIndex2[3] = {i, j, 1};
+			result -> set(setIndex2, max);
+		}
 }
 
 MeshTriple* Mesh::chooseSeed(){
@@ -248,7 +248,7 @@ int Mesh::flip(Triangle* t){
 
 vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 	vector<Triangle*> neighborTriangles = t -> triangles;
-	vector<MeshTriple*> data;
+	vector<MeshTriple*> result;
 	// iterate over triangles
 	for (int i = 0; i < neighborTriangles.size(); i++) {
 		Triangle* tri = neighborTriangles[i];
@@ -256,16 +256,17 @@ vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 		for(int j = 0; j < 3; j++){
 			bool good = true;
 			// check if we already have that point
-			for(int k = 0; k < data.size(); k++)
-				if(data[k] == tri -> points[j]){
+			for(int k = 0; k < result.size(); k++)
+				if(result[k] == tri -> points[j]){
 					good = false;
 					break;
 				}
 			// if we don't, okay, let's add it
 			if(good)
-				data.push_back(tri -> points[j]);
+				result.push_back(tri -> points[j]);
 		}
 	}
+	return result;
 }
 
 vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
