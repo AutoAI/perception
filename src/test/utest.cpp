@@ -359,115 +359,21 @@ TEST(Mesh, det4x4) {
 	EXPECT_LT(abs(out - ans), 0.0001);
 }
 
-TEST(Mesh, det10x10){
-    float** matrix = new float*[10];
-    for(int i = 0; i < 10; i++)
-        matrix[i] = new float[10];
-    matrix[0][0] = 1;
-    matrix[0][1] = 2;
-    matrix[0][2] = 0;
-    matrix[0][3] = 1;
-    matrix[0][4] = 2;
-    matrix[0][5] = 1;
-    matrix[0][6] = 1;
-    matrix[0][7] = 0;
-    matrix[0][8] = -1;
-    matrix[0][9] = 1;
-    matrix[1][0] = 1;
-    matrix[1][1] = 2;
-    matrix[1][2] = 0;
-    matrix[1][3] = 1;
-    matrix[1][4] = 2;
-    matrix[1][5] = 1;
-    matrix[1][6] = 1;
-    matrix[1][7] = 0;
-    matrix[1][8] = -1;
-    matrix[1][9] = -1;
-    matrix[2][0] = 1;
-    matrix[2][1] = 2;
-    matrix[2][2] = 0;
-    matrix[2][3] = 1;
-    matrix[2][4] = 2;
-    matrix[2][5] = 1;
-    matrix[2][6] = 1;
-    matrix[2][7] = 0;
-    matrix[2][8] = -1;
-    matrix[2][9] = -1;
-    matrix[3][0] = 1;
-    matrix[3][1] = 2;
-    matrix[3][2] = 0;
-    matrix[3][3] = 1;
-    matrix[3][4] = 2;
-    matrix[3][5] = 1;
-    matrix[3][6] = 1;
-    matrix[3][7] = 0;
-    matrix[3][8] = -1;
-    matrix[3][9] = -1;
-    matrix[4][0] = 1;
-    matrix[4][1] = 2;
-    matrix[4][2] = 0;
-    matrix[4][3] = 1;
-    matrix[4][4] = 2;
-    matrix[4][5] = 1;
-    matrix[4][6] = 1;
-    matrix[4][7] = 0;
-    matrix[4][8] = -1;
-    matrix[4][9] = -1;
-    matrix[5][0] = 1;
-    matrix[5][1] = 2;
-    matrix[5][2] = 0;
-    matrix[5][3] = 1;
-    matrix[5][4] = 2;
-    matrix[5][5] = 1;
-    matrix[5][6] = 1;
-    matrix[5][7] = 0;
-    matrix[5][8] = -1;
-    matrix[5][9] = -1;
-    matrix[6][0] = 1;
-    matrix[6][1] = 2;
-    matrix[6][2] = 0;
-    matrix[6][3] = 1;
-    matrix[6][4] = 2;
-    matrix[6][5] = 1;
-    matrix[6][6] = 1;
-    matrix[6][7] = 0;
-    matrix[6][8] = -1;
-    matrix[6][9] = -1;
-    matrix[7][0] = 1;
-    matrix[7][1] = 2;
-    matrix[7][2] = 0;
-    matrix[7][3] = 1;
-    matrix[7][4] = 2;
-    matrix[7][5] = 1;
-    matrix[7][6] = 1;
-    matrix[7][7] = 0;
-    matrix[7][8] = -1;
-    matrix[7][9] = -1;
-    matrix[8][0] = 1;
-    matrix[8][1] = 2;
-    matrix[8][2] = 0;
-    matrix[8][3] = 1;
-    matrix[8][4] = 2;
-    matrix[8][5] = 1;
-    matrix[8][6] = 1;
-    matrix[8][7] = 0;
-    matrix[8][8] = -1;
-    matrix[8][9] = -1;
-    matrix[9][0] = -1;
-    matrix[9][1] = -2;
-    matrix[9][2] = 0;
-    matrix[9][3] = -1;
-    matrix[9][4] = -2;
-    matrix[9][5] = -1;
-    matrix[9][6] = -1;
-    matrix[9][7] = 0;
-    matrix[9][8] = 1;
-    matrix[9][9] = -1;
+TEST(Mesh, testIntersect){
+    Triple t1(2, 2, 4);
+    Triple t2(5, 3, 2);
+    Triple t3(1, 4, 98);
+    Triple t4(3, 3, 7);
+    Triple t5(3, 2, -1);
 
-    float ans = 0;
-    float out = Mesh::det(matrix, 10);
-
-    EXPECT_LT(abs(out - ans), 0.0001);
+    EXPECT_TRUE(Mesh::testIntersect(t1, t4, t3, t5));
+    EXPECT_TRUE(Mesh::testIntersect(t3, t5, t1, t4));
+    EXPECT_TRUE(Mesh::testIntersect(t4, t1, t5, t3));
+    EXPECT_TRUE(Mesh::testIntersect(t5, t3, t4, t1));
+    EXPECT_FALSE(Mesh::testIntersect(t1, t5, t4, t2));
+    EXPECT_FALSE(Mesh::testIntersect(t4, t2, t1, t5));
+    EXPECT_FALSE(Mesh::testIntersect(t5, t1, t2, t4));
+    EXPECT_FALSE(Mesh::testIntersect(t2, t4, t5, t1));
 }
 
 TEST(Mesh, constructor){
@@ -480,9 +386,13 @@ TEST(Mesh, constructor){
 	Triple t4(3, 3, 7);
 	Triple t5(3, 2, -1);
 
-	Mesh m(&c);
+    c.set(0, t1);
+    c.set(1, t2);
+    c.set(2, t3);
+    c.set(3, t4);
+    c.set(4, t5);
 
-	
+	Mesh m(&c);
 }
 
 int main(int argc, char **argv) {

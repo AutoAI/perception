@@ -58,15 +58,15 @@ class Mesh {
 		bool isVisible(Triple& a, Triple& d);
 
 		// helper function for above function
-		bool testIntersect(Triple p1, Triple q1, Triple p2, Triple q2);
+		static bool testIntersect(Triple p1, Triple q1, Triple p2, Triple q2);
 
 		// helper-helper function for above function
-		bool onSegment(Triple p, Triple q, Triple r);
+		static bool onSegment(Triple p, Triple q, Triple r);
 
 		// helper-helper function for function above above function
-		int orientation(Triple p, Triple q, Triple r);
+		static int orientation(Triple p, Triple q, Triple r);
 
-		bool inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p);
+		static bool inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p);
 	
 		static float det(float** in_matrix, int n);
 
@@ -77,13 +77,13 @@ class Mesh {
 
 		MeshTriple* getNearest(Triple &t);
 
-		float dist2(Triple &a, Triple &b);
+		static float dist2(Triple &a, Triple &b);
 
-		int toPixelX(float x);
+		static int toPixelX(float x);
 
-		int toPixelY(float y);
+		static int toPixelY(float y);
 
-		float toImageX(int x);
+		static float toImageX(int x);
 
-		float toImageY(int y);
+		static float toImageY(int y);
 };
