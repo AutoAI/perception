@@ -420,6 +420,7 @@ MeshTriple* Mesh::getNearest(Triple &t){
 	return nearest;
 }
 
+//TODO Not dist2, travis that's not okay
 // returns the squared 2d distance between two Triples
 float Mesh::dist2(Triple &a, Triple &b){
 	return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
