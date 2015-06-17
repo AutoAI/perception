@@ -1,4 +1,4 @@
-#include "Triple.h"
+#include "triple.h"
 
 Triple::Triple() {}
 Triple::Triple(float x, float y, float z) {

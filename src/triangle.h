@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MeshTriple.h"
+#include "mesh_triple.h"
 
 class Triangle {
 	public:

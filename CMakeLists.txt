@@ -21,21 +21,21 @@ include_directories(
 )
 
 
-add_executable(Perception_Run src/Run.cpp)
+add_executable(Perception_Run src/run.cc)
 target_link_libraries(Perception_Run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
-add_dependencies(Perception_Run Perception_Run_cpp)
+add_dependencies(Perception_Run Perception_run_cc)
 
-add_executable(Delaunay src/Delaunay-sHull.cpp)
+add_executable(Delaunay src/delaunay_shull.cc)
 target_link_libraries(Delaunay ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
 add_dependencies(Delaunay Perception_delaunay_cpp)
 
 catkin_add_gtest(Perception_utest 
-	src/NdArray.cpp
-	src/CoordinateList.cpp
-	src/Mesh.cpp
-	src/MeshTriple.h
-	src/Triangle.cpp
-	src/Triple.cpp
-	src/test/utest.cpp
+	src/nd_array.cc
+	src/coordinate_list.cc
+	src/mesh.cc
+	src/mesh_triple.h
+	src/triangle.cc
+	src/triple.cc
+	src/test/utest.cc
 	)
 target_link_libraries(Perception_utest ${catkin_LIBRARIES})        

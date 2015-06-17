@@ -12,11 +12,11 @@
 #include <stddef.h>
 #include <iostream>
 
-#include "CoordinateList.h"
+#include "coordinate_list.h"
 
-#include "Mesh.h"
-#include "MeshTriple.cpp"
-#include "GlobalConstants.h"
+#include "mesh.h"
+#include "mesh_triple.cc"
+#include "global_constants.h"
 
 using namespace std;
 

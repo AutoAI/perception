@@ -1,4 +1,4 @@
-#include "MeshTriple.h"
+#include "mesh_triple.h"
 
 MeshTriple::MeshTriple(Triple* triple) {
 	this -> triple = triple;

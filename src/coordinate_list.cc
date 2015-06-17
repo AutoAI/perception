@@ -9,9 +9,9 @@
 #include <math.h>
 #include <string.h>
 
-#include "NdArray.h"
+#include "nd_array.h"
 
-#include "CoordinateList.h"
+#include "coordinate_list.h"
 
 using namespace std;
 

@@ -10,10 +10,10 @@
 
 #include <vector>
 
-#include "Triple.h"
-#include "Triangle.h"
-#include "MeshTriple.h"
-#include "NdArray.h"
+#include "triple.h"
+#include "triangle.h"
+#include "mesh_triple.h"
+#include "nd_array.h"
 
 #define start_size 5;
 

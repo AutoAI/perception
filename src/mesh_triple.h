@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Triple.h"
+#include "triple.h"
 
 class Triangle; // forward declaration. Triangle references MeshTriple, so we can't just #include (reinstate after removing superh.h)
 

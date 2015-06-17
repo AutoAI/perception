@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 
-#include "NdArray.cpp"
-#include "CoordinateList.cpp"
+#include "nd_array.cpp"
+#include "coordinate_list.cpp"
 
 using namespace std;
 

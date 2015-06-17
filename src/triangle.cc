@@ -1,4 +1,4 @@
-#include "Triangle.h"
+#include "triangle.h"
 
 Triangle::Triangle(MeshTriple *v0, MeshTriple *v1, MeshTriple *v2) {
 	points[0] = v0;

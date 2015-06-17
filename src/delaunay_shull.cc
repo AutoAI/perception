@@ -3,7 +3,7 @@
 #include <time.h>
 #include <vector>
 
-#include "NdArray.cpp"
+#include "nd_array.h"
 
 #define gridRes 100
 #define numPoints 1000

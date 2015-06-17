@@ -5,8 +5,8 @@
 
 #include "ros/ros.h"
 
-#include "Triple.h"
-#include "NdArray.h"
+#include "triple.h"
+#include "nd_array.h"
 #include <string>
 
 template<typename T>

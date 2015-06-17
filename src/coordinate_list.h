@@ -10,8 +10,8 @@
 #pragma once
 
 #include <vector>
-#include "Triple.h"
-#include "GlobalConstants.h"
+#include "triple.h"
+#include "global_constants.h"
 
 #define Cartesian 0
 #define Spherical 1
