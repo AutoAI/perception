@@ -59,12 +59,12 @@ Mesh::Mesh(CoordinateList* cList) {
 	}
 
 	// init the data
-	unsigned long bounds[3] = {XRES, YRES, maxNeighbors+1};
+	unsigned long bounds[3] = {CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1};
 	data = new NdArray<float>(3, bounds);
 
 	// populate data
-	for(int i = 0; i < XRES; i++) {
-		for(int j = 0; j < YRES; j++) { 
+	for(int i = 0; i < CameraConstants::XRES; i++) {
+		for(int j = 0; j < CameraConstants::YRES; j++) { 
 			MeshTriple temp = *(getNearest(*(new Triple(toImageX(i), toImageY(j), 0))));
 			unsigned long setIndex[3] = {i, j, 0};
 			data -> set(setIndex, temp.triple -> z);
@@ -80,14 +80,15 @@ Mesh::Mesh(CoordinateList* cList) {
 	}
 
 	// init result
-	unsigned long bounds2[3] = {XRES, YRES, 2};
+	unsigned long bounds2[3] = {CameraConstants::XRES, CameraConstants::YRES, 2};
 	result = new NdArray<float>(3, bounds2);
 
 	// calculate result
-	for(int i = 0; i < XRES; i++) {
-		for(int j = 0; j < YRES; j++) {
+	for(int i = 0; i < CameraConstants::XRES; i++) {
+		for(int j = 0; j < CameraConstants::YRES; j++) {
 			float min = -1;
-			float max = K;
+			float max = CameraConstants::K;
+			//TODO should rename k
 			for(int k = 0; k < maxNeighbors+1; k++) {
 				unsigned long getIndex[3] = {i, j, k};
 				if(data -> get(getIndex) == -1) {
@@ -490,17 +491,17 @@ float Mesh::dist2(Triple &a, Triple &b) {
 }
 
 int Mesh::toPixelX(float x) {
-	return x * XRES/S + XRES/2;
+	return x * CameraConstants::XRES / CameraConstants::S + CameraConstants::XRES / 2;
 }
 
 int Mesh::toPixelY(float y) {
-	return y * XRES/S + YRES/2;
-}
+	return y * CameraConstants::XRES / CameraConstants::S + CameraConstants::YRES / 2;
+} 
 
 float Mesh::toImageX(int x) {
-	return (x-XRES/2)*S/XRES;
+	return (x - CameraConstants::XRES / 2) * CameraConstants::S / CameraConstants::XRES;
 }
 
 float Mesh::toImageY(int y) {
-	return (y-YRES/2)*S/XRES;
+	return (y - CameraConstants::YRES / 2) * CameraConstants::S / CameraConstants::XRES;
 }

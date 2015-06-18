@@ -2,30 +2,29 @@
 
 #pragma once
 
-/**
-* maximum range represented by data structure
-*/
-#define K 120
+namespace CameraConstants {
+	/**
+	* maximum range represented by data structure
+	*/
+	const short K = 120;
 
-/**
-* camera focal length
-*/
-#define F 0.035
+	/**
+	* camera focal length
+	*/
+	const float F = 0.035;
 
-/**
-* camera sensor size (meters)
-*/
-#define S .0254
+	/**
+	* camera sensor size (meters)
+	*/
+	const float S = 0.0254;
 
-/**
-* camera x-resolution
-*/
-#define XRES 192
+	/**
+	* camera x-resolution
+	*/
+	const float XRES = 192;
 
-/**
-* camera y-resolution
-*/
-#define YRES 108
-
-/** Coordinate rightCameraPosition[] = {1, 0, 0}; */
-/** Coordinate leftCameraPosition[] = {-1, 0, 0}; */
+	/**
+	* camera y-resolution
+	*/
+	const float YRES = 108;
+}

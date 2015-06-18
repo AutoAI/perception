@@ -50,9 +50,9 @@ void CoordinateList::toCartesian() {
 			v = coordinates[i].y;
 			w = coordinates[i].z;
 
-			z = K/w;
-			y = v*z/F;
-			x = u*z/F;
+			z = CameraConstants::K/w;
+			y = v*z/CameraConstants::F;
+			x = u*z/CameraConstants::F;
 
 		}
 		coordinates[i].x = x;
@@ -89,9 +89,9 @@ void CoordinateList::toType(char newType, Triple offset) {
 		}
 
 		if(newType==Perspective) {
-			u = coordinates[i].x*F/coordinates[i].z;
-			v = coordinates[i].y*F/coordinates[i].z;
-			w = K/coordinates[i].z;
+			u = coordinates[i].x*CameraConstants::F/coordinates[i].z;
+			v = coordinates[i].y*CameraConstants::F/coordinates[i].z;
+			w = CameraConstants::K/coordinates[i].z;
 
 			coordinates[i].x = u;
 			coordinates[i].y = v;

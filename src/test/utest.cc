@@ -17,6 +17,7 @@
 #include "../triangle.h"
 #include "../mesh.h"
 #include "../mesh_triple.h"
+#include "../global_constants.h"
 
 TEST(Triple, equalityTrue) {
 	Triple a;
@@ -156,14 +157,14 @@ TEST(CoordinateList, toPerspective) {
     Triple a;
     
     a = list.get(0);
-    EXPECT_LT(abs(a.x-F/10), 0.0001);
+    EXPECT_LT(abs(a.x-CameraConstants::F/10), 0.0001);
     EXPECT_LT(abs(a.y-0), 0.0001);
-    EXPECT_LT(abs(a.z-K/10), 0.0001);
+    EXPECT_LT(abs(a.z-CameraConstants::K/10), 0.0001);
     
     a = list.get(1);
-    EXPECT_LT(abs(a.x-F), 0.0001);
-    EXPECT_LT(abs(a.y-F), 0.00001);
-    EXPECT_LT(abs(a.z-K), 0.0001);
+    EXPECT_LT(abs(a.x-CameraConstants::F), 0.0001);
+    EXPECT_LT(abs(a.y-CameraConstants::F), 0.00001);
+    EXPECT_LT(abs(a.z-CameraConstants::K), 0.0001);
 }
 
 TEST(CoordinateList, testSize) {
@@ -200,7 +201,6 @@ TEST(CoordinateList, testSort) {
         float dximinus1 = test.get(i-1).x - c.x;
         float dyiminus1 = test.get(i-1).y - c.y;
         if(dxi*dxi+dyi*dyi < dximinus1*dximinus1+dyiminus1*dyiminus1){
-            ROS_INFO("%f > %f", dxi*dxi+dyi*dyi, dximinus1*dximinus1+dyiminus1*dyiminus1);
             good = false;
         }
     }
@@ -233,7 +233,6 @@ TEST(CoordinateList, testSort2) {
         float dximinus1 = test.get(i-1).x - c.x;
         float dyiminus1 = test.get(i-1).y - c.y;
         if(dxi*dxi+dyi*dyi < dximinus1*dximinus1+dyiminus1*dyiminus1){
-            ROS_INFO("%f > %f", dxi*dxi+dyi*dyi, dximinus1*dximinus1+dyiminus1*dyiminus1);
             good = false;
         }
     }
