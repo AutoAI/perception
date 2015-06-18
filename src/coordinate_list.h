@@ -13,16 +13,22 @@
 #include "triple.h"
 #include "global_constants.h"
 
-#define Cartesian 0
-#define Spherical 1
-#define Perspective 2
-
 using namespace std;
+
 
 /** List of all coordinate triples */
 class CoordinateList {
+
+
 public:
-	char type; /** type of the coordinate (as #define'd) */
+
+	enum ListType {
+		CARTESIAN,
+		SPHERICAL,
+		PERSPECTIVE
+	}; 	
+	
+	ListType type; /** type of the coordinate (as #define'd) */
 
 	/**
 	* Creates a CoordinateList using a type and an initial length
@@ -30,14 +36,14 @@ public:
 	* @param type a char that represents the type of the CoordinateList (Cartesian, Spherical, or Perspective)
 	* @param length the length of the initial list
 	*/
-	CoordinateList(char type, unsigned long length);
+	CoordinateList(ListType type, unsigned long length);
 
 	/**
 	* converts all coordinates to the specified type
 	*
 	* @param newType type to convert to
 	*/
-	void toType(char newType);
+	void toType(ListType newType);
 
 	/**
 	* converts all coodinates to the specified type using an offset to the new origin
@@ -45,7 +51,7 @@ public:
 	* @param newType new type for the list
 	* @param offset a Triple offset to specify the new origin
 	*/
-	void toType(char newType, Triple offset);
+	void toType(ListType newType, Triple offset);
 
 	/**
 	* set a particular element by its list index

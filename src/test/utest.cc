@@ -105,13 +105,13 @@ TEST(NdArray, testCase2){
 }
 
 TEST(CoordinateList, toCartesian) {
-    CoordinateList list(Spherical, 1);
+    CoordinateList list(CoordinateList::SPHERICAL, 1);
 
     Triple coordinate1(1, 3.14159, 0);
 
     list.set(0, coordinate1);
 
-    list.toType(Cartesian);
+    list.toType(CoordinateList::CARTESIAN);
     Triple a; 
 
     a = list.get(0);
@@ -121,7 +121,7 @@ TEST(CoordinateList, toCartesian) {
 }
 
 TEST(CoordinateList, toSpherical) {
-    CoordinateList list(Cartesian, 2);
+    CoordinateList list(CoordinateList::CARTESIAN, 2);
 
     Triple coordinate1(1, 0, 10);
 	Triple coordinate2(1, 1, 1);
@@ -129,7 +129,7 @@ TEST(CoordinateList, toSpherical) {
     list.set(0, coordinate1);
     list.set(1, coordinate2);
     
-    list.toType(Spherical);
+    list.toType(CoordinateList::SPHERICAL);
     Triple a; 
 
     a = list.get(0);
@@ -144,7 +144,7 @@ TEST(CoordinateList, toSpherical) {
 }
 
 TEST(CoordinateList, toPerspective) {
-    CoordinateList list(0, 2);
+    CoordinateList list(CoordinateList::CARTESIAN, 2);
 
     Triple coordinate1(1, 0, 10);
 	Triple coordinate2(1, 1, 1);
@@ -152,7 +152,7 @@ TEST(CoordinateList, toPerspective) {
 	list.set(0, coordinate1);
     list.set(1, coordinate2);
 
-    list.toType(Perspective);
+    list.toType(CoordinateList::PERSPECTIVE);
 
     Triple a;
     
@@ -171,7 +171,7 @@ TEST(CoordinateList, testSize) {
     unsigned long t_length = 20;
     Triple t[t_length];
 
-    CoordinateList test(0, t_length);
+    CoordinateList test(CoordinateList::CARTESIAN, t_length);
     EXPECT_EQ(t_length, test.getLength());
 }
 
@@ -185,7 +185,7 @@ TEST(CoordinateList, testSort) {
         t[i].z = float(rand()) / rand();
     }
 
-    CoordinateList test(0, t_length);
+    CoordinateList test(CoordinateList::CARTESIAN, t_length);
     for (unsigned long i = 0; i < t_length; i++) {
         test.set(i, t[i]);
     }
@@ -217,7 +217,7 @@ TEST(CoordinateList, testSort2) {
         t[i].z = float(rand()) / rand();
     }
 
-    CoordinateList test(0, t_length);
+    CoordinateList test(CoordinateList::CARTESIAN, t_length);
     for (unsigned long i = 0; i < t_length; i++) {
         test.set(i, t[i]);
     }
@@ -244,7 +244,7 @@ TEST(Mesh, testConstructor) {
 }
 
 TEST(Mesh, testConstructor2) {
-	EXPECT_THROW(Mesh(new CoordinateList(0, 0)), std::invalid_argument);
+	EXPECT_THROW(Mesh(new CoordinateList(CoordinateList::CARTESIAN, 0)), std::invalid_argument);
 }
 
 TEST(Mesh, det2x2) {
@@ -349,7 +349,7 @@ TEST(Mesh, dist24) {
 
 TEST(Mesh, constructor){
 	int length = 5;
-	CoordinateList c(0, length);
+	CoordinateList c(CoordinateList::CARTESIAN, length);
 
 	Triple t1(2, 2, 4);
 	Triple t2(5, 3, 2);

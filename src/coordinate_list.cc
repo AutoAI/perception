@@ -15,20 +15,20 @@
 
 using namespace std;
 
-CoordinateList::CoordinateList(char type, unsigned long length) {
+CoordinateList::CoordinateList(ListType type, unsigned long length) {
 	this->type = type;
 	this->length = length;
 	coordinates = new Triple[length];
 }
 
-void CoordinateList::toType(char newType) {
+void CoordinateList::toType(CoordinateList::ListType newType) {
 	Triple d;
 	d.x = d.y = d.z = 0;
 	this->toType(newType, d);
 }
 
 void CoordinateList::toCartesian() {
-	if(type==Cartesian) {
+	if(type == CARTESIAN) {
 		return;
 	}
 
@@ -37,7 +37,7 @@ void CoordinateList::toCartesian() {
 	float x, y, z;
 
 	for(int i = 0; i < length; i++) {
-		if(type==Spherical) {
+		if(type == SPHERICAL) {
 			r = coordinates[i].x;
 			theta =  coordinates[i].y;
 			phi = coordinates[i].z;
@@ -59,10 +59,10 @@ void CoordinateList::toCartesian() {
 		coordinates[i].y = y;
 		coordinates[i].z = z;
 	}
-	type = Cartesian;
+	type = CARTESIAN;
 }
 
-void CoordinateList::toType(char newType, Triple offset) {
+void CoordinateList::toType(ListType newType, Triple offset) {
 
 	float r, theta, phi;
 	float u, v, w;
@@ -78,7 +78,7 @@ void CoordinateList::toType(char newType, Triple offset) {
 		coordinates[i].y += offset.y;
 		coordinates[i].z += offset.z;
 
-		if(newType==Spherical) {
+		if(newType == SPHERICAL) {
 			r = sqrt(coordinates[i].x*coordinates[i].x + coordinates[i].y*coordinates[i].y + coordinates[i].z*coordinates[i].z);
 			theta = atan(coordinates[i].y/coordinates[i].x);
 			phi = acos(coordinates[i].z/r);
@@ -88,7 +88,7 @@ void CoordinateList::toType(char newType, Triple offset) {
 			coordinates[i].z = phi;
 		}
 
-		if(newType==Perspective) {
+		if(newType == PERSPECTIVE) {
 			u = coordinates[i].x*CameraConstants::F/coordinates[i].z;
 			v = coordinates[i].y*CameraConstants::F/coordinates[i].z;
 			w = CameraConstants::K/coordinates[i].z;
