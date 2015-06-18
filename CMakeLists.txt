@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(perception)
+project(Perception)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -11,7 +11,7 @@ find_package(GTest REQUIRED)
 
 catkin_package(
   DEPENDS system_lib
-  CATKIN_DEPENDS message_runtime
+    CATKIN_DEPENDS message_runtime
 )
 
 include_directories(
@@ -21,15 +21,15 @@ include_directories(
 )
 
 
-add_executable(perception_Run src/run.cc)
-target_link_libraries(perception_Run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
-add_dependencies(perception_Run perception_run_cc)
+add_executable(Perception_Run src/run.cc)
+target_link_libraries(Perception_Run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
+add_dependencies(Perception_Run Perception_run_cc)
 
 add_executable(Delaunay src/delaunay_shull.cc)
 target_link_libraries(Delaunay ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
-add_dependencies(Delaunay perception_delaunay_cc)
+add_dependencies(Delaunay Perception_delaunay_cpp)
 
-catkin_add_gtest(perception_utest 
+catkin_add_gtest(Perception_utest 
 	src/nd_array.cc
 	src/coordinate_list.cc
 	src/mesh.cc
@@ -38,4 +38,4 @@ catkin_add_gtest(perception_utest
 	src/triple.cc
 	src/test/utest.cc
 	)
-target_link_libraries(perception_utest ${catkin_LIBRARIES})        
+target_link_libraries(Perception_utest ${catkin_LIBRARIES})        
