@@ -321,27 +321,27 @@ bool Mesh::isVisible(Triple& a, Triple& d){
 // helper function to find if line segments p1q1 and p2q2 intersect
 // got this baby from www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 bool Mesh::testIntersect(Triple p1, Triple q1, Triple p2, Triple q2){
-    // Find some orientations
-    int o1 = orientation(p1, q1, p2);
-    int o2 = orientation(p1, q1, q2);
-    int o3 = orientation(p2, q2, p1);
-    int o4 = orientation(p2, q2, q1);
+  // Find some orientations
+  int o1 = orientation(p1, q1, p2);
+  int o2 = orientation(p1, q1, q2);
+  int o3 = orientation(p2, q2, p1);
+  int o4 = orientation(p2, q2, q1);
  
-    // If you want to know what this does just go to the website where I got it they have more readable code
-    return (o1 != o2 && o3 != o4)||(o1 == 0 && onSegment(p1, p2, q1))||(o2 == 0 && onSegment(p1, q2, q1))||(o3 == 0 && onSegment(p2, p1, q2))||(o4 == 0 && onSegment(p2, q1, q2));
+  // If you want to know what this does just go to the website where I got it they have more readable code
+  return (o1 != o2 && o3 != o4)||(o1 == 0 && onSegment(p1, p2, q1))||(o2 == 0 && onSegment(p1, q2, q1))||(o3 == 0 && onSegment(p2, p1, q2))||(o4 == 0 && onSegment(p2, q1, q2));
 }
 
 // helper-helper function. dont worry about this one
 bool Mesh::onSegment(Triple p, Triple q, Triple r){
-    return q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) && q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y);
+  return q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) && q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y);
 }
 
 // don't worry about this one either
 int Mesh::orientation(Triple p, Triple q, Triple r){
-    int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-    if (val == 0)
-    	return 0;
-    return (val > 0)? 1: 2;
+  int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+  if (val == 0)
+  	return 0;
+  return (val > 0)? 1: 2;
 }
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
