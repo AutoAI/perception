@@ -11,7 +11,7 @@
 
 using namespace std;
 
-int main(int argc, char **argv){ 
+int main(int argc, char **argv) {
 	ros::init(argc, argv, "Run");
 	ros::NodeHandle n;
 	ros::spinOnce();

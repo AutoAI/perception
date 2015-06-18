@@ -3,27 +3,27 @@
 #pragma once
 
 /**
-* maximum range represented by data structure 
+* maximum range represented by data structure
 */
 #define K 120
 
 /**
-* camera focal length 
+* camera focal length
 */
 #define F 0.035
 
 /**
-* camera sensor size (meters) 
+* camera sensor size (meters)
 */
 #define S .0254
 
 /**
-* camera x-resolution 
+* camera x-resolution
 */
 #define XRES 192
 
 /**
-* camera y-resolution 
+* camera y-resolution
 */
 #define YRES 108
 
