@@ -41,16 +41,30 @@ Mesh::Mesh(CoordinateList* cList) {
 		insertVert(list -> getPtr(i));
 	}
 
+	
+
 	// iteratively 'flip' triangles until no more triangles need be flipped
 	int maxIterations = 12;
-	for(int i = 0; i < maxIterations; i++) {
+	for(int i = 0; ; i++) {
 		int sumFlips = 0;
 		for(int j = 0; j < tris.size(); j++) {
 			sumFlips += flip(tris[j]);
 		}
-		if(sumFlips == 0)
+		if(sumFlips == 0){
 			break;
+		}else if(i == maxIterations - 1){
+			ROS_INFO("Failed to flip until delaunay. Last iteration: %d flips.", sumFlips);
+		}
 	}
+
+	// // print triangles (temporary)
+	// Triple *t0, *t1, *t2;
+	// for(int i = 0; i < tris.size(); i++) {
+	// 	t0 = tris[i] -> points[0] -> triple;
+	// 	t1 = tris[i] -> points[1] -> triple;
+	// 	t2 = tris[i] -> points[2] -> triple;
+	// 	ROS_INFO("Triangle %d: [%f, %f, %f], [%f, %f, %f], [%f, %f, %f]", i, t0 -> x, t0 -> y, t0 -> z, t1 -> x, t1 -> y, t1 -> z, t2 -> x, t2 -> y, t2 -> z);
+	// }
 
 	// set up the data array - first, find max number of vert neighbors
 	char maxNeighbors = 0;
@@ -79,6 +93,20 @@ Mesh::Mesh(CoordinateList* cList) {
 		}
 	}
 
+	// // print data (temporary)
+	// for(int i = 0; i < CameraConstants::XRES; i++) {
+	// 	for(int j = 0; j < CameraConstants::YRES; j++) {
+	// 			unsigned long getIndex[3] = {i, j, 0};
+	// 			cout << data -> get(getIndex);
+
+	// 		for(int k = 1; k < maxNeighbors + 1; k++){
+	// 			unsigned long getIndex2[3] = {i, j, k};
+	// 			cout << " | " << data -> get(getIndex2);
+	// 		}
+	// 		cout << endl;
+	// 	}
+	// }
+
 	// init result
 	unsigned long bounds2[3] = {CameraConstants::XRES, CameraConstants::YRES, 2};
 	result = new NdArray<float>(3, bounds2);
@@ -86,8 +114,8 @@ Mesh::Mesh(CoordinateList* cList) {
 	// calculate result
 	for(int i = 0; i < CameraConstants::XRES; i++) {
 		for(int j = 0; j < CameraConstants::YRES; j++) {
-			float min = -1;
-			float max = CameraConstants::K;
+			float max = -1;
+			float min = CameraConstants::K;
 			//TODO should rename k
 			for(int k = 0; k < maxNeighbors+1; k++) {
 				unsigned long getIndex[3] = {i, j, k};
@@ -103,6 +131,16 @@ Mesh::Mesh(CoordinateList* cList) {
 			result -> set(setIndex2, max);
 		}
 	}
+
+	// // print the result
+	// for(int i = 0; i < CameraConstants::XRES; i++) {
+	// 	for(int j = 0; j < CameraConstants::YRES; j++) {
+	// 		unsigned long getIndex[3] = {i, j, 0};
+	// 		cout << result -> get(getIndex) << endl;
+	// 		unsigned long getIndex2[3] = {i, j, 1};
+	// 		cout << result -> get(getIndex2) << endl;
+	// 	}
+	// }
 }
 
 MeshTriple* Mesh::chooseSeed() {
@@ -151,6 +189,22 @@ void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long in
 void Mesh::insertVert(Triple* v) {
 	// insert a meshtriple for the vert
 	MeshTriple* t = new MeshTriple(v);
+
+	// print present triangles (temporary)
+	ROS_INFO("============================================================\nHull:");
+	Triple *tr;
+	for(int i = 0; i < hull.size(); i++){
+		tr = hull[i] -> triple;
+		ROS_INFO("[%f, %f, %f]", tr -> x, tr -> y, tr -> z);
+	}
+	Triple *t0, *t1, *t2;
+	for(int i = 0; i < tris.size(); i++) {
+		t0 = tris[i] -> points[0] -> triple;
+		t1 = tris[i] -> points[1] -> triple;
+		t2 = tris[i] -> points[2] -> triple;
+		ROS_INFO("Triangle %d: [%f, %f, %f], [%f, %f, %f], [%f, %f, %f]", i, t0 -> x, t0 -> y, t0 -> z, t1 -> x, t1 -> y, t1 -> z, t2 -> x, t2 -> y, t2 -> z);
+	}
+
 	// add any visible verts on the hull to a list. edges will be made to all of these
 	// (remember where the most clockwise and most counter-clockwise verts are)
 	vector<MeshTriple*> connectorTriples;
@@ -185,6 +239,19 @@ void Mesh::insertVert(Triple* v) {
 
 	//insert the new point in-between the most clockwise and most counter-clockwise verts
 	hull.insert(hull.begin()+cc, t);
+
+	// print triangles (temporary)
+	ROS_INFO("-------------------------------\nHull:");
+	for(int i = 0; i < hull.size(); i++){
+		tr = hull[i] -> triple;
+		ROS_INFO("[%f, %f, %f]", tr -> x, tr -> y, tr -> z);
+	}
+	for(int i = 0; i < tris.size(); i++) {
+		t0 = tris[i] -> points[0] -> triple;
+		t1 = tris[i] -> points[1] -> triple;
+		t2 = tris[i] -> points[2] -> triple;
+		ROS_INFO("Triangle %d: [%f, %f, %f], [%f, %f, %f], [%f, %f, %f]", i, t0 -> x, t0 -> y, t0 -> z, t1 -> x, t1 -> y, t1 -> z, t2 -> x, t2 -> y, t2 -> z);
+	}
 }
 
 void Mesh::removeTri(Triangle* t) {
