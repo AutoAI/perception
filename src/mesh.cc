@@ -423,7 +423,8 @@ vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 			}
 		}
 	}
-	// if any triangles don't share 2 points with the first, they are not a neighbor
+	// if any triangles don't share 2 points with the first,
+	// they are not a neighbor
 	for(int i = 0; i < data.size(); i++) {
 		Triangle* temp = data[i];
 		int numPoints = 0;
