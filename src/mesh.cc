@@ -263,7 +263,8 @@ void Mesh::insertVert(Triple* v) {
 		i--;
 	}
 
-	// insert the new point in-between the most clockwise and most counter-clockwise verts
+	// insert the new point in-between the most clockwise and most
+	// counter-clockwise verts
 	hull.insert(hull.begin()+cc, t);
 }
 
