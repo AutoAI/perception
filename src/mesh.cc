@@ -373,7 +373,7 @@ vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 		}
 	}
 	// remove this meshtriple from the result
-	for(int i = 0; i < result.size(); i++){
+	for(int i = 0; i < result.size(); i++) {
 		if(result[i] == t){
 			result.erase(result.begin()+i);
 			break;
