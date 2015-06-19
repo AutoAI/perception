@@ -1,6 +1,8 @@
 /** GlobalConstants.h */
 
 #pragma once
+#ifndef SRC_GLOBAL_CONSTANTS_H_
+#define SRC_GLOBAL_CONSTANTS_H_
 
 namespace CameraConstants {
 	/**
@@ -27,4 +29,7 @@ namespace CameraConstants {
 	* camera y-resolution
 	*/
 	const float YRES = 108;
-}
+};  // namespace CameraConstants
+
+#endif  // SRC_GLOBAL_CONSTANTS_H_
+

@@ -4,16 +4,15 @@
 // If you're looking for the documentation, its in CoordinateList.h
 
 #include <stdio.h>
-#include <algorithm>
-#include <limits>
 #include <math.h>
 #include <string.h>
+
+#include <algorithm>
+#include <limits>
 
 #include "nd_array.h"
 
 #include "coordinate_list.h"
-
-using namespace std;
 
 CoordinateList::CoordinateList(ListType type, unsigned long length) {
 	this->type = type;
@@ -53,7 +52,6 @@ void CoordinateList::toCartesian() {
 			z = CameraConstants::K/w;
 			y = v*z/CameraConstants::F;
 			x = u*z/CameraConstants::F;
-
 		}
 		coordinates[i].x = x;
 		coordinates[i].y = y;
@@ -63,23 +61,24 @@ void CoordinateList::toCartesian() {
 }
 
 void CoordinateList::toType(ListType newType, Triple offset) {
-
 	float r, theta, phi;
 	float u, v, w;
 	float x, y, z;
 
-	if(newType==type)
+	if(newType == type)
 		return;
 
 	this->toCartesian();
 	for(int i = 0; i < length; i++) {
-
 		coordinates[i].x += offset.x;
 		coordinates[i].y += offset.y;
 		coordinates[i].z += offset.z;
 
 		if(newType == SPHERICAL) {
-			r = sqrt(coordinates[i].x*coordinates[i].x + coordinates[i].y*coordinates[i].y + coordinates[i].z*coordinates[i].z);
+			r = sqrt(
+				pow(coordinates[i].x, 2) +
+				pow(coordinates[i].y, 2) +
+				pow(coordinates[i].z, 2));
 			theta = atan(coordinates[i].y/coordinates[i].x);
 			phi = acos(coordinates[i].z/r);
 
@@ -149,11 +148,14 @@ void CoordinateList::sortThatDoesntWorkYet(Triple origin) {
 	unsigned long bounds[2] = {num_buckets, max_size};
 	NdArray<Triple> buckets(2, bounds);
 	// Put things in the buckets
-	unsigned long indices [num_buckets];
+	unsigned long indices[num_buckets];
 	for(unsigned long i = 0; i < num_buckets; i++)
 		indices[i] = 0;
 	for(unsigned long i = 0; i < length; i++) {
-		unsigned long bucket_index = (floor((distances[i]-min)/d) < num_buckets - 1) ? floor((distances[i]-min)/d) : num_buckets - 1;
+		unsigned long bucket_index =
+		(floor((distances[i] - min) / d) < num_buckets - 1)
+			? floor((distances[i] - min) / d)
+			: num_buckets - 1;
 		unsigned long index[2] = {bucket_index, indices[bucket_index]};
 		buckets.set(index, coordinates[i]);
 		indices[bucket_index]++;
@@ -176,7 +178,8 @@ float CoordinateList::dist2(Triple a, Triple b) {
 void CoordinateList::sort(Triple origin) {
 	for(unsigned long i = 1; i < length; i++) {
 		unsigned long j = i;
-		while(dist2(coordinates[j], origin) < dist2(coordinates[j-1], origin) && j > 0) {
+		while(dist2(coordinates[j], origin) < dist2(coordinates[j-1], origin) &&
+				j > 0) {
 			Triple temp = coordinates[j];
 			coordinates[j] = coordinates[j-1];
 			coordinates[j-1] = temp;

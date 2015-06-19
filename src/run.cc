@@ -3,8 +3,6 @@
 #include "nd_array.cpp"
 #include "coordinate_list.cpp"
 
-using namespace std;
-
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "Perception_Run");
 	ros::NodeHandle n;

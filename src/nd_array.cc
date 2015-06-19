@@ -3,11 +3,12 @@
 
 // If you're looking for the documentation, its in NdArray.h
 
+#include <string>
+
 #include "ros/ros.h"
 
 #include "triple.h"
 #include "nd_array.h"
-#include <string>
 
 template<typename T>
 NdArray<T>::NdArray(char numDimensions, unsigned long* dimensions) {

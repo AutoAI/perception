@@ -7,6 +7,10 @@
 */
 
 #pragma once
+#ifndef SRC_MESH_H_
+#define SRC_MESH_H_
+
+#define start_size 5
 
 #include <vector>
 
@@ -14,37 +18,36 @@
 #include "triangle.h"
 #include "mesh_triple.h"
 #include "nd_array.h"
-
-#define start_size 5;
+#include "coordinate_list.h"
 
 class Mesh {
-public:
+ public:
 	/**
 	* makes the triangulation. boom.
 	* @param cList pointer to a CoordinateList
 	*/
-	Mesh(CoordinateList* cList);
+	explicit Mesh(CoordinateList* cList);
 
 	/**
 	* result of the triangulation: an image full of interpolation ranges
 	*/
 	NdArray<float>* result;
 
-private:
+ private:
 	/**
 	* hull for sweeping (the sweep-hull. s-hull. more on this at www.s-hull.org/)
 	*/
-	vector<MeshTriple*> hull;
+	std::vector<MeshTriple*> hull;
 
 	/**
 	* all the verts in the triangulation
 	*/
-	vector<MeshTriple*> verts;
+	std::vector<MeshTriple*> verts;
 
 	/**
 	* all the triangles in the triangulation
 	*/
-	vector<Triangle*> tris;
+	std::vector<Triangle*> tris;
 
 	/**
 	* all coordinates that are
@@ -65,7 +68,7 @@ private:
 	* @param index1 index of the second Triple
 	* @param index2 index of the third Triple
 	*/
-	void initHull(size_t index0, size_t index1, size_t index2);
+	void initHull(std::size_t index0, std::size_t index1, std::size_t index2);
 
 	/**
 	* add a vertex to the triangulation. this is called for each entry in list
@@ -87,7 +90,7 @@ private:
 	* @param t point to find neighbors from
 	* @return vector of neighboring points
 	*/
-	vector<MeshTriple*> getNeighbors(MeshTriple* t);
+	std::vector<MeshTriple*> getNeighbors(MeshTriple* t);
 
 	/**
 	* get a list of a triangle's neighboring triangles
@@ -95,7 +98,7 @@ private:
 	* @param t triangle to find neighbors from
 	* @return vector of neighboring Triangles
 	*/
-	vector<Triangle*> getNeighbors(Triangle* t);
+	std::vector<Triangle*> getNeighbors(Triangle* t);
 
 	/**
 	* determines if one triple is "visible" to another through the hull (does a line between them intersect the hull lines)
@@ -136,9 +139,9 @@ private:
 	*/
 	NdArray<float>* data;
 
-	MeshTriple* getNearest(Triple &t);
+	MeshTriple* getNearest(const Triple &t);
 
-	static float dist2(Triple &a, Triple &b);
+	static float dist2(const Triple &a, const Triple &b);
 
 	static int toPixelX(float x);
 
@@ -148,3 +151,6 @@ private:
 
 	static float toImageY(int y);
 };
+
+#endif  // SRC_MESH_H_
+

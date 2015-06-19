@@ -8,26 +8,24 @@
 */
 
 #pragma once
+#ifndef SRC_COORDINATE_LIST_H_
+#define SRC_COORDINATE_LIST_H_
 
 #include <vector>
+#include <algorithm>
+
 #include "triple.h"
 #include "global_constants.h"
 
-using namespace std;
-
-
 /** List of all coordinate triples */
 class CoordinateList {
-
-
-public:
-
+ public:
 	enum ListType {
 		CARTESIAN,
 		SPHERICAL,
 		PERSPECTIVE
-	}; 	
-	
+	};
+
 	ListType type; /** type of the coordinate (as #define'd) */
 
 	/**
@@ -100,7 +98,7 @@ public:
 	*/
 	unsigned long getLength();
 
-private:
+ private:
 	/**
 	* changes all the triples in the list to be of type Cartesian
 	*/
@@ -126,3 +124,6 @@ private:
 	*/
 	void log_distances(Triple origin);
 };
+
+#endif  // SRC_COORDINATE_LIST_H_
+

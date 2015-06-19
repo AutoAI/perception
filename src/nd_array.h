@@ -4,10 +4,12 @@
 // NdArray represents an n-dimensional array of whatever type you like
 
 #pragma once
+#ifndef SRC_ND_ARRAY_H_
+#define SRC_ND_ARRAY_H_
 
 template <typename T>
 class NdArray {
-public:
+ public:
 	T* array;
 	unsigned long* sizes;
 	unsigned long length;
@@ -20,6 +22,9 @@ public:
 
 	T get(unsigned long* dimensions);
 	T get(unsigned long index);
-	// TODO: make things that should be private private and make necessary setters + getters
+	// TODO: make things that should be private private and make
+	// necessary setters + getters
 };
+
+#endif  // SRC_ND_ARRAY_H_
 
