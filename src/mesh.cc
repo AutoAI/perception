@@ -301,7 +301,7 @@ int Mesh::flip(Triangle* t) {
 		bool found[4] = {false, false, false, false};
 		for(int j = 0; j < allPoints.size(); j++) {
 			for(int k = 0; k < 3; k++) {
-				if(t -> points[k] == allPoints[j]){
+				if(t -> points[k] == allPoints[j]) {
 					found[j] = true;
 				}
 			}
