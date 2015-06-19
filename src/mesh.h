@@ -50,7 +50,7 @@
 #define start_size 5;
 
 class Mesh {
-public:
+ public:
 	/**
 	* makes the triangulation. boom.
 	* @param cList pointer to a CoordinateList
