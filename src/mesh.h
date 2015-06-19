@@ -170,7 +170,7 @@ class Mesh {
 
 	MeshTriple* getNearest(Triple &t);
 
-	static float dist2(Triple &a, Triple &b);
+	static float dist2(const Triple &a, const Triple &b);
 
 	static int toPixelX(float x);
 

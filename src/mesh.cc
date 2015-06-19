@@ -603,7 +603,7 @@ MeshTriple* Mesh::getNearest(Triple &t) {
 
 // TODO Not dist2, travis that's not okay
 // returns the squared 2d distance between two Triples
-float Mesh::dist2(Triple &a, Triple &b) {
+float Mesh::dist2(const Triple &a, const Triple &b) {
 	return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
 }
 
