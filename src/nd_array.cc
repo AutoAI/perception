@@ -3,6 +3,8 @@
 
 // If you're looking for the documentation, its in NdArray.h
 
+#include <stdint.h>
+
 #include <string>
 
 #include "ros/ros.h"
@@ -11,8 +13,8 @@
 #include "nd_array.h"
 
 template<typename T>
-NdArray<T>::NdArray(char numDimensions, unsigned long* dimensions) {
-	sizes = new unsigned long[numDimensions];
+NdArray<T>::NdArray(char numDimensions, uint64_t* dimensions) {
+	sizes = new uint64_t[numDimensions];
 	length = 1;
 	for (char i = 0; i < numDimensions; i++) {
 		length *= dimensions[i];
@@ -27,8 +29,8 @@ NdArray<T>::NdArray(char numDimensions, unsigned long* dimensions) {
 }
 
 template<typename T>
-void NdArray<T>::set(unsigned long* dimensions, T value) {
-	unsigned long index = 0;
+void NdArray<T>::set(uint64_t* dimensions, T value) {
+	uint64_t index = 0;
 	for (char i = 0; i < numDimensions; i++) {
 		index += dimensions[i] * sizes[i];
 	}
@@ -36,13 +38,13 @@ void NdArray<T>::set(unsigned long* dimensions, T value) {
 }
 
 template<typename T>
-void NdArray<T>::set(unsigned long index, T value) {
+void NdArray<T>::set(uint64_t index, T value) {
 	array[index] = value;
 }
 
 template<typename T>
-T NdArray<T>::get(unsigned long* dimensions) {
-	unsigned long index = 0;
+T NdArray<T>::get(uint64_t* dimensions) {
+	uint64_t index = 0;
 	for (char i = 0; i < numDimensions; i++) {
 		index += dimensions[i] * sizes[i];
 	}
@@ -50,7 +52,7 @@ T NdArray<T>::get(unsigned long* dimensions) {
 }
 
 template<typename T>
-T NdArray<T>::get(unsigned long index) {
+T NdArray<T>::get(uint64_t index) {
 	return array[index];
 }
 

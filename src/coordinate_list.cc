@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <limits>
@@ -14,7 +15,7 @@
 
 #include "coordinate_list.h"
 
-CoordinateList::CoordinateList(ListType type, unsigned long length) {
+CoordinateList::CoordinateList(ListType type, uint64_t length) {
 	this->type = type;
 	this->length = length;
 	coordinates = new Triple[length];
@@ -100,71 +101,71 @@ void CoordinateList::toType(ListType newType, Triple offset) {
 	type = newType;
 }
 
-Triple CoordinateList::get(unsigned long index) {
+Triple CoordinateList::get(uint64_t index) {
 	return coordinates[index];
 }
 
-Triple* CoordinateList::getPtr(unsigned long index) {
+Triple* CoordinateList::getPtr(uint64_t index) {
 	return &coordinates[index];
 }
 
-void CoordinateList::set(unsigned long index, Triple value) {
+void CoordinateList::set(uint64_t index, Triple value) {
 	coordinates[index] = value;
 }
 
-unsigned long CoordinateList::getLength() {
+uint64_t CoordinateList::getLength() {
 	return length;
 }
 
 void CoordinateList::sortThatDoesntWorkYet(Triple origin) {
-	unsigned long avg_per_bucket = 200;
-	unsigned long num_buckets = length/avg_per_bucket;
+	uint64_t avg_per_bucket = 200;
+	uint64_t num_buckets = length/avg_per_bucket;
 	// Pre-calculate all distances (so we dont have to do it every comparison)
 	float distances[length];
-	for(unsigned long i = 0; i < length; i++)
+	for(uint64_t i = 0; i < length; i++)
 		distances[i] = dist2(origin, coordinates[i]);
 	// Find min and max distances (for bucket partitioning)
 	float max = 0;
 	float min = std::numeric_limits<float>::max();
-	for(unsigned long i = 0; i < length; i++) {
+	for(uint64_t i = 0; i < length; i++) {
 		max = (max < distances[i]) ? distances[i] : max;
 		min = (min > distances[i]) ? distances[i] : min;
 	}
 	// Figure out how big each bucket is going to be
-	unsigned long bucket_sizes[num_buckets];
-	for(unsigned long i = 0; i < num_buckets; i++) {
+	uint64_t bucket_sizes[num_buckets];
+	for(uint64_t i = 0; i < num_buckets; i++) {
 		bucket_sizes[i] = 0;
 	}
 	float d = (max - min)/num_buckets;
-	for(unsigned long i = 0; i < length; i++) {
-		bucket_sizes[(unsigned long)floor((distances[i]-min)/d)]++;
+	for(uint64_t i = 0; i < length; i++) {
+		bucket_sizes[(uint64_t)floor((distances[i]-min)/d)]++;
 	}
 	// Figure out how big the largest bucket will be
-	unsigned long max_size = 0;
-	for(unsigned long i = 0; i < num_buckets; i++) {
+	uint64_t max_size = 0;
+	for(uint64_t i = 0; i < num_buckets; i++) {
 		max_size = (max_size < bucket_sizes[i]) ? bucket_sizes[i] : max_size;
 	}
 	// Set up the buckets as an NdArray
-	unsigned long bounds[2] = {num_buckets, max_size};
+	uint64_t bounds[2] = {num_buckets, max_size};
 	NdArray<Triple> buckets(2, bounds);
 	// Put things in the buckets
-	unsigned long indices[num_buckets];
-	for(unsigned long i = 0; i < num_buckets; i++)
+	uint64_t indices[num_buckets];
+	for(uint64_t i = 0; i < num_buckets; i++)
 		indices[i] = 0;
-	for(unsigned long i = 0; i < length; i++) {
-		unsigned long bucket_index =
+	for(uint64_t i = 0; i < length; i++) {
+		uint64_t bucket_index =
 		(floor((distances[i] - min) / d) < num_buckets - 1)
 			? floor((distances[i] - min) / d)
 			: num_buckets - 1;
-		unsigned long index[2] = {bucket_index, indices[bucket_index]};
+		uint64_t index[2] = {bucket_index, indices[bucket_index]};
 		buckets.set(index, coordinates[i]);
 		indices[bucket_index]++;
 	}
 	// Copy the things back into the original array
-	unsigned long i = 0;
-	for(unsigned long j = 0; j < num_buckets; j++)
-		for(unsigned long k = 0; k < bucket_sizes[j]; k++) {
-			unsigned long index[2] = {j, k};
+	uint64_t i = 0;
+	for(uint64_t j = 0; j < num_buckets; j++)
+		for(uint64_t k = 0; k < bucket_sizes[j]; k++) {
+			uint64_t index[2] = {j, k};
 			coordinates[i++] = buckets.get(index);
 		}
 	// The array is now mostly in order. Do an insertion sort.
@@ -176,8 +177,8 @@ float CoordinateList::dist2(Triple a, Triple b) {
 }
 
 void CoordinateList::sort(Triple origin) {
-	for(unsigned long i = 1; i < length; i++) {
-		unsigned long j = i;
+	for(uint64_t i = 1; i < length; i++) {
+		uint64_t j = i;
 		while(dist2(coordinates[j], origin) < dist2(coordinates[j-1], origin) &&
 				j > 0) {
 			Triple temp = coordinates[j];
@@ -191,6 +192,6 @@ void CoordinateList::sort(Triple origin) {
 // void CoordinateList::log_distances(Triple origin){
 //   stringstream out;
 //   out << dist2(coordinates[0], origin);
-//   for(unsigned long i = 1; i < length; i++)
+//   for(uint64_t i = 1; i < length; i++)
 //   out << " " << dist2(coordinates[i],origin);
 // }

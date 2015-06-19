@@ -7,21 +7,23 @@
 #ifndef SRC_ND_ARRAY_H_
 #define SRC_ND_ARRAY_H_
 
+#include <stdint.h>
+
 template <typename T>
 class NdArray {
  public:
 	T* array;
-	unsigned long* sizes;
-	unsigned long length;
+	uint64_t* sizes;
+	uint64_t length;
 	char numDimensions;
 
-	NdArray(char numDimensions, unsigned long* dimensions);
+	NdArray(char numDimensions, uint64_t* dimensions);
 
-	void set(unsigned long* dimensions, T value);
-	void set(unsigned long index, T value);
+	void set(uint64_t* dimensions, T value);
+	void set(uint64_t index, T value);
 
-	T get(unsigned long* dimensions);
-	T get(unsigned long index);
+	T get(uint64_t* dimensions);
+	T get(uint64_t index);
 	// TODO: make things that should be private private and make
 	// necessary setters + getters
 };

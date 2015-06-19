@@ -11,6 +11,8 @@
 #ifndef SRC_COORDINATE_LIST_H_
 #define SRC_COORDINATE_LIST_H_
 
+#include <stdint.h>
+
 #include <vector>
 #include <algorithm>
 
@@ -34,7 +36,7 @@ class CoordinateList {
 	* @param type a char that represents the type of the CoordinateList (Cartesian, Spherical, or Perspective)
 	* @param length the length of the initial list
 	*/
-	CoordinateList(ListType type, unsigned long length);
+	CoordinateList(ListType type, uint64_t length);
 
 	/**
 	* converts all coordinates to the specified type
@@ -57,7 +59,7 @@ class CoordinateList {
 	* @param index the index that you're setting
 	* @param value the Triple that it's being set too
 	*/
-	void set(unsigned long index, Triple value);
+	void set(uint64_t index, Triple value);
 
 	/**
 	* returns a particular element by its list index
@@ -65,7 +67,7 @@ class CoordinateList {
 	* @param index returns Triple at index
 	* @return Triple at that index
 	*/
-	Triple get(unsigned long index);
+	Triple get(uint64_t index);
 
 	/**
 	* returns a reference to a particular element by its list index
@@ -73,7 +75,7 @@ class CoordinateList {
 	* @param index returns a pointer to the triple at the specified index
 	* @return Triple returns a pointer to the triple at the specified index
 	*/
-	Triple* getPtr(unsigned long index);
+	Triple* getPtr(uint64_t index);
 
 	/**
 	* performs an 0(n) bucket sort. good for when the list is a mess
@@ -96,7 +98,7 @@ class CoordinateList {
 	*
 	* @return length of the current coordinate list
 	*/
-	unsigned long getLength();
+	uint64_t getLength();
 
  private:
 	/**
@@ -107,7 +109,7 @@ class CoordinateList {
 	/**
 	* the capacity of the coordinates (not the number of actual elements stored)
 	*/
-	unsigned long length;
+	uint64_t length;
 
 	/**
 	* the data stored in the structure
