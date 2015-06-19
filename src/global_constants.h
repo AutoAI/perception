@@ -59,7 +59,7 @@ namespace CameraConstants {
 	* camera y-resolution
 	*/
 	const float YRES = 90;
-}
+};  // namespace CameraConstants
 
 #endif  // SRC_GLOBAL_CONSTANTS_H_
 
