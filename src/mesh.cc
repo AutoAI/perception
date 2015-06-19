@@ -470,7 +470,8 @@ bool Mesh::isVisible(Triple& a, Triple& d) {
 }
 
 // helper function to find if line segments p1q1 and p2q2 intersect
-// got this baby from www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+// got this baby from:
+// 	www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 bool Mesh::testIntersect(Triple p1, Triple q1, Triple p2, Triple q2) {
 	// Find some orientations
 	int o1 = orientation(p1, q1, p2);
