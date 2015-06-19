@@ -49,7 +49,7 @@ TEST(Triple, equalityFalse) {
 	EXPECT_FALSE(a==b);
 }
 
-TEST(Triple, unequalityTrue) {
+TEST(Triple, inequalityTrue) {
 	Triple a(1, 1, 3);
 	Triple b;
 
@@ -60,7 +60,7 @@ TEST(Triple, unequalityTrue) {
 	EXPECT_TRUE(a!=b);
 }
 
-TEST(Triple, unequalityFalse) {
+TEST(Triple, inequalityFalse) {
 	Triple a(1, 2, 2);
 	Triple b(1, 2, 2);
 
@@ -176,7 +176,7 @@ TEST(CoordinateList, testSize) {
 }
 
 TEST(CoordinateList, testSort) {
-    unsigned long t_length = 10000;
+    unsigned long t_length = 1000;
     Triple t[t_length];
 
     for (unsigned long i = 0; i < t_length; i++) {
@@ -208,7 +208,7 @@ TEST(CoordinateList, testSort) {
 }
 
 TEST(CoordinateList, testSort2) {
-    unsigned long t_length = 10000;
+    unsigned long t_length = 1000;
     Triple t[t_length];
 
     for (unsigned long i = 0; i < t_length; i++) {
@@ -351,11 +351,11 @@ TEST(Mesh, constructor){
 	int length = 5;
 	CoordinateList c(CoordinateList::CARTESIAN, length);
 
-	Triple t1(2, 2, 4);
-	Triple t2(5, 3, 2);
-	Triple t3(1, 4, 98);
-	Triple t4(3, 3, 7);
-	Triple t5(3, 2, -1);
+	Triple t1(2, 2, 0);
+	Triple t2(5, 3, 1);
+	Triple t3(1, 4, 2);
+    Triple t5(3, 2, 4);
+	Triple t4(3, 3, 3);
 
     c.set(0, t1);
     c.set(1, t2);
