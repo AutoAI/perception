@@ -481,7 +481,11 @@ bool Mesh::testIntersect(Triple p1, Triple q1, Triple p2, Triple q2) {
 
 	// If you want to know what this does just go to the website
 	// where I got it they have more readable code
-	return (o1 != o2 && o3 != o4) || (o1 == 0 && onSegment(p1, p2, q1)) || (o2 == 0 && onSegment(p1, q2, q1)) || (o3 == 0 && onSegment(p2, p1, q2)) || (o4 == 0 && onSegment(p2, q1, q2));
+	return (o1 != o2 && o3 != o4) ||
+		(o1 == 0 && onSegment(p1, p2, q1)) ||
+		(o2 == 0 && onSegment(p1, q2, q1)) ||
+		(o3 == 0 && onSegment(p2, p1, q2)) ||
+		(o4 == 0 && onSegment(p2, q1, q2));
 }
 
 // helper-helper function. dont worry about this one
