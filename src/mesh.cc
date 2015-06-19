@@ -67,7 +67,8 @@ Mesh::Mesh(CoordinateList* cList) {
 	this->hull = hull;
 	initHull(0, 1, 2);
 
-	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
+	// sequentially insert points, adding edges from new point to 'visible'
+	// points on the convex hull
 	for(uint64_t i = 3; i < list -> getLength(); i++) {
 		insertVert(list -> getPtr(i));
 	}
