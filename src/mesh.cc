@@ -613,7 +613,8 @@ int Mesh::toPixelX(float x) {
 }
 
 int Mesh::toPixelY(float y) {
-	return y * CameraConstants::XRES / CameraConstants::S + CameraConstants::YRES / 2;
+	return y * CameraConstants::XRES / CameraConstants::S +
+		CameraConstants::YRES / 2;
 }
 
 float Mesh::toImageX(int x) {
