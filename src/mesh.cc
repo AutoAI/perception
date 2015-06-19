@@ -443,7 +443,9 @@ vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 	return data;
 }
 
-// is a point 'visible' from another? that is, does the line between them pass through the hull? this function answers these questions
+// is a point 'visible' from another?
+// that is, does the line between them pass through the hull?
+// this function answers these questions
 bool Mesh::isVisible(Triple& a, Triple& d) {
 	if(!((a == *(hull[hull.size()-1] -> triple)) || ((d == *(hull[hull.size()-1] -> triple))) || (a == *(hull[0] -> triple)) || ((d == *(hull[0] -> triple)))) && testIntersect(*(hull[hull.size()-1] -> triple), *(hull[0] -> triple), a, d)) {
 		return false;
