@@ -608,7 +608,8 @@ float Mesh::dist2(Triple &a, Triple &b) {
 }
 
 int Mesh::toPixelX(float x) {
-	return x * CameraConstants::XRES / CameraConstants::S + CameraConstants::XRES / 2;
+	return x * CameraConstants::XRES / CameraConstants::S +
+		CameraConstants::XRES / 2;
 }
 
 int Mesh::toPixelY(float y) {
