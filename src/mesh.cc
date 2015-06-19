@@ -505,7 +505,8 @@ int Mesh::orientation(Triple p, Triple q, Triple r) {
 	return (val > 0)? 1: 2;
 }
 
-// formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
+// formula I grabbed from
+// 	https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
 bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p) {
 	float** delta = new float*[4];
 	for(int i = 0; i < 4; i++) {
