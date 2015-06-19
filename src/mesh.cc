@@ -103,7 +103,7 @@ Mesh::Mesh(CoordinateList* cList) {
 	}
 
 	// init the data
-	uint64_t bounds[3] = 
+	uint64_t bounds[3] =
 		{CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1};
 	data = new NdArray<float>(3, bounds);
 
