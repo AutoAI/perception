@@ -236,7 +236,8 @@ void Mesh::insertVert(Triple* v) {
 		}
 	}
 
-	// make triangles, starting with the most clockwise pair of points and working counter-clockwise
+	// make triangles, starting with the most clockwise pair of points
+	// and working counter-clockwise
 	for(int i = c; i != cc; i = (i+1)%hull.size()) {
 		Triangle* temp = new Triangle(hull[i], hull[(i+1)%hull.size()], t);
 		tris.push_back(temp);
