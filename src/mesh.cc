@@ -44,7 +44,6 @@
 #include <stdexcept>
 
 #include "coordinate_list.h"
-
 #include "mesh.h"
 #include "mesh_triple.cc"
 #include "global_constants.h"
