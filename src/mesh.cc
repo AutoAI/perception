@@ -237,7 +237,7 @@ void Mesh::insertVert(Triple* v) {
 		if(i == -1) {
 			i = hull.size() - 1;
 		}
-		if(i == c){
+		if(i == c) {
 			break;
 		}
 		hull.erase(hull.begin()+i);
