@@ -243,7 +243,8 @@ void Mesh::insertVert(Triple* v) {
 		tris.push_back(temp);
 	}
 
-	// trim the hull. of those verts visible to t, only the most clockwise and most counter-clockwise verts will remain
+	// trim the hull. of those verts visible to t, only the most clockwise
+	// and most counter-clockwise verts will remain
 	int i = cc - 1;
 	while(true) {
 		if(i == -1) {
