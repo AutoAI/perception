@@ -55,7 +55,7 @@ public:
 	* makes the triangulation. boom.
 	* @param cList pointer to a CoordinateList
 	*/
-	Mesh(CoordinateList* cList);
+	explicit Mesh(CoordinateList* cList);
 
 	/**
 	* result of the triangulation: an image full of interpolation ranges
