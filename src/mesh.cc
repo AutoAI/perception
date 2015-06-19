@@ -68,7 +68,7 @@ Mesh::Mesh(CoordinateList* cList) {
 	initHull(0, 1, 2);
 
 	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
-	for(unsigned long i = 3; i < list -> getLength(); i++) {
+	for(uint64_t i = 3; i < list -> getLength(); i++) {
 		insertVert(list -> getPtr(i));
 	}
 
@@ -100,17 +100,17 @@ Mesh::Mesh(CoordinateList* cList) {
 	}
 
 	// init the data
-	unsigned long bounds[3] = {CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1};
+	uint64_t bounds[3] = {CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1};
 	data = new NdArray<float>(3, bounds);
 
 	// populate data
 	for(int i = 0; i < CameraConstants::XRES; i++) {
 		for(int j = 0; j < CameraConstants::YRES; j++) {
 			MeshTriple* temp = getNearest(*(new Triple(toImageX(i), toImageY(j), 0)));
-			unsigned long setIndex[3] = {i, j, 0};
+			uint64_t setIndex[3] = {i, j, 0};
 			data -> set(setIndex, temp -> triple -> z);
 			for(int k = 1; k < maxNeighbors+1; k++) {
-				unsigned long setIndexTemp[3] = {i, j, k};
+				uint64_t setIndexTemp[3] = {i, j, k};
 				if(k-1 < getNeighbors(temp).size()) {
 					data -> set(setIndexTemp, getNeighbors(temp)[k-1] -> triple -> z);
 				} else {
@@ -121,7 +121,7 @@ Mesh::Mesh(CoordinateList* cList) {
 	}
 
 	// init result
-	unsigned long bounds2[3] = {CameraConstants::XRES, CameraConstants::YRES, 2};
+	uint64_t bounds2[3] = {CameraConstants::XRES, CameraConstants::YRES, 2};
 	result = new NdArray<float>(3, bounds2);
 
 	// calculate result
@@ -131,16 +131,16 @@ Mesh::Mesh(CoordinateList* cList) {
 			float min = CameraConstants::K;
 			// TODO should rename k
 			for(int k = 0; k < maxNeighbors+1; k++) {
-				unsigned long getIndex[3] = {i, j, k};
+				uint64_t getIndex[3] = {i, j, k};
 				if(data -> get(getIndex) == -1) {
 					break;
 				}
 				min = (min < data -> get(getIndex)) ? min : data -> get(getIndex);
 				max = (max > data -> get(getIndex)) ? max : data -> get(getIndex);
 			}
-			unsigned long setIndex[3] = {i, j, 0};
+			uint64_t setIndex[3] = {i, j, 0};
 			result -> set(setIndex, min);
-			unsigned long setIndex2[3] = {i, j, 1};
+			uint64_t setIndex2[3] = {i, j, 1};
 			result -> set(setIndex2, max);
 		}
 	}
@@ -148,9 +148,9 @@ Mesh::Mesh(CoordinateList* cList) {
 	// // print the result
 	// for(int i = 0; i < CameraConstants::XRES; i++) {
 	// 	for(int j = 0; j < CameraConstants::YRES; j++) {
-	// 		unsigned long getIndex[3] = {i, j, 0};
+	// 		uint64_t getIndex[3] = {i, j, 0};
 	// 		cout << result -> get(getIndex) << endl;
-	// 		unsigned long getIndex2[3] = {i, j, 1};
+	// 		uint64_t getIndex2[3] = {i, j, 1};
 	// 		cout << result -> get(getIndex2) << endl;
 	// 	}
 	// }
@@ -161,7 +161,7 @@ MeshTriple* Mesh::chooseSeed() {
 	return new MeshTriple((*list).getPtr(0));
 }
 
-void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long index2) {
+void Mesh::initHull(uint64_t index0, uint64_t index1, uint64_t index2) {
 	// check angle 0 to see which way the verts should be ordered to make the triangle counter-clockwise
 	float dTheta = atan2((*list).get(2).y-(*list).get(0).y, (*list).get(2).x-(*list).get(0).x)-atan2((*list).get(1).y-(*list).get(0).y, (*list).get(1).x-(*list).get(0).x);
 	if(dTheta > 2*M_PI) {
@@ -266,7 +266,7 @@ void Mesh::removeTri(Triangle* t) {
 		}
 	}
 	// remove reference to t from this mesh
-	for(unsigned long i = 0; i < tris.size(); i++) {
+	for(uint64_t i = 0; i < tris.size(); i++) {
 		if(tris[i] == t) {
 			tris.erase(tris.begin()+i);
 			return;
@@ -431,7 +431,7 @@ bool Mesh::isVisible(Triple& a, Triple& d) {
 		return false;
 	}
 
-	for(unsigned long i = 1; i < hull.size(); i++) {
+	for(uint64_t i = 1; i < hull.size(); i++) {
 		if(!((a == *(hull[i-1] -> triple)) || ((d == *(hull[i-1] -> triple))) || (a == *(hull[i] -> triple)) || ((d == *(hull[i] -> triple)))) && testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)) {
 			return false;
 		}
