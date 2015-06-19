@@ -7,10 +7,6 @@
 */
 
 #pragma once
-#ifndef SRC_MESH_H_
-#define SRC_MESH_H_
-
-#define start_size 5
 
 #include <vector>
 
@@ -18,22 +14,23 @@
 #include "triangle.h"
 #include "mesh_triple.h"
 #include "nd_array.h"
-#include "coordinate_list.h"
+
+#define start_size 5;
 
 class Mesh {
- public:
+public:
 	/**
 	* makes the triangulation. boom.
 	* @param cList pointer to a CoordinateList
 	*/
-	explicit Mesh(CoordinateList* cList);
+	Mesh(CoordinateList* cList);
 
 	/**
 	* result of the triangulation: an image full of interpolation ranges
 	*/
 	NdArray<float>* result;
 
- private:
+private:
 	/**
 	* hull for sweeping (the sweep-hull. s-hull. more on this at www.s-hull.org/)
 	*/
@@ -68,7 +65,7 @@ class Mesh {
 	* @param index1 index of the second Triple
 	* @param index2 index of the third Triple
 	*/
-	void initHull(std::size_t index0, std::size_t index1, std::size_t index2);
+	void initHull(size_t index0, size_t index1, size_t index2);
 
 	/**
 	* add a vertex to the triangulation. this is called for each entry in list
@@ -90,7 +87,7 @@ class Mesh {
 	* @param t point to find neighbors from
 	* @return vector of neighboring points
 	*/
-	std::vector<MeshTriple*> getNeighbors(MeshTriple* t);
+	static std::vector<MeshTriple*> getNeighbors(MeshTriple* t);
 
 	/**
 	* get a list of a triangle's neighboring triangles
@@ -98,7 +95,7 @@ class Mesh {
 	* @param t triangle to find neighbors from
 	* @return vector of neighboring Triangles
 	*/
-	std::vector<Triangle*> getNeighbors(Triangle* t);
+	static std::vector<Triangle*> getNeighbors(Triangle* t);
 
 	/**
 	* determines if one triple is "visible" to another through the hull (does a line between them intersect the hull lines)
@@ -139,9 +136,9 @@ class Mesh {
 	*/
 	NdArray<float>* data;
 
-	MeshTriple* getNearest(const Triple &t);
+	MeshTriple* getNearest(Triple &t);
 
-	static float dist2(const Triple &a, const Triple &b);
+	static float dist2(Triple &a, Triple &b);
 
 	static int toPixelX(float x);
 
@@ -151,6 +148,3 @@ class Mesh {
 
 	static float toImageY(int y);
 };
-
-#endif  // SRC_MESH_H_
-

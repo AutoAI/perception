@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 #include <stddef.h>
 
+#include <time.h>
 #include <climits>
 #include <string>
 #include <vector>
@@ -347,26 +348,56 @@ TEST(Mesh, dist24) {
 	EXPECT_EQ(Mesh::dist2(t1, t2), 25);
 }
 
+TEST(Mesh, inCircumCirc) {
+    Triple* s1 = new Triple(0, 2, 0);
+    Triple* s2 = new Triple(0, 0, 0);
+    Triple* s3 = new Triple(2, 0, 0);
+
+    Triple* t1 = new Triple(1, 1, 0);
+    Triple* t2 = new Triple(2, 2, 0);
+    Triple* t3 = new Triple(3, 3, 0);
+
+    EXPECT_TRUE(Mesh::inCircumCirc(s1, s2, s3, t1));
+    EXPECT_FALSE(Mesh::inCircumCirc(s1, s2, s3, t2));
+    EXPECT_FALSE(Mesh::inCircumCirc(s1, s2, s3, t3));
+}
+
+TEST(Mesh, getNeighbors) {
+    MeshTriple* m1 = new MeshTriple(new Triple(0, 0, 0));
+    MeshTriple* m2 = new MeshTriple(new Triple(1, 1, 1));
+    MeshTriple* m3 = new MeshTriple(new Triple(2, 0, 2));
+    MeshTriple* m4 = new MeshTriple(new Triple(3, 1, 3));
+    MeshTriple* m5 = new MeshTriple(new Triple(4, 0, 4));
+
+    Triangle* t1 = new Triangle(m1, m2, m3);
+    Triangle* t2 = new Triangle(m2, m3, m4);
+    Triangle* t3 = new Triangle(m3, m4, m5);
+
+    EXPECT_EQ(Mesh::getNeighbors(m1).size(), 2);
+    EXPECT_EQ(Mesh::getNeighbors(m2).size(), 3);
+    EXPECT_EQ(Mesh::getNeighbors(m3).size(), 4);
+    EXPECT_EQ(Mesh::getNeighbors(m4).size(), 3);
+    EXPECT_EQ(Mesh::getNeighbors(m5).size(), 2);
+
+    EXPECT_EQ(Mesh::getNeighbors(t1).size(), 1);
+    EXPECT_EQ(Mesh::getNeighbors(t2).size(), 2);
+    EXPECT_EQ(Mesh::getNeighbors(t3).size(), 1);
+}
+
 TEST(Mesh, constructor){
-	int length = 5;
+	int length = 10;
 	CoordinateList c(CoordinateList::CARTESIAN, length);
 
-	Triple t1(2, 2, 0);
-	Triple t2(5, 3, 1);
-	Triple t3(1, 4, 2);
-    Triple t5(3, 2, 4);
-	Triple t4(3, 3, 3);
-
-    c.set(0, t1);
-    c.set(1, t2);
-    c.set(2, t3);
-    c.set(3, t4);
-    c.set(4, t5);
+    for(int i = 0; i < length; i++) {
+        Triple temp(((float)(rand())/(float)(RAND_MAX) - .5) * CameraConstants::S, ((float)(rand())/(float)(RAND_MAX) - .5) * CameraConstants::S * CameraConstants::YRES/CameraConstants::XRES, ((float)(rand())/(float)(RAND_MAX)) * CameraConstants::K);
+        c.set(i, temp);
+    }
 
 	Mesh m(&c);
 }
 
 int main(int argc, char **argv) {
+    srand(time(NULL));
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
