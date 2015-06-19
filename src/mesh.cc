@@ -1,0 +1,624 @@
+// Mesh.cpp
+// @author: Travis Vanderstad, Parth Mehrotra
+
+// If you're looking for the documentation, its in Mesh.h
+
+#define _USE_MATH_DEFINES
+
+#include "mesh.h"
+
+
+#include <math.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include <algorithm>
+#include <iostream>
+#include <stdexcept>
+
+#include "ros/ros.h"
+
+#include "coordinate_list.h"
+#include "mesh_triple.cc"
+#include "global_constants.h"
+
+Mesh::Mesh(CoordinateList* cList) {
+	if (cList == NULL) {
+		throw std::invalid_argument("CoordinateList must not be null");
+	} else if (cList->getLength() < 3) {
+		throw std::invalid_argument("CoordinateList must contain at least 3 points");
+	}
+	list = cList;
+	// choose seed point, sort others accorinding to distance from seed
+	MeshTriple* s = chooseSeed();
+	(*list).sort(*(s -> triple));
+
+	// construct initial convex hull (counter-clockwise)
+	std::vector<MeshTriple*> hull;
+	this->hull = hull;
+	initHull(0, 1, 2);
+
+	// sequentially insert points, adding edges from new point to 'visible'
+	// points on the convex hull
+	for(uint64_t i = 3; i < list -> getLength(); i++) {
+		insertVert(list -> getPtr(i));
+	}
+
+	// iteratively 'flip' triangles until no more triangles need be flipped
+	int maxIterations = 12;
+	for(int i = 0; ; i++) {
+		int sumFlips = 0;
+		for(int j = 0; j < tris.size(); j++) {
+			sumFlips += flip(tris[j]);
+		}
+		if(sumFlips == 0) {
+			break;
+		} else if (i == maxIterations - 1) {
+			ROS_INFO("Failed to flip until delaunay. Last iteration: %d flips.",
+				sumFlips);
+		}
+	}
+
+	// // print triangles (temporary)
+	// Triple *t0, *t1, *t2;
+	// for(int i = 0; i < tris.size(); i++) {
+	// 	t0 = tris[i] -> points[0] -> triple;
+	// 	t1 = tris[i] -> points[1] -> triple;
+	// 	t2 = tris[i] -> points[2] -> triple;
+	// 	ROS_INFO("Triangle %d: [%f, %f, %f], [%f, %f, %f],
+	// 		[%f, %f, %f]", i, t0 -> x, t0 -> y, t0 -> z, t1 -> x, t1 -> y,
+	// 		t1 -> z, t2 -> x, t2 -> y, t2 -> z);
+	// }
+
+	// set up the data array - first, find max number of vert neighbors
+	char maxNeighbors = 0;
+	for(int i = 0; i < verts.size(); i++) {
+		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size())
+			? maxNeighbors
+			: getNeighbors(verts[i]).size();
+	}
+
+	// init the data
+	uint64_t bounds[3] =
+		{CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1};
+	data = new NdArray<float>(3, bounds);
+
+	// populate data
+	for(int i = 0; i < CameraConstants::XRES; i++) {
+		for(int j = 0; j < CameraConstants::YRES; j++) {
+			MeshTriple temp = *(getNearest(*(new Triple(toImageX(i), toImageY(j), 0))));
+			uint64_t setIndex[3] = {i, j, 0};
+			data -> set(setIndex, temp.triple -> z);
+			for(int k = 1; k < maxNeighbors+1; k++) {
+				uint64_t setIndexTemp[3] = {i, j, k};
+				if(k < temp.triangles.size()) {
+					data -> set(setIndexTemp, temp.triple -> z);
+				} else {
+					data -> set(setIndexTemp, -1);
+				}
+			}
+		}
+	}
+
+	// // print data (temporary)
+	// for(int i = 0; i < CameraConstants::XRES; i++) {
+	// 	for(int j = 0; j < CameraConstants::YRES; j++) {
+	// 			uint64_t getIndex[3] = {i, j, 0};
+	// 			cout << data -> get(getIndex);
+
+	// 		for(int k = 1; k < maxNeighbors + 1; k++){
+	// 			uint64_t getIndex2[3] = {i, j, k};
+	// 			cout << " | " << data -> get(getIndex2);
+	// 		}
+	// 		cout << endl;
+	// 	}
+	// }
+
+	// init result
+	uint64_t bounds2[3] = {CameraConstants::XRES, CameraConstants::YRES, 2};
+	result = new NdArray<float>(3, bounds2);
+
+	// calculate result
+	for(int i = 0; i < CameraConstants::XRES; i++) {
+		for(int j = 0; j < CameraConstants::YRES; j++) {
+			float max = -1;
+			float min = CameraConstants::K;
+			// TODO should rename k
+			for(int k = 0; k < maxNeighbors+1; k++) {
+				uint64_t getIndex[3] = {i, j, k};
+				if(data -> get(getIndex) == -1) {
+					break;
+				}
+				min = (min < data -> get(getIndex)) ? min : data -> get(getIndex);
+				max = (max > data -> get(getIndex)) ? max : data -> get(getIndex);
+			}
+			uint64_t setIndex[3] = {i, j, 0};
+			result -> set(setIndex, min);
+			uint64_t setIndex2[3] = {i, j, 1};
+			result -> set(setIndex2, max);
+		}
+	}
+
+	// // print the result
+	// for(int i = 0; i < CameraConstants::XRES; i++) {
+	// 	for(int j = 0; j < CameraConstants::YRES; j++) {
+	// 		uint64_t getIndex[3] = {i, j, 0};
+	// 		cout << result -> get(getIndex) << endl;
+	// 		uint64_t getIndex2[3] = {i, j, 1};
+	// 		cout << result -> get(getIndex2) << endl;
+	// 	}
+	// }
+}
+
+MeshTriple* Mesh::chooseSeed() {
+	// just give 'em any old seed
+	return new MeshTriple((*list).getPtr(0));
+}
+
+void Mesh::initHull(uint64_t index0, uint64_t index1, uint64_t index2) {
+	// check angle 0 to see which way the verts should be ordered to make the
+	// triangle counter-clockwise
+	float dTheta = atan2(
+		(*list).get(2).y - (*list).get(0).y,
+		(*list).get(2).x - (*list).get(0).x) -
+			atan2((*list).get(1).y - (*list).get(0).y,
+		(*list).get(1).x - (*list).get(0).x);
+	if(dTheta > 2*M_PI) {
+		dTheta -= M_PI;
+	} else if (dTheta < 0) {
+		dTheta += M_PI;
+	}
+	bool increasing = dTheta < M_PI;
+
+	// lets init that hull
+	MeshTriple* temp0 = new MeshTriple((*list).getPtr(0));
+	verts.push_back(temp0);
+	hull.push_back(temp0);
+
+	if(increasing) {
+		MeshTriple* temp1 = new MeshTriple((*list).getPtr(1));
+		verts.push_back(temp1);
+		hull.push_back(temp1);
+
+		MeshTriple* temp2 = new MeshTriple((*list).getPtr(2));
+		verts.push_back(temp2);
+		hull.push_back(temp2);
+	} else {
+		MeshTriple* temp2 = new MeshTriple((*list).getPtr(2));
+		verts.push_back(temp2);
+		hull.push_back(temp2);
+
+		MeshTriple* temp1 = new MeshTriple((*list).getPtr(1));
+		verts.push_back(temp1);
+		hull.push_back(temp1);
+	}
+
+	// make all them connections and ish
+	Triangle* t = new Triangle(hull[0], hull[1], hull[2]);
+	tris.push_back(t);
+}
+
+void Mesh::insertVert(Triple* v) {
+	// insert a meshtriple for the vert
+	MeshTriple* t = new MeshTriple(v);
+
+	// print present triangles (temporary)
+	ROS_INFO("============================================================\nHull:");
+	Triple *tr;
+	for(int i = 0; i < hull.size(); i++) {
+		tr = hull[i] -> triple;
+		ROS_INFO("[%f, %f, %f]", tr -> x, tr -> y, tr -> z);
+	}
+	Triple *t0, *t1, *t2;
+	for(int i = 0; i < tris.size(); i++) {
+		t0 = tris[i] -> points[0] -> triple;
+		t1 = tris[i] -> points[1] -> triple;
+		t2 = tris[i] -> points[2] -> triple;
+		ROS_INFO("Triangle %d: [%f, %f, %f], [%f, %f, %f], [%f, %f, %f]",
+				i, t0 -> x, t0 -> y, t0 -> z, t1 -> x, t1 -> y, t1 -> z,
+				t2 -> x, t2 -> y, t2 -> z);
+	}
+
+	// add any visible verts on the hull to a list.
+	// edges will be made to all of these
+
+	// (remember where the most clockwise and most counter-clockwise verts are)
+	std::vector<MeshTriple*> connectorTriples;
+	bool visibilities[hull.size()];
+	int c;
+	int cc;
+	for(int i = 0; i < hull.size(); i++) {
+		if(isVisible(*(t -> triple), *(hull[i] -> triple))) {
+			connectorTriples.push_back(hull[i]);
+			visibilities[i] = true;
+		}
+	}
+	for(int i = 0; i < hull.size(); i++) {
+		if(visibilities[i] && !visibilities[(i+1)%hull.size()]) {
+			c = i;
+		} else if (visibilities[(i+1)%hull.size()] && !visibilities[i]) {
+			cc = (i+1)%hull.size();
+		}
+	}
+
+	// make triangles, starting with the most clockwise pair of points
+	// and working counter-clockwise
+	for(int i = c; i != cc; i = (i+1)%hull.size()) {
+		Triangle* temp = new Triangle(hull[i], hull[(i+1)%hull.size()], t);
+		tris.push_back(temp);
+	}
+
+	// trim the hull. of those verts visible to t, only the most clockwise
+	// and most counter-clockwise verts will remain
+	int initialHullSize = hull.size();
+	for(int i = (c + 1) % initialHullSize;
+			(i + 1) % initialHullSize <= cc;
+			cc = (cc - 1 + initialHullSize) % initialHullSize) {
+		hull.erase(hull.begin() + i);
+	}
+
+	// insert the new point in-between the most clockwise and most
+	// counter-clockwise verts
+	hull.insert(hull.begin() + cc, t);
+
+	// print triangles (temporary)
+	ROS_INFO("-------------------------------\nHull:");
+	for(int i = 0; i < hull.size(); i++) {
+		tr = hull[i] -> triple;
+		ROS_INFO("[%f, %f, %f]", tr -> x, tr -> y, tr -> z);
+	}
+	for(int i = 0; i < tris.size(); i++) {
+		t0 = tris[i] -> points[0] -> triple;
+		t1 = tris[i] -> points[1] -> triple;
+		t2 = tris[i] -> points[2] -> triple;
+		ROS_INFO("Triangle %d: [%f, %f, %f], [%f, %f, %f], [%f, %f, %f]",
+				i, t0 -> x, t0 -> y, t0 -> z, t1 -> x, t1 -> y,
+				t1 -> z, t2 -> x, t2 -> y, t2 -> z);
+	}
+}
+
+void Mesh::removeTri(Triangle* t) {
+	// remove references to t from all its verts
+	for(char i = 0; i < 3; i++) {
+		for(int j = 0; j < t -> points[i] -> triangles.size(); j++) {
+			if(t -> points[i] -> triangles[j] == t) {
+				t -> points[i] -> triangles.erase(t -> points[i] -> triangles.begin()+j);
+				break;
+			}
+		}
+	}
+	// remove reference to t from this mesh
+	for(uint64_t i = 0; i < tris.size(); i++) {
+		if(tris[i] == t) {
+			tris.erase(tris.begin()+i);
+			return;
+		}
+	}
+}
+
+// flips necessary edges of a triangle, returns number of edges flipped
+int Mesh::flip(Triangle* t) {
+	int flipCount = 0;
+	// for each neighbor
+	std::vector<Triangle*> neighbors = getNeighbors(t);
+	for(int i = 0; i < neighbors.size(); i++) {
+		Triangle* neighbor = neighbors[i];
+		// find all points between the pair of triangles
+		std::vector<MeshTriple*> allPoints;
+		for(int i = 0; i < 3; i++) {
+			allPoints.push_back(t -> points[i]);
+			allPoints.push_back(neighbor -> points[i]);
+		}
+		for(int i = 0; i < allPoints.size(); i++) {
+			for(int j = 0; j < i; j++) {
+				if(allPoints[i] == allPoints[j]) {
+					allPoints.erase(allPoints.begin()+i);
+					i--;
+				}
+			}
+		}
+
+		// find the two points they have in common
+		int i1 = -1;
+		int i2 = -1;
+		bool found[4] = {false, false, false, false};
+		for(int i = 0; i < allPoints.size(); i++) {
+			for(int j = 0; j < 3; j++) {
+				found[i] = found[i] || t -> points[j] == allPoints[i];
+			}
+		}
+
+		for(int i = 0; i < allPoints.size(); i++) {
+			for(int j = 0; j < 3; j++) {
+				if(found[i] || neighbor -> points[j] == allPoints[i]) {
+					if(i1 == -1) {
+						i1 = i;
+					} else {
+						i2 = i;
+					}
+				}
+			}
+		}
+
+		// find the two points they don't have in common
+		int i3 = -1;
+		int i4 = -1;
+		bool n = true;
+		for(int i = 0; i < allPoints.size(); i++) {
+			if(i != i1 && i != i2) {
+				if(n) {
+					i3 = i;
+					n = false;
+				} else {
+					i4 = i;
+				}
+			}
+		}
+
+		// if the pair is not locally delaunay, flip it
+		if(inCircumCirc(allPoints[i1] -> triple,
+						allPoints[i2] -> triple,
+						allPoints[i3] -> triple,
+						allPoints[i4] -> triple)) {
+			removeTri(t);
+			removeTri(neighbor);
+			Triangle* new1 = new Triangle(allPoints[i1], allPoints[i3], allPoints[i4]);
+			Triangle* new2 = new Triangle(allPoints[i2], allPoints[i3], allPoints[i4]);
+			flipCount++;
+		}
+	}
+	return flipCount;
+}
+
+std::vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
+	std::vector<Triangle*> neighborTriangles = t -> triangles;
+	std::vector<MeshTriple*> result;
+	// iterate over triangles
+	for (int i = 0; i < neighborTriangles.size(); i++) {
+		Triangle* tri = neighborTriangles[i];
+		// iterate over each triangle's points
+		for(int j = 0; j < 3; j++) {
+			bool good = true;
+			// check if we already have that point
+			for(int k = 0; k < result.size(); k++) {
+				if(result[k] == tri -> points[j]) {
+					good = false;
+					break;
+				}
+			}
+
+			// if we don't, okay, let's add it
+			if(good) {
+				result.push_back(tri -> points[j]);
+			}
+		}
+	}
+	return result;
+}
+
+std::vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
+	MeshTriple** points = t -> points;
+	std::vector<Triangle*> data;
+	// iterate over points
+	for (int i = 0; i < 3; i++) {
+		MeshTriple* mtrip = points[i];
+		// iterate over each point's triangles
+		for(int j = 0; j < mtrip -> triangles.size(); j++) {
+			bool good = true;
+			// check if we already have that triangle
+			for(int k = 0; k < data.size(); k++) {
+				if(data[k] == mtrip -> triangles[j]) {
+					good = false;
+					break;
+				}
+			}
+
+			// if we don't, okay, let's add it
+			if(good) {
+				data.push_back(mtrip -> triangles[j]);
+			}
+		}
+	}
+	// if any triangles don't share 2 points with the first,
+	// they are not a neighbor
+	for(int i = 0; i < data.size(); i++) {
+		Triangle* temp = data[i];
+		int numPoints = 0;
+		for(int j = 0; j < 3; j++) {
+			for(int k = 0; k < 3; k++) {
+				if(t -> points[j] == temp -> points[k]) {
+					numPoints++;
+				}
+			}
+		}
+		if(numPoints != 2) {
+			data.erase(data.begin()+i);
+			i--;
+		}
+	}
+	return data;
+}
+
+// is a point 'visible' from another? that is, does the line between them
+// pass through the hull? this function answers these questions
+bool Mesh::isVisible(Triple& a, Triple& d) {
+	bool result = true;
+	if(!((a == *(hull[hull.size()-1] -> triple)) ||
+			((d == *(hull[hull.size()-1] -> triple))) ||
+			(a == *(hull[0] -> triple)) ||
+			((d == *(hull[0] -> triple))))
+			&&
+			testIntersect(*(hull[hull.size() - 1] -> triple),
+						*(hull[0] -> triple), a, d)) {
+		return false;
+	}
+
+	for(uint64_t i = 1; i < hull.size(); i++) {
+		if(!((a == *(hull[i-1] -> triple)) ||
+				((d == *(hull[i-1] -> triple))) ||
+				(a == *(hull[i] -> triple)) ||
+				((d == *(hull[i] -> triple)))) &&
+				testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)) {
+			result = false;
+			break;
+		}
+	}
+	return result;
+}
+
+// helper function to find if line segments p1q1 and p2q2 intersect
+// got this baby from:
+// 		www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+bool Mesh::testIntersect(Triple p1, Triple q1, Triple p2, Triple q2) {
+	// Find some orientations
+	int o1 = orientation(p1, q1, p2);
+	int o2 = orientation(p1, q1, q2);
+	int o3 = orientation(p2, q2, p1);
+	int o4 = orientation(p2, q2, q1);
+
+	// If you want to know what this does just go to the website where I
+	// got it they have more readable code
+	return (o1 != o2 && o3 != o4) ||
+			(o1 == 0 && onSegment(p1, p2, q1)) ||
+			(o2 == 0 && onSegment(p1, q2, q1)) ||
+			(o3 == 0 && onSegment(p2, p1, q2)) ||
+			(o4 == 0 && onSegment(p2, q1, q2));
+}
+
+// helper-helper function. dont worry about this one
+bool Mesh::onSegment(Triple p, Triple q, Triple r) {
+	return q.x <= std::max(p.x, r.x) &&
+			q.x >= std::min(p.x, r.x) &&
+			q.y <= std::max(p.y, r.y) &&
+			q.y >= std::min(p.y, r.y);
+}
+
+// don't worry about this one either
+int Mesh::orientation(Triple p, Triple q, Triple r) {
+	int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+	if (val == 0) {
+		return 0;
+	}
+	return (val > 0)? 1: 2;
+}
+
+// formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
+bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p) {
+	float** delta = new float*[4];
+	for(int i = 0; i < 4; i++) {
+		delta[i] = new float[4];
+	}
+	delta[0][0] = 1;
+	delta[0][1] = 1;
+	delta[0][2] = 1;
+	delta[0][3] = 1;
+	delta[1][0] = t0 -> x;
+	delta[1][1] = t1 -> x;
+	delta[1][2] = t2 -> x;
+	delta[1][3] = p -> x;
+	delta[2][0] = t0 -> y;
+	delta[2][1] = t1 -> y;
+	delta[2][2] = t2 -> y;
+	delta[2][3] = p -> y;
+	delta[3][0] = t0 -> x * t0 -> x + t0 -> y * t0 -> y;
+	delta[3][1] = t1 -> x * t1 -> x + t1 -> y * t1 -> y;
+	delta[3][2] = t2 -> x * t2 -> x + t2 -> y * t2 -> y;
+	delta[3][3] = p -> x * p -> x + p -> y * p -> y;
+
+	float** gamma = new float*[3];
+	for(int i = 0; i < 4; i++) {
+		gamma[i] = new float[3];
+	}
+	gamma[0][0] = 1;
+	gamma[0][1] = 1;
+	gamma[0][2] = 1;
+	gamma[1][0] = t0 -> x;
+	gamma[1][1] = t1 -> x;
+	gamma[1][2] = t2 -> x;
+	gamma[2][0] = t0 -> y;
+	gamma[2][1] = t1 -> y;
+	gamma[2][2] = t2 -> y;
+
+	return det(delta, 4) * det(gamma, 3) < 0;
+}
+
+// computes a determinant using cofactor expansion (n!)
+float Mesh::det(float** m, int n) {
+	if(n == 2) {
+		return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+	}
+
+	float*** sub = new float**[n];
+	for(int i = 0; i < n; i++) {
+		sub[i] = new float*[n-1];
+	}
+
+	for(int i = 0; i < n; i++) {
+		for(int j = 0; j < n-1; j++) {
+			sub[i][j] = new float[n-1];
+		}
+	}
+
+	for(int i = 0; i < n; i++) {
+		int s = 0;
+		for(int j = 0; j < n-1; j++) {
+			if(j == i) {
+				s++;
+			}
+
+			for(int k = 1; k < n; k++) {
+				sub[i][j][k-1] = m[s][k];
+			}
+			s++;
+		}
+	}
+
+	float sum = 0;
+	bool add = true;
+	for(int i = 0; i < n; i++) {
+		if(add) {
+			sum += m[i][0] * det(sub[i], n-1);
+		} else {
+			sum -= m[i][0] * det(sub[i], n-1);
+		}
+		add = !add;
+	}
+	return sum;
+}
+
+// returns a pointer to the nearest MeshTriple to a Triple
+MeshTriple* Mesh::getNearest(const Triple &t) {
+	MeshTriple* nearest = verts[0];
+	for(int i = 1; i < verts.size(); i++) {
+		if(dist2(t, *(verts[i]->triple)) < dist2(t, *(nearest->triple))) {
+			nearest = verts[i];
+		}
+	}
+	return nearest;
+}
+
+// TODO Not dist2, travis that's not okay
+// returns the squared 2d distance between two Triples
+float Mesh::dist2(const Triple &a, const Triple &b) {
+	return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+}
+
+int Mesh::toPixelX(float x) {
+	return x * CameraConstants::XRES / CameraConstants::S +
+		CameraConstants::XRES / 2;
+}
+
+int Mesh::toPixelY(float y) {
+	return y * CameraConstants::XRES / CameraConstants::S +
+		CameraConstants::YRES / 2;
+}
+
+float Mesh::toImageX(int x) {
+	return (x - CameraConstants::XRES / 2) *
+		CameraConstants::S / CameraConstants::XRES;
+}
+
+float Mesh::toImageY(int y) {
+	return (y - CameraConstants::YRES / 2) *
+		CameraConstants::S / CameraConstants::XRES;
+}
