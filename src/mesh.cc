@@ -38,6 +38,7 @@
 #include <math.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
