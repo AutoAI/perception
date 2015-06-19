@@ -398,7 +398,7 @@ vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 					break;
 				}
 			}
-			
+
 			// if we don't, okay, let's add it
 			if(good) {
 				data.push_back(mtrip -> triangles[j]);
