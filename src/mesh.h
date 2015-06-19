@@ -37,6 +37,8 @@
 */
 
 #pragma once
+#ifndef SRC_MESH_H_
+#define SRC_MESH_H_
 
 #include <vector>
 
@@ -178,3 +180,6 @@ private:
 
 	static float toImageY(int y);
 };
+
+#endif  // SRC_MESH_H_
+
