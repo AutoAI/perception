@@ -165,7 +165,7 @@ void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long in
 	float dTheta = atan2((*list).get(2).y-(*list).get(0).y, (*list).get(2).x-(*list).get(0).x)-atan2((*list).get(1).y-(*list).get(0).y, (*list).get(1).x-(*list).get(0).x);
 	if(dTheta > 2*M_PI) {
 		dTheta -= M_PI;
-	} else if(dTheta < 0) {
+	} else if (dTheta < 0) {
 		dTheta += M_PI;
 	}
 	bool increasing = dTheta < M_PI;
