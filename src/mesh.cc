@@ -277,7 +277,7 @@ void Mesh::insertVert(Triple* v) {
 	}
 }
 
-void Mesh::removeTri(Triangle* t) {
+void Mesh::RemoveTri(Triangle* t) {
 	// remove references to t from all its verts
 	for(char i = 0; i < 3; i++) {
 		for(int j = 0; j < t -> points[i] -> triangles.size(); j++) {
