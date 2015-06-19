@@ -35,13 +35,13 @@
 
 #define _USE_MATH_DEFINES
 
-#include "ros/ros.h"
-
 #include <math.h>
 #include <stddef.h>
 
 #include <iostream>
 #include <stdexcept>
+
+#include "ros/ros.h"
 
 #include "coordinate_list.h"
 #include "mesh.h"
