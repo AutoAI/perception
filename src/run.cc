@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 
-#include "nd_array.cpp"
-#include "coordinate_list.cpp"
+#include "nd_array.cc"
+#include "coordinate_list.cc"
 
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "Perception_Run");
