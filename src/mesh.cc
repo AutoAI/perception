@@ -263,7 +263,6 @@ void Mesh::removeTri(Triangle* t) {
 				break;
 			}
 		}
-
 	}
 	// remove reference to t from this mesh
 	for(unsigned long i = 0; i < tris.size(); i++) {
