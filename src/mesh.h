@@ -62,7 +62,7 @@ class Mesh {
 	*/
 	NdArray<float>* result;
 
-private:
+ private:
 	/**
 	* hull for sweeping (the sweep-hull. s-hull. more on this at www.s-hull.org/)
 	*/
