@@ -104,7 +104,7 @@ Mesh::Mesh(CoordinateList* cList) {
 
 	// populate data
 	for(int i = 0; i < CameraConstants::XRES; i++) {
-		for(int j = 0; j < CameraConstants::YRES; j++) { 
+		for(int j = 0; j < CameraConstants::YRES; j++) {
 			MeshTriple* temp = getNearest(*(new Triple(toImageX(i), toImageY(j), 0)));
 			unsigned long setIndex[3] = {i, j, 0};
 			data -> set(setIndex, temp -> triple -> z);
