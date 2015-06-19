@@ -37,10 +37,10 @@
 
 #include "ros/ros.h"
 
-#include <stdexcept>
 #include <math.h>
 #include <stddef.h>
 #include <iostream>
+#include <stdexcept>
 
 #include "coordinate_list.h"
 
