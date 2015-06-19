@@ -128,7 +128,7 @@ Mesh::Mesh(CoordinateList* cList) {
 		for(int j = 0; j < CameraConstants::YRES; j++) {
 			float max = -1;
 			float min = CameraConstants::K;
-			//TODO should rename k
+			// TODO should rename k
 			for(int k = 0; k < maxNeighbors+1; k++) {
 				unsigned long getIndex[3] = {i, j, k};
 				if(data -> get(getIndex) == -1) {
