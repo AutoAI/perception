@@ -34,6 +34,8 @@
 #ifndef SRC_GLOBAL_CONSTANTS_H_
 #define SRC_GLOBAL_CONSTANTS_H_
 
+#include <stdint.h>
+
 namespace CameraConstants {
 	/**
 	* maximum range represented by data structure
