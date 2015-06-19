@@ -490,7 +490,10 @@ bool Mesh::testIntersect(Triple p1, Triple q1, Triple p2, Triple q2) {
 
 // helper-helper function. dont worry about this one
 bool Mesh::onSegment(Triple p, Triple q, Triple r) {
-	return q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) && q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y);
+	return q.x <= max(p.x, r.x) &&
+		q.x >= min(p.x, r.x) &&
+		q.y <= max(p.y, r.y) &&
+		q.y >= min(p.y, r.y);
 }
 
 // don't worry about this one either
