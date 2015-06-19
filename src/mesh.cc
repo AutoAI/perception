@@ -97,7 +97,9 @@ Mesh::Mesh(CoordinateList* cList) {
 	// set up the data array - first, find max number of vert neighbors
 	char maxNeighbors = 0;
 	for(int i = 0; i < verts.size(); i++) {
-		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size()) ? maxNeighbors : getNeighbors(verts[i]).size();
+		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size())
+			? maxNeighbors
+			: getNeighbors(verts[i]).size();
 	}
 
 	// init the data
