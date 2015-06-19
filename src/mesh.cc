@@ -350,7 +350,10 @@ int Mesh::flip(Triangle* t) {
 
 		// if the pair is not locally delaunay, flip it and stop
 		// (we'll come back for the rest in the next iteration)
-		if(inCircumCirc(allPoints[i1] -> triple, allPoints[i2] -> triple, allPoints[i3] -> triple, allPoints[i4] -> triple)) {
+		if(inCircumCirc(allPoints[i1] -> triple,
+				allPoints[i2] -> triple,
+				allPoints[i3] -> triple,
+				allPoints[i4] -> triple)) {
 			removeTri(t);
 			removeTri(neighbor);
 			Triangle* new1 = new Triangle(allPoints[i1], allPoints[i3], allPoints[i4]);
