@@ -431,7 +431,7 @@ bool Mesh::isVisible(Triple& a, Triple& d) {
 	}
 
 	for(unsigned long i = 1; i < hull.size(); i++) {
-		if(!((a == *(hull[i-1] -> triple)) || ((d == *(hull[i-1] -> triple))) || (a == *(hull[i] -> triple)) || ((d == *(hull[i] -> triple)))) && testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)) { 
+		if(!((a == *(hull[i-1] -> triple)) || ((d == *(hull[i-1] -> triple))) || (a == *(hull[i] -> triple)) || ((d == *(hull[i] -> triple)))) && testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)) {
 			return false;
 		}
 	}
