@@ -385,7 +385,7 @@ TEST(Mesh, getNeighbors) {
 }
 
 TEST(Mesh, constructor){
-	int length = 10;
+	int length = 36;
 	CoordinateList c(CoordinateList::CARTESIAN, length);
 
     for(int i = 0; i < length; i++) {
@@ -397,7 +397,9 @@ TEST(Mesh, constructor){
 }
 
 int main(int argc, char **argv) {
+    time_t seed = time(NULL);
     srand(time(NULL));
+    ROS_INFO("Random seed is %zu.", seed);
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

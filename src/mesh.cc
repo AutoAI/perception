@@ -17,6 +17,7 @@
 #include "mesh.h"
 #include "mesh_triple.cc"
 #include "global_constants.h"
+#include "bitmap_image.hpp"
 
 using namespace std;
 
@@ -28,20 +29,26 @@ Mesh::Mesh(CoordinateList* cList) {
 	}
 	list = cList;
 	// choose seed point, sort others accorinding to distance from seed
+	ROS_INFO("choosing seed...");
 	MeshTriple* s = chooseSeed();
+	ROS_INFO("sorting...");
 	(*list).sort(*(s -> triple));
 
 	// construct initial convex hull (counter-clockwise)
+	ROS_INFO("initializing hull...");
 	vector<MeshTriple*> hull;
 	this->hull = hull;
 	initHull(0, 1, 2);
 
+
 	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
+	ROS_INFO("inserting...");
 	for(unsigned long i = 3; i < list -> getLength(); i++) {
 		insertVert(list -> getPtr(i));
 	}
 
 	// iteratively 'flip' triangles until no more triangles need be flipped
+	ROS_INFO("flipping...");
 	int maxIterations = 12;
 	int sumFlips;
 	for(int i = 0; sumFlips != 0; i++) {
@@ -54,25 +61,21 @@ Mesh::Mesh(CoordinateList* cList) {
 		}
 	}
 
-	// print triangles (temporary)
-	Triple *t0, *t1, *t2;
-	for(int i = 0; i < tris.size(); i++) {
-		t0 = tris[i] -> points[0] -> triple;
-		t1 = tris[i] -> points[1] -> triple;
-		t2 = tris[i] -> points[2] -> triple;
-	}
-
 	// set up the data array - first, find max number of vert neighbors
+	ROS_INFO("calculating data array dimensions...");
 	char maxNeighbors = 0;
 	for(int i = 0; i < verts.size(); i++) {
 		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size()) ? maxNeighbors : getNeighbors(verts[i]).size();
 	}
 
 	// init the data
+	ROS_INFO("initializing data array...");
 	unsigned long bounds[3] = {CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1};
+	ROS_INFO("data is %zu by %zu by %zu", bounds[0], bounds[1], bounds[2]);
 	data = new NdArray<float>(3, bounds);
 
 	// populate data
+	ROS_INFO("calculating data...");
 	for(int i = 0; i < CameraConstants::XRES; i++) {
 		for(int j = 0; j < CameraConstants::YRES; j++) { 
 			MeshTriple* temp = getNearest(*(new Triple(toImageX(i), toImageY(j), 0)));
@@ -94,11 +97,11 @@ Mesh::Mesh(CoordinateList* cList) {
 	result = new NdArray<float>(3, bounds2);
 
 	// calculate result
+	ROS_INFO("calculating result...");
 	for(int i = 0; i < CameraConstants::XRES; i++) {
 		for(int j = 0; j < CameraConstants::YRES; j++) {
 			float max = -1;
 			float min = CameraConstants::K;
-			//TODO should rename k
 			for(int k = 0; k < maxNeighbors+1; k++) {
 				unsigned long getIndex[3] = {i, j, k};
 				if(data -> get(getIndex) == -1) {
@@ -115,14 +118,33 @@ Mesh::Mesh(CoordinateList* cList) {
 	}
 
 	// // print the result
-	// for(int i = 0; i < CameraConstants::XRES; i++) {
-	// 	for(int j = 0; j < CameraConstants::YRES; j++) {
+	// for(int j = 0; j < CameraConstants::YRES; j++) {
+	// 	for(int i = 0; i < CameraConstants::XRES; i++) {
 	// 		unsigned long getIndex[3] = {i, j, 0};
 	// 		cout << result -> get(getIndex) << endl;
 	// 		unsigned long getIndex2[3] = {i, j, 1};
 	// 		cout << result -> get(getIndex2) << endl;
 	// 	}
 	// }
+
+	// save an image representation of the result
+	ROS_INFO("generating image...");
+	bitmap_image image(CameraConstants::XRES, CameraConstants::YRES);
+	for(int j = 0; j < CameraConstants::YRES; j++) {
+		for(int i = 0; i < CameraConstants::XRES; i++) {
+			unsigned long getIndex[3] = {i, j, 0};
+			unsigned long getIndex2[3] = {i, j, 1};
+			image.set_pixel(i, j, result -> get(getIndex), 63, result -> get(getIndex2));
+		}
+	}
+
+	for(int i = 0; i < verts.size(); i++){
+		int x = toPixelX(verts[i] -> triple -> x);
+		int y = toPixelY(verts[i] -> triple -> y);
+		image.set_pixel(x, y, 255, 255, 255);
+	}
+
+	image.save_image("out.bmp");
 }
 
 MeshTriple* Mesh::chooseSeed() {
@@ -220,7 +242,10 @@ void Mesh::insertVert(Triple* v) {
 		i--;
 	}
 
-	//insert the new point in-between the most clockwise and most counter-clockwise verts
+	// add the new point to our list of points
+	verts.push_back(t);
+
+	// insert the new point in-between the most clockwise and most counter-clockwise verts
 	hull.insert(hull.begin()+cc, t);
 }
 

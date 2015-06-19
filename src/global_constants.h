@@ -21,10 +21,10 @@ namespace CameraConstants {
 	/**
 	* camera x-resolution
 	*/
-	const float XRES = 160;
+	const float XRES = 1920;
 
 	/**
 	* camera y-resolution
 	*/
-	const float YRES = 90;
+	const float YRES = 1080;
 }
