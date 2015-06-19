@@ -212,7 +212,8 @@ void Mesh::insertVert(Triple* v) {
 	// insert a meshtriple for the vert
 	MeshTriple* t = new MeshTriple(v);
 
-	// add any visible verts on the hull to a list. edges will be made to all of these
+	// add any visible verts on the hull to a list.
+	// edges will be made to all of these
 	// (remember where the most clockwise and most counter-clockwise verts are)
 	vector<MeshTriple*> connectorTriples;
 	bool visibilities[hull.size()];
