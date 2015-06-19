@@ -220,7 +220,7 @@ void Mesh::insertVert(Triple* v) {
 	for(int i = 0; i < hull.size(); i++) {
 		if(visibilities[i] && !visibilities[(i+1)%hull.size()]) {
 			cc = i;
-		} else if(visibilities[(i+1)%hull.size()] && !visibilities[i]) {
+		} else if (visibilities[(i+1)%hull.size()] && !visibilities[i]) {
 			c = (i+1)%hull.size();
 		}
 	}
