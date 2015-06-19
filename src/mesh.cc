@@ -43,8 +43,6 @@ Mesh::Mesh(CoordinateList* cList) {
 		insertVert(list -> getPtr(i));
 	}
 
-	
-
 	// iteratively 'flip' triangles until no more triangles need be flipped
 	int maxIterations = 12;
 	for(int i = 0; ; i++) {
@@ -119,15 +117,9 @@ Mesh::Mesh(CoordinateList* cList) {
 	// calculate result
 	for(int i = 0; i < CameraConstants::XRES; i++) {
 		for(int j = 0; j < CameraConstants::YRES; j++) {
-<<<<<<< HEAD
-			float min = -1;
-			float max = CameraConstants::K;
-			// TODO should rename k
-=======
 			float max = -1;
 			float min = CameraConstants::K;
 			//TODO should rename k
->>>>>>> 4beb0f88dfb7120d739a71efd0fa1e6a5c31672a
 			for(int k = 0; k < maxNeighbors+1; k++) {
 				unsigned long getIndex[3] = {i, j, k};
 				if(data -> get(getIndex) == -1) {
@@ -205,10 +197,6 @@ void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long in
 void Mesh::insertVert(Triple* v) {
 	// insert a meshtriple for the vert
 	MeshTriple* t = new MeshTriple(v);
-<<<<<<< HEAD
-	// add any visible verts on the hull to a list.
-	// edges will be made to all of these
-=======
 
 	// print present triangles (temporary)
 	ROS_INFO("============================================================\nHull:");
@@ -226,7 +214,7 @@ void Mesh::insertVert(Triple* v) {
 	}
 
 	// add any visible verts on the hull to a list. edges will be made to all of these
->>>>>>> 4beb0f88dfb7120d739a71efd0fa1e6a5c31672a
+
 	// (remember where the most clockwise and most counter-clockwise verts are)
 	std::vector<MeshTriple*> connectorTriples;
 	bool visibilities[hull.size()];
@@ -262,13 +250,9 @@ void Mesh::insertVert(Triple* v) {
 		hull.erase(hull.begin() + i);
 	}
 
-<<<<<<< HEAD
 	// insert the new point in-between the most clockwise and most
 	// counter-clockwise verts
 	hull.insert(hull.begin() + cc, t);
-=======
-	//insert the new point in-between the most clockwise and most counter-clockwise verts
-	hull.insert(hull.begin()+cc, t);
 
 	// print triangles (temporary)
 	ROS_INFO("-------------------------------\nHull:");
@@ -282,7 +266,6 @@ void Mesh::insertVert(Triple* v) {
 		t2 = tris[i] -> points[2] -> triple;
 		ROS_INFO("Triangle %d: [%f, %f, %f], [%f, %f, %f], [%f, %f, %f]", i, t0 -> x, t0 -> y, t0 -> z, t1 -> x, t1 -> y, t1 -> z, t2 -> x, t2 -> y, t2 -> z);
 	}
->>>>>>> 4beb0f88dfb7120d739a71efd0fa1e6a5c31672a
 }
 
 void Mesh::removeTri(Triangle* t) {
