@@ -244,7 +244,7 @@ void Mesh::insertVert(Triple* v) {
 		if(i < c) {
 			c--;
 		}
-		if(i < cc){
+		if(i < cc) {
 			cc--;
 		}
 		i--;
