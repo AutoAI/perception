@@ -241,7 +241,7 @@ void Mesh::insertVert(Triple* v) {
 			break;
 		}
 		hull.erase(hull.begin()+i);
-		if(i < c){
+		if(i < c) {
 			c--;
 		}
 		if(i < cc){
