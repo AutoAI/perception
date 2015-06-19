@@ -79,7 +79,7 @@ Mesh::Mesh(CoordinateList* cList) {
 		for(int j = 0; j < tris.size(); j++) {
 			sumFlips += flip(tris[j]);
 		}
-		if(i == maxIterations - 1){
+		if(i == maxIterations - 1) {
 			break;
 		}
 	}
