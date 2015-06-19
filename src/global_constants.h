@@ -38,7 +38,7 @@ namespace CameraConstants {
 	/**
 	* maximum range represented by data structure
 	*/
-	const short K = 120;
+	const int16_t K = 120;
 
 	/**
 	* camera focal length
