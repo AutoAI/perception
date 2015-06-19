@@ -166,7 +166,8 @@ MeshTriple* Mesh::chooseSeed() {
 }
 
 void Mesh::initHull(uint64_t index0, uint64_t index1, uint64_t index2) {
-	// check angle 0 to see which way the verts should be ordered to make the triangle counter-clockwise
+	// check angle 0 to see which way the verts should be ordered to make
+	// the triangle counter-clockwise
 	float dTheta = atan2((*list).get(2).y-(*list).get(0).y, (*list).get(2).x-(*list).get(0).x)-atan2((*list).get(1).y-(*list).get(0).y, (*list).get(1).x-(*list).get(0).x);
 	if(dTheta > 2*M_PI) {
 		dTheta -= M_PI;
