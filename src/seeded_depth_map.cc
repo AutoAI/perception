@@ -30,15 +30,74 @@
 
 #include "seeded_depth_map.h"
 #include "coordinate_list.h"
+#include "global_constants.h"
+#include "mesh.h"
 
-SeededDepthMap::SeededDepthMap(){
+#include <float.h>
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
 
-}
+SeededDepthMap::SeededDepthMap(){}
 
 void SeededDepthMap::doCorrespondence(){
+	Image left(fileConstants::left);
+	Image right(fileConstants::right);
 
+	int xres = left.getWidth();
+	int yres = left.getHeight();
+
+	Mesh mesh(getLidarData());
+	NdArray<float> bounds = *(mesh.result);
+
+	float f = CameraConstants::F;
+	float l = CameraConstants::L;
+
+	unsigned long dimensions[2] = {xres, yres}
+	result = new NdArray<float>(2, dimensions);
+
+	for(int v = 0; v < yres; v++) {
+		for(int ul = 0; ul < xres; ul++) {
+			unsigned long indexmin[3] = {ul, v, 0};
+			float zmin = bounds.get(indexmin);
+			unsigned long indexmax[3] = {ul, v, 1};
+			float zmax = bounds.get(indexmax);
+			float bestZ;
+			float bestBadness = FLT_MAX;
+			for(int ur = ceil(ul - (f*l/zmin)); f*l/(ul - ur) < zmax; ur++){
+				tempBadness = calcBadness(left, right, v, ul, ur)
+				if(tempBadness < bestBadness){
+					bestBadness = tempBadness;
+					bestZ = f*l/(ul-ur);
+				}
+			}
+			unsigned long setindex[2] = {ul, v};
+			result.set(setindex, bestZ);
+		}
+	}
 }
 
-CoordinateList SeededDepthMap::getLidarData(){
-	// do yo thang
+CoordinateList SeededDepthMap::getLidarData(int resolution){
+	srand(time(NULL));
+	Image depth(fileConstants::depth);
+	int xres = depth.getWidth();
+	int yres = depth.getHeight();
+	
+	int count = 0;
+	char val;
+	CoordinateList list(CoordinateList::CARTESIAN, resolution);
+
+	int xrand;
+	int yrand;
+	
+	while (count < resolution) {
+		xrand = (rand() % xres)
+		yrand = (rand() % yres)
+		val = depth.getGrayScalePixelValue(xrand, yrand);
+		Triple coord(xrand, yrand, val);
+		list.set(count, coord);
+		count++;
+	}
+
+	return list;
 }

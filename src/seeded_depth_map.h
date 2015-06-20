@@ -44,6 +44,6 @@ class SeededDepthMap {
 		void doCorrespondence();
 	private:
 		// gets the lidar data
-		CoordinateList getLidarData();
+		CoordinateList getLidarData(int resolution);
 };
 

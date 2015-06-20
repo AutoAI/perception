@@ -57,4 +57,9 @@ namespace CameraConstants {
 	* camera y-resolution
 	*/
 	const float YRES = 90;
+
+	/**
+	* distance between cameras
+	*/
+	const float L = .1;
 }
