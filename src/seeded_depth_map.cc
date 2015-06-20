@@ -31,17 +31,11 @@
 #include "seeded_depth_map.h"
 #include "coordinate_list.h"
 
-namespace fileConstants {
-	const std::string left = "left.bmp";
-	const std::string right = "right.bmp";
-	const std::string depth = "depth.bmp";
-}
-
 SeededDepthMap::SeededDepthMap(){
 
 }
 
-void doCorrespondence(){
+void SeededDepthMap::doCorrespondence(){
 
 }
 
