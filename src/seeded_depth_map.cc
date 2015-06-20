@@ -30,6 +30,8 @@
 
 #include "seeded_depth_map.h"
 #include "coordinate_list.h"
+#include <stdlib.h>     
+
 
 namespace fileConstants {
 	const std::string left = "left.bmp";
@@ -38,13 +40,34 @@ namespace fileConstants {
 }
 
 SeededDepthMap::SeededDepthMap(){
-
 }
 
 void doCorrespondence(){
 
 }
 
-CoordinateList SeededDepthMap::getLidarData(){
+CoordinateList SeededDepthMap::getLidarData(int resolution){
 	// do yo thang
+	srand(time(NULL));
+	Image depth(fileConstants::depth);
+	int xres = depth.getWidth();
+	int yres = depth.getHeight();
+	
+	int count = 0;	
+	char val;
+	CoordinateList list(CoordinateList::CARTESIAN, resolution);
+	
+
+	int xrand;
+	int yrand;
+	while count < resolution{
+		xrand = (rand() % xres)
+		yrand = (rand() % yres)
+		val = depth.getGrayScalePixelValue(xrand, yrand);
+		Triple coord(xrand, yrand, val);
+		list.set(count, coord);
+		count++;
+	}
+
+	return list;
 }
