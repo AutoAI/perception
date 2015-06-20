@@ -97,9 +97,9 @@ int SeededDepthMap::calcBadness(Image left, Image right, int v, int ul, int ur){
 
 CoordinateList SeededDepthMap::getLidarData(int resolution){
 	srand(time(NULL));
-	Image depth(fileConstants::depth);
-	int xres = depth.getWidth();
-	int yres = depth.getHeight();
+	bitmap_image  depth(fileConstants::depth);
+	int xres = image.width();
+	int yres = image.height();
 	
 	int count = 0;
 	char val;
@@ -108,10 +108,15 @@ CoordinateList SeededDepthMap::getLidarData(int resolution){
 	int xrand;
 	int yrand;
 
+	unsigned char red;
+	unsigned char green;
+	unsigned char blue;
+
 	while (count < resolution) {
 		xrand = (rand() % xres)
 		yrand = (rand() % yres)
-		val = depth.getGrayScalePixelValue(xrand, yrand);
+		depth.get_pixel(xrand, yrand, red, green, blue);
+		val = red;
 		Triple coord(xrand, yrand, val);
 		list.set(count, coord);
 		count++;
