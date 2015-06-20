@@ -77,9 +77,12 @@ void SeededDepthMap::doCorrespondence(){
 	}
 }
 
-int SeededDepthMap::calcBadness(Image left, Image right, int v, int ul, int ur){
-	unsigned long index[3] = {ul, v, 0};
-	char al = left.get(index);
+int SeededDepthMap::calcBadness(bitmap_image left, bitmap_image right, int v, int ul, int ur){
+	unsigned char red;
+	unsigned char blue;
+	unsigned char green;
+
+	char al = left.get_pixel(ul, v, red, green, blue);
 	index[2] = 1;
 	char bl = left.get(index);
 	index[2] = 2;
