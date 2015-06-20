@@ -10,8 +10,8 @@ using namespace std;
 
 int main() {
 
-    Image img("test.bmp");
-    img.write("output.bmp");
+    Image img("test/test_data/test.bmp");
+    img.write("test/test_data/output.bmp");
     return 0;
 
 }
