@@ -35,13 +35,13 @@
 
 class SeededDepthMap {
 	public:
-		Seeded_depth_map(std::string left_img_name, std::string right_img_name, std::string depth_map_name);
+		Seeded_depth_map();
 		NdArray<float> result;
 	private:
 		// gets the lidar data
-		CoordinateList getLidarData(std::string file_name);
+		CoordinateList getLidarData();
 
 		// does the correspondence
-		void doCorrespondence(std::string left_img_name, std::string right_img_name, std::string depth_map_name);
+		void doCorrespondence();
 };
 
