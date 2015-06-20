@@ -28,24 +28,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "SeededDepthMap.h"
+#include "seeded_depth_map.h"
 
-Triangle::Triangle(MeshTriple *v0, MeshTriple *v1, MeshTriple *v2) {
-	points[0] = v0;
-	points[1] = v1;
-	points[2] = v2;
-	v0 -> triangles.push_back(this);
-	v1 -> triangles.push_back(this);
-	v2 -> triangles.push_back(this);
+SeededDepthMap::SeededDepthMap(std::string left_img_name, std::string right_img_name, std::string depth_map_name){
+
 }
 
-bool Triangle::operator==(const Triangle& tri1) {
-	bool arr[3] = {false};
-	bool alreadyfound[3] = {false};
-	for (int ours = 0; ours < 3; ours++) {
-		if (*points[ours] == *tri1.points[0] && !alreadyfound[0]) {
-			arr[ours] = true;
-			alreadyfound[0]= true;
-		}
-		else if(*points[ours] == *tri1.points[1] && !alreadyfound[1]){
 
+CoordinateList SeededDepthMap::getLidarData(std::string file_name){
+	// do yo thang
+}
