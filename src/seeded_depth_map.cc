@@ -29,10 +29,12 @@
  */
 
 #include "seeded_depth_map.h"
+#include "coordinate_list.h"
 
 SeededDepthMap::SeededDepthMap(std::string left_img_name, std::string right_img_name, std::string depth_map_name){
 
 }
+
 
 
 CoordinateList SeededDepthMap::getLidarData(std::string file_name){

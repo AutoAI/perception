@@ -31,14 +31,17 @@
 #pragma once
 
 #include <string>
+#include "NdArray.h"
 
 class SeededDepthMap {
 	public:
-		Seeded_depth_map();
+		Seeded_depth_map(std::string left_img_name, std::string right_img_name, std::string depth_map_name);
+		NdArray<float> result;
 	private:
 		// gets the lidar data
 		CoordinateList getLidarData(std::string file_name);
-};
 
-#endif  // SRC_TRIANGLE_H_
+		// does the correspondence
+		void doCorrespondence(std::string left_img_name, std::string right_img_name, std::string depth_map_name);
+};
 
