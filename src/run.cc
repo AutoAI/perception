@@ -3,7 +3,7 @@
 #include "seeded_depth_map.h"
 
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "seeded depth map");
+	ros::init(argc, argv, "run");
 	ros::NodeHandle n;
 
 	ros::spinOnce();

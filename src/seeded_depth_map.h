@@ -33,6 +33,7 @@
 #include <string>
 #include "nd_array.h"
 #include "coordinate_list.h"
+#include "bitmap/bitmap_image.hpp"
 
 class SeededDepthMap {
 	public:
@@ -47,6 +48,6 @@ class SeededDepthMap {
 		CoordinateList getLidarData(int resolution);
 
 		// calculates how bad a match between pixels is (higher values = more bad)
-		float calcBadness(Image left, Image right, int v, int ul, int ur);
+		int calcBadness(bitmap_image left, bitmap_image right, int v, int ul, int ur);
 };
 
