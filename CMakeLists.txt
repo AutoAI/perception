@@ -50,7 +50,6 @@ include_directories(
   ${GTEST_INCLUDE_DIRS}
 )
 
-
 add_executable(perception_run src/run.cc)
 target_link_libraries(perception_run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
 add_dependencies(perception_run perception_run_cc)
