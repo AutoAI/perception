@@ -31,12 +31,20 @@
 #include "seeded_depth_map.h"
 #include "coordinate_list.h"
 
-SeededDepthMap::SeededDepthMap(std::string left_img_name, std::string right_img_name, std::string depth_map_name){
+namespace fileConstants {
+	const std::string left = "left.bmp";
+	const std::string right = "right.bmp";
+	const std::string depth = "depth.bmp";
+}
+
+SeededDepthMap::SeededDepthMap(){
 
 }
 
+void doCorrespondence(){
 
+}
 
-CoordinateList SeededDepthMap::getLidarData(std::string file_name){
+CoordinateList SeededDepthMap::getLidarData(){
 	// do yo thang
 }
