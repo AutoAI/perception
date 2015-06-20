@@ -35,19 +35,14 @@
 
 #include <float.h>
 #include <math.h>
+#include <stdlib.h>
+#include <time.h>
 
-namespace fileConstants {
-	const std::string left = "left.bmp";
-	const std::string right = "right.bmp";
-	const std::string depth = "depth.bmp";
-}
+SeededDepthMap::SeededDepthMap(){}
 
-SeededDepthMap::SeededDepthMap(){
-}
-
-void doCorrespondence(){
+void SeededDepthMap::doCorrespondence(){
 	Image left(fileConstants::left);
-	Image rightfileConstants::right);
+	Image right(fileConstants::right);
 
 	int xres = left.getWidth();
 	int yres = left.getHeight();
@@ -82,6 +77,27 @@ void doCorrespondence(){
 	}
 }
 
-CoordinateList SeededDepthMap::getLidarData(){
-	// do yo thang
+CoordinateList SeededDepthMap::getLidarData(int resolution){
+	srand(time(NULL));
+	Image depth(fileConstants::depth);
+	int xres = depth.getWidth();
+	int yres = depth.getHeight();
+	
+	int count = 0;
+	char val;
+	CoordinateList list(CoordinateList::CARTESIAN, resolution);
+
+	int xrand;
+	int yrand;
+	
+	while (count < resolution) {
+		xrand = (rand() % xres)
+		yrand = (rand() % yres)
+		val = depth.getGrayScalePixelValue(xrand, yrand);
+		Triple coord(xrand, yrand, val);
+		list.set(count, coord);
+		count++;
+	}
+
+	return list;
 }

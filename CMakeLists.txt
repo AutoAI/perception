@@ -16,8 +16,7 @@
 #    contributors may be used to endorse or promote products derived from
 #    this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
 # FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
@@ -50,8 +49,16 @@ include_directories(
   ${GTEST_INCLUDE_DIRS}
 )
 
-
-add_executable(perception_run src/run.cc)
+add_executable(perception_run 
+	src/run.cc
+	src/seeded_depth_map.cc
+	src/nd_array.cc
+	src/coordinate_list.cc
+	src/mesh.cc
+	src/mesh_triple.h
+	src/triangle.cc
+	src/triple.cc
+	)
 target_link_libraries(perception_run ${GTEST_LIBRARIES} ${catkin_LIBRARIES} pthread)
 add_dependencies(perception_run perception_run_cc)
 
