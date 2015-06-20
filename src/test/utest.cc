@@ -397,7 +397,7 @@ TEST(Mesh, constructor){
 }
 
 int main(int argc, char **argv) {
-    time_t seed = time(NULL);
+    time_t seed = 1434738591; //time(NULL);
     srand(time(NULL));
     ROS_INFO("Random seed is %zu.", seed);
     testing::InitGoogleTest(&argc, argv);

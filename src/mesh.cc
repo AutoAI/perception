@@ -17,6 +17,7 @@
 #include "mesh.h"
 #include "mesh_triple.cc"
 #include "global_constants.h"
+#include "bitmap_image.hpp"
 
 using namespace std;
 
@@ -130,6 +131,12 @@ Mesh::Mesh(CoordinateList* cList) {
 		int x = toPixelX(verts[i] -> triple -> x);
 		int y = toPixelY(verts[i] -> triple -> y);
 		image.set_pixel(x, y, 255, 255, 255);
+	}
+
+	// draw lines
+	for(int i = 0; i < verts.size(); i++){
+		std::vector<MeshTriple*> neighbors = ;
+		for(int j = 0; j < verts.get)
 	}
 
 	image.save_image("out.bmp");
