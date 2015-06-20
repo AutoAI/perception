@@ -30,17 +30,14 @@
 
 #pragma once
 
-
-
-
+#include <string>
 
 class SeededDepthMap {
 	public:
-		
 		Seeded_depth_map();
-		MeshTriple* points[3];
-		bool operator==(const Triangle& t1);
-		bool operator!=(const Triangle& t1);
+	private:
+		// gets the lidar data
+		CoordinateList getLidarData(std::string file_name);
 };
 
 #endif  // SRC_TRIANGLE_H_
