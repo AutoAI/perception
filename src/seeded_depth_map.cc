@@ -39,9 +39,9 @@
 #include <time.h>
 
 namespace fileConstants {
-	std::string left = "test/test_data/left.bmp";
-	std::string right = "test/test_data/right.bmp";
-	std::string depth = "test/test_data/lidar.bmp";
+	std::string left =  "/home/parthmehrotra/Projects/HighPriority/DriveAI/DriveAI-Platform/src/perception/src/test/test_data/left.bmp";
+	std::string right = "/home/parthmehrotra/Projects/HighPriority/DriveAI/DriveAI-Platform/src/perception/src/test/test_data/right.bmp";
+	std::string depth = "/home/parthmehrotra/Projects/HighPriority/DriveAI/DriveAI-Platform/src/perception/src/test/test_data/lidar.bmp";
 }
 
 SeededDepthMap::SeededDepthMap(){}
