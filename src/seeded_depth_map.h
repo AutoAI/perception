@@ -31,17 +31,22 @@
 #pragma once
 
 #include <string>
-#include "NdArray.h"
+#include "nd_array.h"
+#include "coordinate_list.h"
 
 class SeededDepthMap {
 	public:
-		Seeded_depth_map();
-		NdArray<float> result;
-	private:
-		// gets the lidar data
-		CoordinateList getLidarData();
+		SeededDepthMap();
+	
+		NdArray<float>* result;
 
 		// does the correspondence
 		void doCorrespondence();
+	private:
+		// gets the lidar data
+		CoordinateList getLidarData(int resolution);
+
+		// calculates how bad a match between pixels is (higher values = more bad)
+		float calcBadness(Image left, Image right, int v, int ul, int ur);
 };
 

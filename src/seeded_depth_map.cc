@@ -30,21 +30,100 @@
 
 #include "seeded_depth_map.h"
 #include "coordinate_list.h"
+#include "global_constants.h"
+#include "mesh.h"
 
-namespace fileConstants {
-	const std::string left = "left.bmp";
-	const std::string right = "right.bmp";
-	const std::string depth = "depth.bmp";
+#include <limits.h>
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
+
+SeededDepthMap::SeededDepthMap(){}
+
+void SeededDepthMap::doCorrespondence(){
+	Image left(fileConstants::left);
+	Image right(fileConstants::right);
+
+	int xres = left.getWidth();
+	int yres = left.getHeight();
+
+	Mesh mesh(getLidarData());
+	NdArray<float> bounds = *(mesh.result);
+
+	float f = CameraConstants::F;
+	float l = CameraConstants::L;
+
+	unsigned long dimensions[2] = {xres, yres}
+	result = new NdArray<float>(2, dimensions);
+
+	for(int v = 0; v < yres; v++) {
+		for(int ul = 0; ul < xres; ul++) {
+			unsigned long indexmin[3] = {ul, v, 0};
+			float zmin = bounds.get(indexmin);
+			unsigned long indexmax[3] = {ul, v, 1};
+			float zmax = bounds.get(indexmax);
+			float bestZ;
+			int bestBadness = INT_MAX;
+			for(int ur = ceil(ul - (f*l/zmin)); f*l/(ul - ur) < zmax; ur++){
+				tempBadness = calcBadness(left, right, v, ul, ur)
+				if(tempBadness < bestBadness){
+					bestBadness = tempBadness;
+					bestZ = f*l/(ul-ur);
+				}
+			}
+			unsigned long setindex[2] = {ul, v};
+			result.set(setindex, bestZ);
+		}
+	}
 }
 
-SeededDepthMap::SeededDepthMap(){
+int SeededDepthMap::calcBadness(bitmap_image left, bitmap_image right, int v, int ul, int ur){
+	unsigned char red;
+	unsigned char blue;
+	unsigned char green;
 
+	char al = left.get_pixel(ul, v, red, green, blue);
+	index[2] = 1;
+	char bl = left.get(index);
+	index[2] = 2;
+	char cl = left.get(index);
+
+	unsigned long index2[3] = {ur, v, 0};
+	char ar = left.get(index2);
+	index[2] = 1;
+	char br = left.get(index2);
+	index[2] = 2;
+	char cr = left.get(index2);
+
+	return ((int)al - (int)ar)*((int)al - (int)ar) + ((int)bl - (int)br)*((int)bl - (int)br) + ((int)cl - (int)cr)*((int)cl - (int)cr);
 }
 
-void doCorrespondence(){
+CoordinateList SeededDepthMap::getLidarData(int resolution){
+	srand(time(NULL));
+	bitmap_image  depth(fileConstants::depth);
+	int xres = image.width();
+	int yres = image.height();
+	
+	int count = 0;
+	char val;
+	CoordinateList list(CoordinateList::CARTESIAN, resolution);
 
-}
+	int xrand;
+	int yrand;
 
-CoordinateList SeededDepthMap::getLidarData(){
-	// do yo thang
+	unsigned char red;
+	unsigned char green;
+	unsigned char blue;
+
+	while (count < resolution) {
+		xrand = (rand() % xres)
+		yrand = (rand() % yres)
+		depth.get_pixel(xrand, yrand, red, green, blue);
+		val = red;
+		Triple coord(xrand, yrand, val);
+		list.set(count, coord);
+		count++;
+	}
+
+	return list;
 }
