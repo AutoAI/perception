@@ -4,12 +4,15 @@
 #define WIDTH 128
 #define HEIGHT 128
 
-#include "Image.h"
+#include <cstring>
+
+#include "image.h"
 #include <cmath>
 
 #endif
 
 using namespace std;
+
 typedef unsigned char unchar;
 
 //Constructor
@@ -78,8 +81,10 @@ void Image::write(const char* fileName) {
 void Image::smoothFilter(){
 
     //copy input image into new image
-    for(int i = 0; i < HEIGHT; i++) {
-        strcpy(reinterpret_cast<char*>(filteredData[i]), reinterpret_cast<char*>(imageData[i]));
+    for(int i= 0; i<HEIGHT; i++) {
+        strncpy (reinterpret_cast<char*>(filteredData[i]), 
+                 reinterpret_cast<char*>(imageData[i]), 
+                 sizeof(reinterpret_cast<char*>(filteredData[i])));
     }
 
     int sumOfPixels = 0;
