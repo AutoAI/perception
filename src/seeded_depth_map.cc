@@ -33,7 +33,7 @@
 #include "global_constants.h"
 #include "mesh.h"
 
-#include <float.h>
+#include <limits.h>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
@@ -63,7 +63,7 @@ void SeededDepthMap::doCorrespondence(){
 			unsigned long indexmax[3] = {ul, v, 1};
 			float zmax = bounds.get(indexmax);
 			float bestZ;
-			float bestBadness = FLT_MAX;
+			int bestBadness = INT_MAX;
 			for(int ur = ceil(ul - (f*l/zmin)); f*l/(ul - ur) < zmax; ur++){
 				tempBadness = calcBadness(left, right, v, ul, ur)
 				if(tempBadness < bestBadness){
@@ -75,6 +75,24 @@ void SeededDepthMap::doCorrespondence(){
 			result.set(setindex, bestZ);
 		}
 	}
+}
+
+int SeededDepthMap::calcBadness(Image left, Image right, int v, int ul, int ur){
+	unsigned long index[3] = {ul, v, 0};
+	char al = left.get(index);
+	index[2] = 1;
+	char bl = left.get(index);
+	index[2] = 2;
+	char cl = left.get(index);
+
+	unsigned long index2[3] = {ur, v, 0};
+	char ar = left.get(index2);
+	index[2] = 1;
+	char br = left.get(index2);
+	index[2] = 2;
+	char cr = left.get(index2);
+
+	return ((int)al - (int)ar)*((int)al - (int)ar) + ((int)bl - (int)br)*((int)bl - (int)br) + ((int)cl - (int)cr)*((int)cl - (int)cr);
 }
 
 CoordinateList SeededDepthMap::getLidarData(int resolution){
@@ -89,7 +107,7 @@ CoordinateList SeededDepthMap::getLidarData(int resolution){
 
 	int xrand;
 	int yrand;
-	
+
 	while (count < resolution) {
 		xrand = (rand() % xres)
 		yrand = (rand() % yres)
