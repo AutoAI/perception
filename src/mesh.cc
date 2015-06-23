@@ -110,7 +110,7 @@ Mesh::Mesh(CoordinateList* cList) {
 	if(debug) {
 		ROS_INFO("\ttriangles flipped");
 	}
-	
+
 	// set up the data array - first, find max number of vert neighbors
 	if(debug) {
 		ROS_INFO("generating data...");
@@ -126,6 +126,7 @@ Mesh::Mesh(CoordinateList* cList) {
 
 	// populate data
 	for(int i = 0; i < CameraConstants::XRES; i++) {
+		ROS_INFO("progress: %d/%d", i, CameraConstants::XRES);
 		for(int j = 0; j < CameraConstants::YRES; j++) { 
 			MeshTriple* temp = getNearest(*(new Triple(toImageX(i), toImageY(j), 0)));
 			unsigned long setIndex[3] = {i, j, 0};
@@ -170,6 +171,7 @@ Mesh::Mesh(CoordinateList* cList) {
 			result -> set(setIndex, min);
 			unsigned long setIndex2[3] = {i, j, 1};
 			result -> set(setIndex2, max);
+			// ROS_INFO("min: %f, max: %f", min, max);
 		}
 	}
 	if(debug) {
@@ -248,7 +250,6 @@ void Mesh::insertVert(Triple* v) {
 	}
 
 	// if they're all visible, find the triangle that doesn't work and find c and cc that way
-	float a, b, c0, d, e, f;
 	if(allVisible) {
 		if(!goodTri(connectorTriples[0] -> triple, connectorTriples[hull.size()-1] -> triple, v)) {
 			c = hull.size() - 1;

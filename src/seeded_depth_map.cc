@@ -58,42 +58,44 @@ void SeededDepthMap::doCorrespondence(){
 	Mesh mesh(&c);
 	ROS_INFO("\t mesh built");
 
-	// NdArray<float> bounds = *(mesh.result);
+	NdArray<float> bounds = *(mesh.result);
 
-	// float f = CameraConstants::F;
-	// float l = CameraConstants::L;
+	float f = CameraConstants::F;
+	float l = CameraConstants::L;
 
-	// unsigned long dimensions[2] = {xres, yres};
-	// result = new NdArray<float>(2, dimensions);
+	unsigned long dimensions[2] = {xres, yres};
+	result = new NdArray<float>(2, dimensions);
 
-	// bool print = true;
-	// for(int v = 0; v < yres; v++) {
-	// 	// print = true;
-	// 	for(int ul = 0; ul < xres; ul++) {
-	// 		unsigned long indexmin[3] = {ul, v, 0};
-	// 		float zmin = bounds.get(indexmin);
-	// 		unsigned long indexmax[3] = {ul, v, 1};
-	// 		float zmax = bounds.get(indexmax);
-	// 		float bestZ;
-	// 		int bestBadness = INT_MAX;
-	// 		for(int ur = ceil(ul - (f*l/zmin)); f*l/(ul - ur) < zmax && ur < xres; ur++){
-	// 			if(print){
-	// 				ROS_INFO("f: %f, l: %f", f, l);
-	// 				ROS_INFO("zmin: %f, zmax: %f",zmin, zmax);
-	// 				ROS_INFO("ul: %d, ur: %d, xres: %d", ul, ur, xres);
-	// 				ROS_INFO("------------------");
-	// 				print = false;
-	// 			}
-	// 			int tempBadness = calcBadness(left, right, v, ul, ur);
-	// 			if(tempBadness < bestBadness) {
-	// 				bestBadness = tempBadness;
-	// 				bestZ = f*l/(ul-ur);
-	// 			}
-	// 		}
-	// 		unsigned long setindex[2] = {ul, v};
-	// 		result -> set(setindex, bestZ);
-	// 	}
-	// }
+	savePicture(mesh.result);
+
+	bool print = true;
+	for(int v = 0; v < yres; v++) {
+		// print = true;
+		for(int ul = 0; ul < xres; ul++) {
+			unsigned long indexmin[3] = {ul, v, 0};
+			float zmin = bounds.get(indexmin);
+			unsigned long indexmax[3] = {ul, v, 1};
+			float zmax = bounds.get(indexmax);
+			float bestZ;
+			int bestBadness = INT_MAX;
+			for(int ur = ceil(ul - (f*l/zmin)); f*l/(ul - ur) < zmax && ur < xres; ur++){
+				if(print){
+					ROS_INFO("f: %f, l: %f", f, l);
+					ROS_INFO("zmin: %f, zmax: %f",zmin, zmax);
+					ROS_INFO("ul: %d, ur: %d, xres: %d", ul, ur, xres);
+					ROS_INFO("------------------");
+					print = false;
+				}
+				int tempBadness = calcBadness(left, right, v, ul, ur);
+				if(tempBadness < bestBadness) {
+					bestBadness = tempBadness;
+					bestZ = f*l/(ul-ur);
+				}
+			}
+			unsigned long setindex[2] = {ul, v};
+			result -> set(setindex, bestZ);
+		}
+	}
 }
 
 int SeededDepthMap::calcBadness(bitmap_image left, bitmap_image right, int v, int ul, int ur){
