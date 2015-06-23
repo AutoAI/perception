@@ -44,7 +44,31 @@ namespace fileConstants {
 	std::string right = "src/perception/src/test/test_data/right.bmp";
 	std::string depth = "src/perception/src/test/test_data/depth.bmp";
 }
+
 SeededDepthMap::SeededDepthMap(){} 
+
+void saveImage(NdArray<float> &c, int width, int height, const std::string filename) {
+	bitmap_image image(width, height);
+	unsigned long location[2];
+	for (int x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+
+			location[0] = x;
+			location[1] = y;
+			location[2] = 0;
+
+			unsigned char r = char(c.get(location));
+
+			location[2] = 1;
+
+			unsigned char g = char(c.get(location));
+
+			image.set_pixel(x, y, r, g, 0);
+		}
+	}
+	image.save_image(filename);
+}
+
 void SeededDepthMap::doCorrespondence(){
 	bitmap_image left(fileConstants::left);
 	bitmap_image right(fileConstants::right);
@@ -65,8 +89,6 @@ void SeededDepthMap::doCorrespondence(){
 
 	unsigned long dimensions[2] = {xres, yres};
 	result = new NdArray<float>(2, dimensions);
-
-	savePicture(mesh.result);
 
 	bool print = true;
 	for(int v = 0; v < yres; v++) {
