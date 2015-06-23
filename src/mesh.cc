@@ -51,27 +51,51 @@
 using namespace std;
 
 Mesh::Mesh(CoordinateList* cList) {
+	bool debug = true;
+
 	if (cList == NULL) {
 		throw std::invalid_argument("CoordinateList must not be null");
 	} else if(cList->getLength() < 3) {
 		throw std::invalid_argument("CoordinateList must contain at least 3 points");
 	}
 	list = cList;
+
 	// choose seed point, sort others accorinding to distance from seed
+	if(debug) {
+		ROS_INFO("choosing seed...");
+	}
 	MeshTriple* s = chooseSeed();
 	(*list).sort(*(s -> triple));
+	if(debug) {
+		ROS_INFO("\tseed chosen");
+	}
 
 	// construct initial convex hull (counter-clockwise)
+	if(debug) {
+		ROS_INFO("initializing hull...");
+	}
 	vector<MeshTriple*> hull;
 	this->hull = hull;
 	initHull(0, 1, 2);
+	if(debug) {
+		ROS_INFO("\thull initialized");
+	}
 
 	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
+	if(debug) {
+		ROS_INFO("inserting points...");
+	}
 	for(unsigned long i = 3; i < list -> getLength(); i++) {
 		insertVert(list -> getPtr(i));
 	}
+	if(debug) {
+		ROS_INFO("\tpoints inserted");
+	}
 
 	// iteratively 'flip' triangles until no more triangles need be flipped
+	if(debug) {
+		ROS_INFO("flipping triangles...");
+	}
 	int maxIterations = 12;
 	int sumFlips;
 	for(int i = 0; sumFlips != 0; i++) {
@@ -83,16 +107,14 @@ Mesh::Mesh(CoordinateList* cList) {
 			break;
 		}
 	}
-
-	// print triangles (temporary)
-	Triple *t0, *t1, *t2;
-	for(int i = 0; i < tris.size(); i++) {
-		t0 = tris[i] -> points[0] -> triple;
-		t1 = tris[i] -> points[1] -> triple;
-		t2 = tris[i] -> points[2] -> triple;
+	if(debug) {
+		ROS_INFO("\ttriangles flipped");
 	}
-
+	
 	// set up the data array - first, find max number of vert neighbors
+	if(debug) {
+		ROS_INFO("generating data...");
+	}
 	char maxNeighbors = 0;
 	for(int i = 0; i < verts.size(); i++) {
 		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size()) ? maxNeighbors : getNeighbors(verts[i]).size();
@@ -118,8 +140,14 @@ Mesh::Mesh(CoordinateList* cList) {
 			}
 		}
 	}
+	if(debug) {
+		ROS_INFO("\tdata generated");
+	}
 
 	// init result
+	if(debug) {
+		ROS_INFO("generating result...");
+	}
 	unsigned long bounds2[3] = {CameraConstants::XRES, CameraConstants::YRES, 2};
 	result = new NdArray<float>(3, bounds2);
 
@@ -131,6 +159,7 @@ Mesh::Mesh(CoordinateList* cList) {
 			//TODO should rename k
 			for(int k = 0; k < maxNeighbors+1; k++) {
 				unsigned long getIndex[3] = {i, j, k};
+				// ROS_INFO("data: %f", data -> get(getIndex));
 				if(data -> get(getIndex) == -1) {
 					break;
 				}
@@ -143,16 +172,9 @@ Mesh::Mesh(CoordinateList* cList) {
 			result -> set(setIndex2, max);
 		}
 	}
-
-	// // print the result
-	// for(int i = 0; i < CameraConstants::XRES; i++) {
-	// 	for(int j = 0; j < CameraConstants::YRES; j++) {
-	// 		unsigned long getIndex[3] = {i, j, 0};
-	// 		cout << result -> get(getIndex) << endl;
-	// 		unsigned long getIndex2[3] = {i, j, 1};
-	// 		cout << result -> get(getIndex2) << endl;
-	// 	}
-	// }
+	if(debug) {
+		ROS_INFO("\tresult generated");
+	}
 }
 
 MeshTriple* Mesh::chooseSeed() {
@@ -206,10 +228,10 @@ void Mesh::insertVert(Triple* v) {
 	// (remember where the most clockwise and most counter-clockwise verts are)
 	vector<MeshTriple*> connectorTriples;
 	bool visibilities[hull.size()];
-	int c;
-	int cc;
+	int c; // index of clockwise-most vert
+	int cc; // index of counter-clockwise-most vert
 	for(int i = 0; i < hull.size(); i++) {
-		if(isVisible(*(t -> triple), *(hull[i] -> triple))) {
+		if(isVisible(*v, *(hull[i] -> triple))) {
 			connectorTriples.push_back(hull[i]);
 			visibilities[i] = true;
 		} else {
@@ -217,18 +239,45 @@ void Mesh::insertVert(Triple* v) {
 		}
 	}
 
+	bool allVisible = true;
 	for(int i = 0; i < hull.size(); i++) {
-		if(visibilities[i] && !visibilities[(i+1)%hull.size()]) {
-			cc = i;
-		} else if(visibilities[(i+1)%hull.size()] && !visibilities[i]) {
-			c = (i+1)%hull.size();
+		if(!visibilities[i]){
+			allVisible = false;
+			break;
+		}
+	}
+
+	// if they're all visible, find the triangle that doesn't work and find c and cc that way
+	float a, b, c0, d, e, f;
+	if(allVisible) {
+		if(!goodTri(connectorTriples[0] -> triple, connectorTriples[hull.size()-1] -> triple, v)) {
+			c = hull.size() - 1;
+			cc = 0;
+		} else {
+			for(int i = 1; i < hull.size(); i++) {
+				if(!goodTri(connectorTriples[i-1] -> triple, connectorTriples[i] -> triple, v)) {
+					c = i - 1;
+					cc = i;
+					break;
+				}
+			}
+		}
+	} else { // otherwise, find the c and cc such that they are visible but the next c or cc is not
+		for(int i = 0; i < hull.size(); i++) {
+			if(visibilities[i] && !visibilities[(i+1)%hull.size()]) {
+				cc = i;
+			} else if(visibilities[(i+1)%hull.size()] && !visibilities[i]) {
+				c = (i+1)%hull.size();
+			}
 		}
 	}
 
 	// make triangles, starting with the most clockwise pair of points and working counter-clockwise
+	int numTrisAdded = 0;
 	for(int i = c; i != cc; i = (i+1)%hull.size()) {
 		Triangle* temp = new Triangle(hull[i], hull[(i+1)%hull.size()], t);
 		tris.push_back(temp);
+		numTrisAdded++;
 	}
 
 	// trim the hull. of those verts visible to t, only the most clockwise and most counter-clockwise verts will remain
@@ -250,7 +299,10 @@ void Mesh::insertVert(Triple* v) {
 		i--;
 	}
 
-	//insert the new point in-between the most clockwise and most counter-clockwise verts
+	// add the vert to our list of verts
+	verts.push_back(t);
+
+	// insert the new point in-between the most clockwise and most counter-clockwise verts
 	hull.insert(hull.begin()+cc, t);
 }
 
@@ -464,6 +516,32 @@ int Mesh::orientation(Triple p, Triple q, Triple r) {
 		return 0;
 	}
 	return (val > 0)? 1: 2;
+}
+
+// is this tri good?
+bool Mesh::goodTri(Triple* t0, Triple* t1, Triple* t2){
+	for(int i = 0; i < verts.size(); i++) {
+		if(inTri(t0, t1, t2, verts[i] -> triple)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+// code I grabbed from http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
+bool Mesh::inTri(Triple* t0, Triple* t1, Triple* t2, Triple* p){
+	bool b1, b2, b3;
+
+    b1 = sign(p, t0, t1) < 0.0f;
+    b2 = sign(p, t1, t2) < 0.0f;
+    b3 = sign(p, t2, t0) < 0.0f;
+
+    return ((b1 == b2) && (b2 == b3));
+}
+
+// helper function for inTri
+float Mesh::sign (Triple* p1, Triple* p2, Triple* p3){
+    return (p1 -> x - p3 -> x) * (p2 -> y - p3 -> y) - (p2 -> x - p3 -> x) * (p1 -> y - p3 -> y);
 }
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf

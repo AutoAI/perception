@@ -60,6 +60,14 @@ public:
 	*/
 	NdArray<float>* result;
 
+	static int toPixelX(float x);
+
+	static int toPixelY(float y);
+
+	static float toImageX(int x);
+
+	static float toImageY(int y);
+
 private:
 	/**
 	* hull for sweeping (the sweep-hull. s-hull. more on this at www.s-hull.org/)
@@ -155,6 +163,12 @@ private:
 	*/
 	static int orientation(Triple p, Triple q, Triple r);
 
+	bool goodTri(Triple* t0, Triple* t1, Triple* t2);
+
+	static bool inTri(Triple* t0, Triple* t1, Triple* t2, Triple* p);
+
+	static float sign (Triple* p1, Triple* p2, Triple* p3);
+
 	static bool inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p);
 
 	static float det(float** in_matrix, int n);
@@ -169,12 +183,4 @@ private:
 	MeshTriple* getNearest(Triple &t);
 
 	static float dist2(Triple &a, Triple &b);
-
-	static int toPixelX(float x);
-
-	static int toPixelY(float y);
-
-	static float toImageX(int x);
-
-	static float toImageY(int y);
 };
