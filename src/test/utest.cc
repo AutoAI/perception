@@ -6,6 +6,7 @@
 #include "ros/console.h"
 #include <gtest/gtest.h>
 #include <stddef.h>
+#include <iostream>
 
 #include <time.h>
 #include <climits>
@@ -19,6 +20,8 @@
 #include "../mesh.h"
 #include "../mesh_triple.h"
 #include "../global_constants.h"
+
+using namespace std;
 
 TEST(Triple, equalityTrue) {
 	Triple a;
@@ -399,5 +402,6 @@ TEST(Mesh, constructor){
 int main(int argc, char **argv) {
     srand(time(NULL));
     testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+	for (int i = 0; i < 11; i++) cout << RUN_ALL_TESTS() << endl;
+    return 0;
 }
