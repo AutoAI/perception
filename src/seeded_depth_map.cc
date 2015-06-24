@@ -45,11 +45,11 @@ namespace fileConstants {
 	std::string depth = "src/perception/src/test/test_data/depth.bmp";
 }
 
-SeededDepthMap::SeededDepthMap(){} 
-
-void saveImage(NdArray<float> &c, int width, int height, const std::string filename) {
+void SeededDepthMap::saveImage(NdArray<float> &c, std::string filename) {
+	int height = CameraConstants::YRES;
+	int width = CameraConstants::XRES;
 	bitmap_image image(width, height);
-	unsigned long location[2];
+	unsigned long location[3];
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
 
@@ -57,13 +57,13 @@ void saveImage(NdArray<float> &c, int width, int height, const std::string filen
 			location[1] = y;
 			location[2] = 0;
 
-			unsigned char r = char(c.get(location));
+			float r = c.get(location);
 
 			location[2] = 1;
+			float g = c.get(location);
 
-			unsigned char g = char(c.get(location));
-
-			image.set_pixel(x, y, r, g, 0);
+			ROS_INFO("min: %f\tmax: %f", r, g);
+			image.set_pixel(x, y, char(r), char(g), 0);
 		}
 	}
 	image.save_image(filename);
@@ -83,6 +83,8 @@ void SeededDepthMap::doCorrespondence(){
 	ROS_INFO("\t mesh built");
 
 	NdArray<float> bounds = *(mesh.result);
+
+	saveImage(bounds, "bounds.bmp");
 
 	float f = CameraConstants::F;
 	float l = CameraConstants::L;
@@ -119,6 +121,8 @@ void SeededDepthMap::doCorrespondence(){
 		}
 	}
 }
+
+SeededDepthMap::SeededDepthMap(){} 
 
 int SeededDepthMap::calcBadness(bitmap_image left, bitmap_image right, int v, int ul, int ur){
 	unsigned char red1, red2, grn1, grn2, blu1, blu2;

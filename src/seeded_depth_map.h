@@ -49,5 +49,7 @@ class SeededDepthMap {
 
 		// calculates how bad a match between pixels is (higher values = more bad)
 		int calcBadness(bitmap_image left, bitmap_image right, int v, int ul, int ur);
+
+		void saveImage(NdArray<float> &c, std::string filename);
 };
 

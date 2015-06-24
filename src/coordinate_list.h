@@ -51,110 +51,110 @@
 
 /** List of all coordinate triples */
 class CoordinateList {
- public:
-	enum ListType {
-		CARTESIAN,
-		SPHERICAL,
-		PERSPECTIVE
-	};
+	public:
+		enum ListType {
+			CARTESIAN,
+			SPHERICAL,
+			PERSPECTIVE
+		};
 
-	ListType type; /** type of the coordinate (as #define'd) */
+		ListType type; /** type of the coordinate (as #define'd) */
 
-	/**
-	* Creates a CoordinateList using a type and an initial length
-	*
-	* @param type a char that represents the type of the CoordinateList (Cartesian, Spherical, or Perspective)
-	* @param length the length of the initial list
-	*/
-	CoordinateList(ListType type, uint64_t length);
+		/**
+		* Creates a CoordinateList using a type and an initial length
+		*
+		* @param type a char that represents the type of the CoordinateList (Cartesian, Spherical, or Perspective)
+		* @param length the length of the initial list
+		*/
+		CoordinateList(ListType type, uint64_t length);
 
-	/**
-	* converts all coordinates to the specified type
-	*
-	* @param newType type to convert to
-	*/
-	void toType(ListType newType);
+		/**
+		* converts all coordinates to the specified type
+		*
+		* @param newType type to convert to
+		*/
+		void toType(ListType newType);
 
-	/**
-	* converts all coodinates to the specified type using an offset to the new origin
-	*
-	* @param newType new type for the list
-	* @param offset a Triple offset to specify the new origin
-	*/
-	void toType(ListType newType, Triple offset);
+		/**
+		* converts all coodinates to the specified type using an offset to the new origin
+		*
+		* @param newType new type for the list
+		* @param offset a Triple offset to specify the new origin
+		*/
+		void toType(ListType newType, Triple offset);
 
-	/**
-	* set a particular element by its list index
-	*
-	* @param index the index that you're setting
-	* @param value the Triple that it's being set too
-	*/
-	void set(uint64_t index, Triple value);
+		/**
+		* set a particular element by its list index
+		*
+		* @param index the index that you're setting
+		* @param value the Triple that it's being set too
+		*/
+		void set(uint64_t index, Triple value);
 
-	/**
-	* returns a particular element by its list index
-	*
-	* @param index returns Triple at index
-	* @return Triple at that index
-	*/
-	Triple get(uint64_t index);
+		/**
+		* returns a particular element by its list index
+		*
+		* @param index returns Triple at index
+		* @return Triple at that index
+		*/
+		Triple get(uint64_t index);
 
-	/**
-	* returns a reference to a particular element by its list index
-	*
-	* @param index returns a pointer to the triple at the specified index
-	* @return Triple returns a pointer to the triple at the specified index
-	*/
-	Triple* getPtr(uint64_t index);
+		/**
+		* returns a reference to a particular element by its list index
+		*
+		* @param index returns a pointer to the triple at the specified index
+		* @return Triple returns a pointer to the triple at the specified index
+		*/
+		Triple* getPtr(uint64_t index);
 
-	/**
-	* performs an 0(n) bucket sort. good for when the list is a mess
-	* metric is vector distance to parameter in 2D
-	*
-	* @param t Triple that the whole list will be sorted against
-	*/
-	void sortThatDoesntWorkYet(Triple t);
+		/**
+		* performs an 0(n) bucket sort. good for when the list is a mess
+		* metric is vector distance to parameter in 2D
+		*
+		* @param t Triple that the whole list will be sorted against
+		*/
+		void sortThatDoesntWorkYet(Triple t);
 
-	/**
-	* performs an n^2 insertion sort. good for when the list is mostly in order
-	* metric is vector distance to parameter in 2D
-	*
-	* @param t Triple that the whole list will be sorted against
-	*/
-	void sort(Triple t);
+		/**
+		* performs an n^2 insertion sort. good for when the list is mostly in order
+		* metric is vector distance to parameter in 2D
+		*
+		* @param t Triple that the whole list will be sorted against
+		*/
+		void sort(Triple t);
 
-	/**
-	* length of the current coordinate list
-	*
-	* @return length of the current coordinate list
-	*/
-	uint64_t getLength();
+		/**
+		* length of the current coordinate list
+		*
+		* @return length of the current coordinate list
+		*/
+		uint64_t getLength();
 
- private:
-	/**
-	* changes all the triples in the list to be of type Cartesian
-	*/
-	void toCartesian();
+	private:
+		/**
+		* changes all the triples in the list to be of type Cartesian
+		*/
+		void toCartesian();
 
-	/**
-	* the capacity of the coordinates (not the number of actual elements stored)
-	*/
-	uint64_t length;
+		/**
+		* the capacity of the coordinates (not the number of actual elements stored)
+		*/
+		uint64_t length;
 
-	/**
-	* the data stored in the structure
-	*/
-	Triple* coordinates;
+		/**
+		* the data stored in the structure
+		*/
+		Triple* coordinates;
 
-	/**
-	* helper function to compute squared distance between two points in 2D
-	*/
-	float dist2(Triple a, Triple b);
+		/**
+		* helper function to compute squared distance between two points in 2D
+		*/
+		float dist2(Triple a, Triple b);
 
-	/**
-	* function to print distances (for sort debugging)
-	*/
-	void log_distances(Triple origin);
+		/**
+		* function to print distances (for sort debugging)
+		*/
+		void log_distances(Triple origin);
 };
 
 #endif  // SRC_COORDINATE_LIST_H_
