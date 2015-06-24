@@ -62,8 +62,8 @@ void SeededDepthMap::saveImage(NdArray<float> &c, std::string filename) {
 			location[2] = 1;
 			float g = c.get(location);
 
-			ROS_INFO("min: %f\tmax: %f", r, g);
-			image.set_pixel(x, y, char(r), char(g), 0);
+			// ROS_INFO("min: %f\tmax: %f", r, g);
+			image.set_pixel(x, y, char(1/r), char(1/g), 0);
 		}
 	}
 	image.save_image(filename);
@@ -76,50 +76,58 @@ void SeededDepthMap::doCorrespondence(){
 	int xres = left.width();
 	int yres = left.height();
 
-	CoordinateList c = getLidarData(400);
+	CoordinateList c = getLidarData(10000);
 
-	ROS_INFO("building mesh...");
 	Mesh mesh(&c);
-	ROS_INFO("\t mesh built");
 
 	NdArray<float> bounds = *(mesh.result);
 
 	saveImage(bounds, "bounds.bmp");
 
-	float f = CameraConstants::F;
-	float l = CameraConstants::L;
+	// float f = CameraConstants::F;
+	// float l = CameraConstants::L;
 
-	unsigned long dimensions[2] = {xres, yres};
-	result = new NdArray<float>(2, dimensions);
+	// unsigned long dimensions[2] = {xres, yres};
+	// result = new NdArray<float>(2, dimensions);
 
-	bool print = true;
-	for(int v = 0; v < yres; v++) {
-		// print = true;
-		for(int ul = 0; ul < xres; ul++) {
-			unsigned long indexmin[3] = {ul, v, 0};
-			float zmin = bounds.get(indexmin);
-			unsigned long indexmax[3] = {ul, v, 1};
-			float zmax = bounds.get(indexmax);
-			float bestZ;
-			int bestBadness = INT_MAX;
-			for(int ur = ceil(ul - (f*l/zmin)); f*l/(ul - ur) < zmax && ur < xres; ur++){
-				if(print){
-					ROS_INFO("f: %f, l: %f", f, l);
-					ROS_INFO("zmin: %f, zmax: %f",zmin, zmax);
-					ROS_INFO("ul: %d, ur: %d, xres: %d", ul, ur, xres);
-					ROS_INFO("------------------");
-					print = false;
-				}
-				int tempBadness = calcBadness(left, right, v, ul, ur);
-				if(tempBadness < bestBadness) {
-					bestBadness = tempBadness;
-					bestZ = f*l/(ul-ur);
-				}
-			}
-			unsigned long setindex[2] = {ul, v};
-			result -> set(setindex, bestZ);
-		}
-	}
+	// ROS_INFO("doing correspondence...");
+	// bool print = true;
+	// ROS_INFO("for v");
+	// for(int v = 0; v < yres; v++) {
+	// 	ROS_INFO("v = %d", v);
+	// 	ROS_INFO("for ul");
+	// 	for(int ul = 0; ul < xres; ul++) {
+	// 		ROS_INFO("ul = %d", ul);
+	// 		unsigned long indexmin[3] = {ul, v, 0};
+	// 		float zmin = bounds.get(indexmin);
+	// 		unsigned long indexmax[3] = {ul, v, 1};
+	// 		float zmax = bounds.get(indexmax);
+	// 		float bestZ;
+	// 		int bestBadness = INT_MAX;
+	// 		ROS_INFO("for ur");
+	// 		for(int ur = ceil(ul - (f*l/zmin)); f*l/(ul - ur) < zmax && ur < ul; ur++){
+	// 			ROS_INFO("ur = %d", ur);
+	// 			if(print){
+	// 				ROS_INFO("f: %f, l: %f", f, l);
+	// 				ROS_INFO("zmin: %f, zmax: %f",zmin, zmax);
+	// 				ROS_INFO("ul: %d, ur: %d, xres: %d", ul, ur, xres);
+	// 				ROS_INFO("------------------");
+	// 				print = false;
+	// 			}
+	// 			int tempBadness = calcBadness(left, right, v, ul, ur);
+	// 			if(tempBadness < bestBadness) {
+	// 				bestBadness = tempBadness;
+	// 				bestZ = f*l/(ul-ur);
+	// 			}
+	// 		}
+	// 		ROS_INFO("/for ur");
+	// 		unsigned long setindex[2] = {ul, v};
+	// 		result -> set(setindex, bestZ);
+	// 	}
+	// 	ROS_INFO("/for ul");
+	// }
+	// ROS_INFO("/for v");
+	// ROS_INFO("\tcorrespondence done");
 }
 
 SeededDepthMap::SeededDepthMap(){} 
@@ -131,31 +139,27 @@ int SeededDepthMap::calcBadness(bitmap_image left, bitmap_image right, int v, in
 	return ((int)red1-(int)red2)*((int)red1-(int)red2)+((int)blu1-(int)blu2)*((int)blu1-(int)blu2)+((int)grn1-(int)grn2)*((int)grn1-(int)grn2);
 }
 
-CoordinateList SeededDepthMap::getLidarData(int resolution){
-	srand(time(NULL));
-	bitmap_image depth(fileConstants::depth);
-	int xres = depth.width();
-	int yres = depth.height();
+CoordinateList SeededDepthMap::getLidarData(int num_samples){
+	bitmap_image depth_map(fileConstants::depth);
+	int xres = depth_map.width();
+	int yres = depth_map.height();
 	
-	int count = 0;
-	float val;
-	CoordinateList list(CoordinateList::PERSPECTIVE, resolution);
+	CoordinateList list(CoordinateList::PERSPECTIVE, num_samples);
 
 	float xrand;
 	float yrand;
-
 	unsigned char red;
 	unsigned char green;
 	unsigned char blue;
+	for(int i = 0; i < num_samples; i++) {
+		xrand = rand() % xres;
+		yrand = rand() % yres;
+		depth_map.get_pixel(xrand, yrand, red, green, blue);
 
-	while (count < resolution) {
-		xrand = Mesh::toImageX(rand() % xres);
-		yrand = Mesh::toImageY(rand() % yres);
-		depth.get_pixel(xrand, yrand, red, green, blue);
-		val = 1/float(red);
-		Triple coord(xrand, yrand, val);
-		list.set(count, coord);
-		count++;
+		xrand = Mesh::toImageX(xrand);
+		yrand = Mesh::toImageY(yrand);
+		Triple coord(xrand, yrand, 1.0/float(red));
+		list.set(i, coord);
 	}
 
 	return list;

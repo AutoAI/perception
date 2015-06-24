@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 
 #include "seeded_depth_map.h"
+#include <time.h>
 
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "run");
@@ -9,6 +10,7 @@ int main(int argc, char **argv) {
 	ros::spinOnce();
 
 	if (ros::ok()) {
+		srand(time(NULL));
 		ROS_INFO("Running...");
 		ROS_INFO("==========");
 		SeededDepthMap seed;

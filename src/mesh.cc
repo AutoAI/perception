@@ -126,7 +126,9 @@ Mesh::Mesh(CoordinateList* cList) {
 
 	// populate data
 	for(int i = 0; i < CameraConstants::XRES; i++) {
-		ROS_INFO("progress: %d/%d", i, CameraConstants::XRES);
+		if(i%10 == 0) {
+			ROS_INFO("progress: %d/%d", i, CameraConstants::XRES);
+		}
 		for(int j = 0; j < CameraConstants::YRES; j++) { 
 			MeshTriple* temp = getNearest(*(new Triple(toImageX(i), toImageY(j), 0)));
 			unsigned long setIndex[3] = {i, j, 0};
@@ -135,10 +137,8 @@ Mesh::Mesh(CoordinateList* cList) {
 				unsigned long setIndexTemp[3] = {i, j, k};
 				if(k-1 < getNeighbors(temp).size()) {
 					data -> set(setIndexTemp, getNeighbors(temp)[k-1] -> triple -> z);
-					ROS_INFO("z = %f", getNeighbors(temp)[k-1] -> triple -> z);
 				} else {
 					data -> set(setIndexTemp, -1);
-					ROS_INFO("z = %f", -1.0);
 				}
 			}
 		}
