@@ -51,15 +51,15 @@ namespace CameraConstants {
 	/**
 	* camera x-resolution
 	*/
-	const int XRES = 1920;
+	const int XRES = 752;
 
 	/**
 	* camera y-resolution
 	*/
-	const int YRES = 1080;
+	const int YRES = 480;
 
 	/**
 	* distance between cameras
 	*/
-	const float L = .1;
+	const float L = 1;
 }
