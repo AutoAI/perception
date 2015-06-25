@@ -35,15 +35,16 @@
 
 #define _USE_MATH_DEFINES
 
-#include "ros/ros.h"
-
-#include <stdexcept>
 #include <math.h>
 #include <stddef.h>
+
+#include <algorithm>
 #include <iostream>
+#include <stdexcept>
+
+#include "ros/ros.h"
 
 #include "coordinate_list.h"
-
 #include "mesh.h"
 #include "mesh_triple.cc"
 #include "global_constants.h"
@@ -53,7 +54,7 @@ using namespace std;
 Mesh::Mesh(CoordinateList* cList) {
 	if (cList == NULL) {
 		throw std::invalid_argument("CoordinateList must not be null");
-	} else if(cList->getLength() < 3) {
+	} else if (cList->getLength() < 3) {
 		throw std::invalid_argument("CoordinateList must contain at least 3 points");
 	}
 	list = cList;
@@ -66,8 +67,9 @@ Mesh::Mesh(CoordinateList* cList) {
 	this->hull = hull;
 	initHull(0, 1, 2);
 
-	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
-	for(unsigned long i = 3; i < list -> getLength(); i++) {
+	// sequentially insert points, adding edges from new point to 'visible'
+	// points on the convex hull
+	for(uint64_t i = 3; i < list -> getLength(); i++) {
 		insertVert(list -> getPtr(i));
 	}
 
@@ -79,7 +81,7 @@ Mesh::Mesh(CoordinateList* cList) {
 		for(int j = 0; j < tris.size(); j++) {
 			sumFlips += flip(tris[j]);
 		}
-		if(i == maxIterations - 1){
+		if(i == maxIterations - 1) {
 			break;
 		}
 	}
@@ -95,21 +97,24 @@ Mesh::Mesh(CoordinateList* cList) {
 	// set up the data array - first, find max number of vert neighbors
 	char maxNeighbors = 0;
 	for(int i = 0; i < verts.size(); i++) {
-		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size()) ? maxNeighbors : getNeighbors(verts[i]).size();
+		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size())
+			? maxNeighbors
+			: getNeighbors(verts[i]).size();
 	}
 
 	// init the data
-	unsigned long bounds[3] = {CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1};
+	uint64_t bounds[3] =
+		{CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1};
 	data = new NdArray<float>(3, bounds);
 
 	// populate data
 	for(int i = 0; i < CameraConstants::XRES; i++) {
-		for(int j = 0; j < CameraConstants::YRES; j++) { 
+		for(int j = 0; j < CameraConstants::YRES; j++) {
 			MeshTriple* temp = getNearest(*(new Triple(toImageX(i), toImageY(j), 0)));
-			unsigned long setIndex[3] = {i, j, 0};
+			uint64_t setIndex[3] = {i, j, 0};
 			data -> set(setIndex, temp -> triple -> z);
 			for(int k = 1; k < maxNeighbors+1; k++) {
-				unsigned long setIndexTemp[3] = {i, j, k};
+				uint64_t setIndexTemp[3] = {i, j, k};
 				if(k-1 < getNeighbors(temp).size()) {
 					data -> set(setIndexTemp, getNeighbors(temp)[k-1] -> triple -> z);
 				} else {
@@ -120,7 +125,7 @@ Mesh::Mesh(CoordinateList* cList) {
 	}
 
 	// init result
-	unsigned long bounds2[3] = {CameraConstants::XRES, CameraConstants::YRES, 2};
+	uint64_t bounds2[3] = {CameraConstants::XRES, CameraConstants::YRES, 2};
 	result = new NdArray<float>(3, bounds2);
 
 	// calculate result
@@ -128,18 +133,18 @@ Mesh::Mesh(CoordinateList* cList) {
 		for(int j = 0; j < CameraConstants::YRES; j++) {
 			float max = -1;
 			float min = CameraConstants::K;
-			//TODO should rename k
+			// TODO should rename k
 			for(int k = 0; k < maxNeighbors+1; k++) {
-				unsigned long getIndex[3] = {i, j, k};
+				uint64_t getIndex[3] = {i, j, k};
 				if(data -> get(getIndex) == -1) {
 					break;
 				}
 				min = (min < data -> get(getIndex)) ? min : data -> get(getIndex);
 				max = (max > data -> get(getIndex)) ? max : data -> get(getIndex);
 			}
-			unsigned long setIndex[3] = {i, j, 0};
+			uint64_t setIndex[3] = {i, j, 0};
 			result -> set(setIndex, min);
-			unsigned long setIndex2[3] = {i, j, 1};
+			uint64_t setIndex2[3] = {i, j, 1};
 			result -> set(setIndex2, max);
 		}
 	}
@@ -147,9 +152,9 @@ Mesh::Mesh(CoordinateList* cList) {
 	// // print the result
 	// for(int i = 0; i < CameraConstants::XRES; i++) {
 	// 	for(int j = 0; j < CameraConstants::YRES; j++) {
-	// 		unsigned long getIndex[3] = {i, j, 0};
+	// 		uint64_t getIndex[3] = {i, j, 0};
 	// 		cout << result -> get(getIndex) << endl;
-	// 		unsigned long getIndex2[3] = {i, j, 1};
+	// 		uint64_t getIndex2[3] = {i, j, 1};
 	// 		cout << result -> get(getIndex2) << endl;
 	// 	}
 	// }
@@ -160,12 +165,17 @@ MeshTriple* Mesh::chooseSeed() {
 	return new MeshTriple((*list).getPtr(0));
 }
 
-void Mesh::initHull(unsigned long index0, unsigned long index1, unsigned long index2) {
-	// check angle 0 to see which way the verts should be ordered to make the triangle counter-clockwise
-	float dTheta = atan2((*list).get(2).y-(*list).get(0).y, (*list).get(2).x-(*list).get(0).x)-atan2((*list).get(1).y-(*list).get(0).y, (*list).get(1).x-(*list).get(0).x);
+void Mesh::initHull(uint64_t index0, uint64_t index1, uint64_t index2) {
+	// check angle 0 to see which way the verts should be ordered to make
+	// the triangle counter-clockwise
+	float dTheta = atan2(
+		(*list).get(2).y - (*list).get(0).y,
+		(*list).get(2).x - (*list).get(0).x) -
+			atan2((*list).get(1).y - (*list).get(0).y,
+		(*list).get(1).x - (*list).get(0).x);
 	if(dTheta > 2*M_PI) {
 		dTheta -= M_PI;
-	} else if(dTheta < 0) {
+	} else if (dTheta < 0) {
 		dTheta += M_PI;
 	}
 	bool increasing = dTheta < M_PI;
@@ -202,7 +212,8 @@ void Mesh::insertVert(Triple* v) {
 	// insert a meshtriple for the vert
 	MeshTriple* t = new MeshTriple(v);
 
-	// add any visible verts on the hull to a list. edges will be made to all of these
+	// add any visible verts on the hull to a list.
+	// edges will be made to all of these
 	// (remember where the most clockwise and most counter-clockwise verts are)
 	vector<MeshTriple*> connectorTriples;
 	bool visibilities[hull.size()];
@@ -220,37 +231,40 @@ void Mesh::insertVert(Triple* v) {
 	for(int i = 0; i < hull.size(); i++) {
 		if(visibilities[i] && !visibilities[(i+1)%hull.size()]) {
 			cc = i;
-		} else if(visibilities[(i+1)%hull.size()] && !visibilities[i]) {
+		} else if (visibilities[(i+1)%hull.size()] && !visibilities[i]) {
 			c = (i+1)%hull.size();
 		}
 	}
 
-	// make triangles, starting with the most clockwise pair of points and working counter-clockwise
+	// make triangles, starting with the most clockwise pair of points
+	// and working counter-clockwise
 	for(int i = c; i != cc; i = (i+1)%hull.size()) {
 		Triangle* temp = new Triangle(hull[i], hull[(i+1)%hull.size()], t);
 		tris.push_back(temp);
 	}
 
-	// trim the hull. of those verts visible to t, only the most clockwise and most counter-clockwise verts will remain
+	// trim the hull. of those verts visible to t, only the most clockwise
+	// and most counter-clockwise verts will remain
 	int i = cc - 1;
-	while(true){
-		if(i == -1){
+	while(true) {
+		if(i == -1) {
 			i = hull.size() - 1;
 		}
-		if(i == c){
+		if(i == c) {
 			break;
 		}
 		hull.erase(hull.begin()+i);
-		if(i < c){
+		if(i < c) {
 			c--;
 		}
-		if(i < cc){
+		if(i < cc) {
 			cc--;
 		}
 		i--;
 	}
 
-	//insert the new point in-between the most clockwise and most counter-clockwise verts
+	// insert the new point in-between the most clockwise and most
+	// counter-clockwise verts
 	hull.insert(hull.begin()+cc, t);
 }
 
@@ -263,10 +277,9 @@ void Mesh::removeTri(Triangle* t) {
 				break;
 			}
 		}
-
 	}
 	// remove reference to t from this mesh
-	for(unsigned long i = 0; i < tris.size(); i++) {
+	for(uint64_t i = 0; i < tris.size(); i++) {
 		if(tris[i] == t) {
 			tris.erase(tris.begin()+i);
 			return;
@@ -302,7 +315,7 @@ int Mesh::flip(Triangle* t) {
 		bool found[4] = {false, false, false, false};
 		for(int j = 0; j < allPoints.size(); j++) {
 			for(int k = 0; k < 3; k++) {
-				if(t -> points[k] == allPoints[j]){
+				if(t -> points[k] == allPoints[j]) {
 					found[j] = true;
 				}
 			}
@@ -335,8 +348,12 @@ int Mesh::flip(Triangle* t) {
 			}
 		}
 
-		// if the pair is not locally delaunay, flip it and stop (we'll come back for the rest in the next iteration)
-		if(inCircumCirc(allPoints[i1] -> triple, allPoints[i2] -> triple, allPoints[i3] -> triple, allPoints[i4] -> triple)) {
+		// if the pair is not locally delaunay, flip it and stop
+		// (we'll come back for the rest in the next iteration)
+		if(inCircumCirc(allPoints[i1] -> triple,
+				allPoints[i2] -> triple,
+				allPoints[i3] -> triple,
+				allPoints[i4] -> triple)) {
 			removeTri(t);
 			removeTri(neighbor);
 			Triangle* new1 = new Triangle(allPoints[i1], allPoints[i3], allPoints[i4]);
@@ -374,8 +391,8 @@ vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
 		}
 	}
 	// remove this meshtriple from the result
-	for(int i = 0; i < result.size(); i++){
-		if(result[i] == t){
+	for(int i = 0; i < result.size(); i++) {
+		if(result[i] == t) {
 			result.erase(result.begin()+i);
 			break;
 		}
@@ -399,14 +416,15 @@ vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 					break;
 				}
 			}
-			
+
 			// if we don't, okay, let's add it
 			if(good) {
 				data.push_back(mtrip -> triangles[j]);
 			}
 		}
 	}
-	// if any triangles don't share 2 points with the first, they are not a neighbor
+	// if any triangles don't share 2 points with the first,
+	// they are not a neighbor
 	for(int i = 0; i < data.size(); i++) {
 		Triangle* temp = data[i];
 		int numPoints = 0;
@@ -425,14 +443,26 @@ vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 	return data;
 }
 
-// is a point 'visible' from another? that is, does the line between them pass through the hull? this function answers these questions
+// is a point 'visible' from another?
+// that is, does the line between them pass through the hull?
+// this function answers these questions
 bool Mesh::isVisible(Triple& a, Triple& d) {
-	if(!((a == *(hull[hull.size()-1] -> triple)) || ((d == *(hull[hull.size()-1] -> triple))) || (a == *(hull[0] -> triple)) || ((d == *(hull[0] -> triple)))) && testIntersect(*(hull[hull.size()-1] -> triple), *(hull[0] -> triple), a, d)) {
+	if(!((a == *(hull[hull.size()-1] -> triple)) ||
+			((d == *(hull[hull.size()-1] -> triple))) ||
+			(a == *(hull[0] -> triple)) ||
+			((d == *(hull[0] -> triple)))) &&
+			testIntersect(*(hull[hull.size()-1] -> triple),
+				*(hull[0] -> triple), a, d)) {
 		return false;
 	}
 
-	for(unsigned long i = 1; i < hull.size(); i++) {
-		if(!((a == *(hull[i-1] -> triple)) || ((d == *(hull[i-1] -> triple))) || (a == *(hull[i] -> triple)) || ((d == *(hull[i] -> triple)))) && testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)) { 
+	for(uint64_t i = 1; i < hull.size(); i++) {
+		if(!((a == *(hull[i-1] -> triple)) ||
+				((d == *(hull[i-1] -> triple))) ||
+				(a == *(hull[i] -> triple)) ||
+				((d == *(hull[i] -> triple)))) &&
+				testIntersect(*(hull[i-1] -> triple),
+					*(hull[i] -> triple), a, d)) {
 			return false;
 		}
 	}
@@ -440,7 +470,8 @@ bool Mesh::isVisible(Triple& a, Triple& d) {
 }
 
 // helper function to find if line segments p1q1 and p2q2 intersect
-// got this baby from www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+// got this baby from:
+// 	www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 bool Mesh::testIntersect(Triple p1, Triple q1, Triple p2, Triple q2) {
 	// Find some orientations
 	int o1 = orientation(p1, q1, p2);
@@ -448,13 +479,21 @@ bool Mesh::testIntersect(Triple p1, Triple q1, Triple p2, Triple q2) {
 	int o3 = orientation(p2, q2, p1);
 	int o4 = orientation(p2, q2, q1);
 
-	// If you want to know what this does just go to the website where I got it they have more readable code
-	return (o1 != o2 && o3 != o4)||(o1 == 0 && onSegment(p1, p2, q1))||(o2 == 0 && onSegment(p1, q2, q1))||(o3 == 0 && onSegment(p2, p1, q2))||(o4 == 0 && onSegment(p2, q1, q2));
+	// If you want to know what this does just go to the website
+	// where I got it they have more readable code
+	return (o1 != o2 && o3 != o4) ||
+		(o1 == 0 && onSegment(p1, p2, q1)) ||
+		(o2 == 0 && onSegment(p1, q2, q1)) ||
+		(o3 == 0 && onSegment(p2, p1, q2)) ||
+		(o4 == 0 && onSegment(p2, q1, q2));
 }
 
 // helper-helper function. dont worry about this one
 bool Mesh::onSegment(Triple p, Triple q, Triple r) {
-	return q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) && q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y);
+	return q.x <= max(p.x, r.x) &&
+		q.x >= min(p.x, r.x) &&
+		q.y <= max(p.y, r.y) &&
+		q.y >= min(p.y, r.y);
 }
 
 // don't worry about this one either
@@ -466,7 +505,8 @@ int Mesh::orientation(Triple p, Triple q, Triple r) {
 	return (val > 0)? 1: 2;
 }
 
-// formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
+// formula I grabbed from
+// 	https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
 bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p) {
 	float** delta = new float*[4];
 	for(int i = 0; i < 4; i++) {
@@ -561,24 +601,28 @@ MeshTriple* Mesh::getNearest(Triple &t) {
 	return nearest;
 }
 
-//TODO Not dist2, travis that's not okay
+// TODO Not dist2, travis that's not okay
 // returns the squared 2d distance between two Triples
-float Mesh::dist2(Triple &a, Triple &b) {
+float Mesh::dist2(const Triple &a, const Triple &b) {
 	return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
 }
 
 int Mesh::toPixelX(float x) {
-	return x * CameraConstants::XRES / CameraConstants::S + CameraConstants::XRES / 2;
+	return x * CameraConstants::XRES / CameraConstants::S +
+		CameraConstants::XRES / 2;
 }
 
 int Mesh::toPixelY(float y) {
-	return y * CameraConstants::XRES / CameraConstants::S + CameraConstants::YRES / 2;
-} 
+	return y * CameraConstants::XRES / CameraConstants::S +
+		CameraConstants::YRES / 2;
+}
 
 float Mesh::toImageX(int x) {
-	return (x - CameraConstants::XRES / 2) * CameraConstants::S / CameraConstants::XRES;
+	return (x - CameraConstants::XRES / 2) *
+		CameraConstants::S / CameraConstants::XRES;
 }
 
 float Mesh::toImageY(int y) {
-	return (y - CameraConstants::YRES / 2) * CameraConstants::S / CameraConstants::XRES;
+	return (y - CameraConstants::YRES / 2) *
+		CameraConstants::S / CameraConstants::XRES;
 }

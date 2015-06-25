@@ -31,12 +31,16 @@
 /** GlobalConstants.h */
 
 #pragma once
+#ifndef SRC_GLOBAL_CONSTANTS_H_
+#define SRC_GLOBAL_CONSTANTS_H_
+
+#include <stdint.h>
 
 namespace CameraConstants {
 	/**
 	* maximum range represented by data structure
 	*/
-	const short K = 120;
+	const int16_t K = 120;
 
 	/**
 	* camera focal length
@@ -57,4 +61,7 @@ namespace CameraConstants {
 	* camera y-resolution
 	*/
 	const float YRES = 90;
-}
+};  // namespace CameraConstants
+
+#endif  // SRC_GLOBAL_CONSTANTS_H_
+

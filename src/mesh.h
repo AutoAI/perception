@@ -37,6 +37,8 @@
 */
 
 #pragma once
+#ifndef SRC_MESH_H_
+#define SRC_MESH_H_
 
 #include <vector>
 
@@ -48,19 +50,19 @@
 #define start_size 5;
 
 class Mesh {
-public:
+ public:
 	/**
 	* makes the triangulation. boom.
 	* @param cList pointer to a CoordinateList
 	*/
-	Mesh(CoordinateList* cList);
+	explicit Mesh(CoordinateList* cList);
 
 	/**
 	* result of the triangulation: an image full of interpolation ranges
 	*/
 	NdArray<float>* result;
 
-private:
+ private:
 	/**
 	* hull for sweeping (the sweep-hull. s-hull. more on this at www.s-hull.org/)
 	*/
@@ -168,7 +170,7 @@ private:
 
 	MeshTriple* getNearest(Triple &t);
 
-	static float dist2(Triple &a, Triple &b);
+	static float dist2(const Triple &a, const Triple &b);
 
 	static int toPixelX(float x);
 
@@ -178,3 +180,6 @@ private:
 
 	static float toImageY(int y);
 };
+
+#endif  // SRC_MESH_H_
+
