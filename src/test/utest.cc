@@ -95,6 +95,7 @@ TEST(NdArray, testCase1) {
     array.set(location, value);
 
     EXPECT_EQ(value, array.get(location));
+    EXPECT_EQ(value, array.get(0, 2, 0));
 }
 
 TEST(NdArray, testCase2){
@@ -103,8 +104,9 @@ TEST(NdArray, testCase2){
 
     unsigned long location[3] = {0, 1, 0};
     float value = 69.69;
-    array.set(location, value);
+    array.set(0, 1, 0, value);
 
+    EXPECT_LT(abs(value - array.get(location)), 0.0001);
     EXPECT_LT(abs(value - array.get(location)), 0.0001);
 }
 
@@ -402,6 +404,9 @@ TEST(Mesh, constructor){
 int main(int argc, char **argv) {
     srand(time(NULL));
     testing::InitGoogleTest(&argc, argv);
-	for (int i = 0; i < 11; i++) cout << RUN_ALL_TESTS() << endl;
-    return 0;
+    int result;
+	for (int i = 0; i < 1; i++) {
+        result += RUN_ALL_TESTS();
+    }
+    return result;
 }

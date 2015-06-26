@@ -51,9 +51,13 @@ class NdArray {
 
 	void set(uint64_t* dimensions, T value);
 	void set(uint64_t index, T value);
+	void set(uint64_t i, uint64_t j, T value);
+	void set(uint64_t i, uint64_t j, uint64_t k, T value);
 
 	T get(uint64_t* dimensions);
 	T get(uint64_t index);
+	T get(uint64_t i, uint64_t j);
+	T get(uint64_t i, uint64_t j, uint64_t k);
 	// TODO: make things that should be private private and make
 	// necessary setters + getters
 };

@@ -73,6 +73,18 @@ void NdArray<T>::set(uint64_t index, T value) {
 }
 
 template<typename T>
+void NdArray<T>::set(uint64_t i, uint64_t j, T value) {
+	uint64_t index = i + j * sizes[1];
+	array[index] = value;
+}
+
+template<typename T>
+void NdArray<T>::set(uint64_t i, uint64_t j, uint64_t k, T value) {
+	uint64_t index = i + j * sizes[1] + k * sizes[2];
+	array[index] = value;
+}
+
+template<typename T>
 T NdArray<T>::get(uint64_t* dimensions) {
 	uint64_t index = 0;
 	for (char i = 0; i < numDimensions; i++) {
@@ -83,6 +95,18 @@ T NdArray<T>::get(uint64_t* dimensions) {
 
 template<typename T>
 T NdArray<T>::get(uint64_t index) {
+	return array[index];
+}
+
+template<typename T>
+T NdArray<T>::get(uint64_t i, uint64_t j) {
+	uint64_t index = i + j * sizes[1];
+	return array[index];
+}
+
+template<typename T>
+T NdArray<T>::get(uint64_t i, uint64_t j, uint64_t k) {
+	uint64_t index = i + j * sizes[1] + k * sizes[2];
 	return array[index];
 }
 

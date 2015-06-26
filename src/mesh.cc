@@ -108,7 +108,7 @@ Mesh::Mesh(CoordinateList* cList) {
 		}
 	}
 	if(debug) {
-		ROS_INFO("\ttriangleedges");
+		ROS_INFO("\tedges flipped");
 	}
 
 	// set up the data array - first, find max number of vert neighbors
