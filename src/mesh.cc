@@ -65,7 +65,7 @@ Mesh::Mesh(CoordinateList* cList) {
 		ROS_INFO("choosing seed...");
 	}
 	MeshTriple* s = chooseSeed();
-	(*list).sort(*(s -> triple));
+	(*list).bucketSort(*(s -> triple));
 	if(debug) {
 		ROS_INFO("\tseed chosen");
 	}
@@ -131,14 +131,12 @@ Mesh::Mesh(CoordinateList* cList) {
 		}
 		for(int j = 0; j < CameraConstants::YRES; j++) { 
 			MeshTriple* temp = getNearest(*(new Triple(toImageX(i), toImageY(j), 0)));
-			unsigned long setIndex[3] = {i, j, 0};
-			data -> set(setIndex, temp -> triple -> z);
+			data -> set(i, j, 0, temp -> triple -> z);
 			for(int k = 1; k < maxNeighbors+1; k++) {
-				unsigned long setIndexTemp[3] = {i, j, k};
 				if(k-1 < getNeighbors(temp).size()) {
-					data -> set(setIndexTemp, getNeighbors(temp)[k-1] -> triple -> z);
+					data -> set(i, j, k, getNeighbors(temp)[k-1] -> triple -> z);
 				} else {
-					data -> set(setIndexTemp, -1);
+					data -> set(i, j, k, -1);
 				}
 			}
 		}
@@ -161,19 +159,14 @@ Mesh::Mesh(CoordinateList* cList) {
 			float min = CameraConstants::K;
 			//TODO should rename k
 			for(int k = 0; k < maxNeighbors+1; k++) {
-				unsigned long getIndex[3] = {i, j, k};
-				// ROS_INFO("data: %f", data -> get(getIndex));
-				if(data -> get(getIndex) == -1) {
+				if(data -> get(i, j, k) == -1) {
 					break;
 				}
-				min = (min < data -> get(getIndex)) ? min : data -> get(getIndex);
-				max = (max > data -> get(getIndex)) ? max : data -> get(getIndex);
+				min = (min < data -> get(i, j, k)) ? min : data -> get(i, j, k);
+				max = (max > data -> get(i, j, k)) ? max : data -> get(i, j, k);
 			}
-			unsigned long setIndex[3] = {i, j, 0};
-			result -> set(setIndex, min);
-			unsigned long setIndex2[3] = {i, j, 1};
-			result -> set(setIndex2, max);
-			// ROS_INFO("min: %f, max: %f", min, max);
+			result -> set(i, j, 0, min);
+			result -> set(i, j, 1, max);
 		}
 	}
 	if(debug) {

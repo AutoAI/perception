@@ -113,7 +113,7 @@ class CoordinateList {
 		*
 		* @param t Triple that the whole list will be sorted against
 		*/
-		void sortThatDoesntWorkYet(Triple t);
+		void bucketSort(Triple t);
 
 		/**
 		* performs an n^2 insertion sort. good for when the list is mostly in order

@@ -147,8 +147,8 @@ uint64_t CoordinateList::getLength() {
 	return length;
 }
 
-void CoordinateList::sortThatDoesntWorkYet(Triple origin) {
-	uint64_t avg_per_bucket = 200;
+void CoordinateList::bucketSort(Triple origin) {
+	uint64_t avg_per_bucket = 50;
 	uint64_t num_buckets = length/avg_per_bucket;
 	// Pre-calculate all distances (so we dont have to do it every comparison)
 	float distances[length];
@@ -187,16 +187,14 @@ void CoordinateList::sortThatDoesntWorkYet(Triple origin) {
 		(floor((distances[i] - min) / d) < num_buckets - 1)
 			? floor((distances[i] - min) / d)
 			: num_buckets - 1;
-		uint64_t index[2] = {bucket_index, indices[bucket_index]};
-		buckets.set(index, coordinates[i]);
+		buckets.set(bucket_index, indices[bucket_index], coordinates[i]);
 		indices[bucket_index]++;
 	}
 	// Copy the things back into the original array
 	uint64_t i = 0;
 	for(uint64_t j = 0; j < num_buckets; j++)
 		for(uint64_t k = 0; k < bucket_sizes[j]; k++) {
-			uint64_t index[2] = {j, k};
-			coordinates[i++] = buckets.get(index);
+			coordinates[i++] = buckets.get(j, k);
 		}
 	// The array is now mostly in order. Do an insertion sort.
 	sort(origin);

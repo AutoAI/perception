@@ -49,20 +49,10 @@ void SeededDepthMap::saveImage(NdArray<float> &c, std::string filename) {
 	int height = CameraConstants::YRES;
 	int width = CameraConstants::XRES;
 	bitmap_image image(width, height);
-	unsigned long location[3];
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-
-			location[0] = x;
-			location[1] = y;
-			location[2] = 0;
-
-			float r = c.get(location);
-
-			location[2] = 1;
-			float g = c.get(location);
-
-			// ROS_INFO("min: %f\tmax: %f", r, g);
+			float r = c.get(x, y, 0);
+			float g = c.get(x, y, 1);
 			image.set_pixel(x, y, char(1/r), char(1/g), 0);
 		}
 	}
@@ -84,50 +74,47 @@ void SeededDepthMap::doCorrespondence(){
 
 	saveImage(bounds, "bounds.bmp");
 
-	// float f = CameraConstants::F;
-	// float l = CameraConstants::L;
+	float f = CameraConstants::F;
+	float l = CameraConstants::L;
 
-	// unsigned long dimensions[2] = {xres, yres};
-	// result = new NdArray<float>(2, dimensions);
+	unsigned long dimensions[2] = {xres, yres};
+	result = new NdArray<float>(2, dimensions);
 
-	// ROS_INFO("doing correspondence...");
-	// bool print = true;
-	// ROS_INFO("for v");
-	// for(int v = 0; v < yres; v++) {
-	// 	ROS_INFO("v = %d", v);
-	// 	ROS_INFO("for ul");
-	// 	for(int ul = 0; ul < xres; ul++) {
-	// 		ROS_INFO("ul = %d", ul);
-	// 		unsigned long indexmin[3] = {ul, v, 0};
-	// 		float zmin = bounds.get(indexmin);
-	// 		unsigned long indexmax[3] = {ul, v, 1};
-	// 		float zmax = bounds.get(indexmax);
-	// 		float bestZ;
-	// 		int bestBadness = INT_MAX;
-	// 		ROS_INFO("for ur");
-	// 		for(int ur = ceil(ul - (f*l/zmin)); f*l/(ul - ur) < zmax && ur < ul; ur++){
-	// 			ROS_INFO("ur = %d", ur);
-	// 			if(print){
-	// 				ROS_INFO("f: %f, l: %f", f, l);
-	// 				ROS_INFO("zmin: %f, zmax: %f",zmin, zmax);
-	// 				ROS_INFO("ul: %d, ur: %d, xres: %d", ul, ur, xres);
-	// 				ROS_INFO("------------------");
-	// 				print = false;
-	// 			}
-	// 			int tempBadness = calcBadness(left, right, v, ul, ur);
-	// 			if(tempBadness < bestBadness) {
-	// 				bestBadness = tempBadness;
-	// 				bestZ = f*l/(ul-ur);
-	// 			}
-	// 		}
-	// 		ROS_INFO("/for ur");
-	// 		unsigned long setindex[2] = {ul, v};
-	// 		result -> set(setindex, bestZ);
-	// 	}
-	// 	ROS_INFO("/for ul");
-	// }
-	// ROS_INFO("/for v");
-	// ROS_INFO("\tcorrespondence done");
+	ROS_INFO("doing correspondence...");
+	bool print = true;
+	ROS_INFO("for v");
+	for(int v = 0; v < yres; v++) {
+		ROS_INFO("v = %d", v);
+		ROS_INFO("for ul");
+		for(int ul = 0; ul < xres; ul++) {
+			ROS_INFO("ul = %d", ul);
+			float zmin = bounds.get(ul, v, 0);
+			float zmax = bounds.get(ul, v, 1);
+			float bestZ;
+			int bestBadness = INT_MAX;
+			ROS_INFO("for ur");
+			for(int ur = ceil(ul - (f*l/zmin)); f*l/(ul - ur) < zmax && ur < ul; ur++){
+				ROS_INFO("ur = %d", ur);
+				if(print){
+					ROS_INFO("f: %f, l: %f", f, l);
+					ROS_INFO("zmin: %f, zmax: %f",zmin, zmax);
+					ROS_INFO("ul: %d, ur: %d, xres: %d", ul, ur, xres);
+					ROS_INFO("------------------");
+					print = false;
+				}
+				int tempBadness = calcBadness(left, right, v, ul, ur);
+				if(tempBadness < bestBadness) {
+					bestBadness = tempBadness;
+					bestZ = f*l/(ul-ur);
+				}
+			}
+			ROS_INFO("/for ur");
+			result -> set(ul, v, bestZ);
+		}
+		ROS_INFO("/for ul");
+	}
+	ROS_INFO("/for v");
+	ROS_INFO("\tcorrespondence done");
 }
 
 SeededDepthMap::SeededDepthMap(){} 
