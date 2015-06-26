@@ -90,6 +90,11 @@ private:
 	CoordinateList* list;
 
 	/**
+	* populated with data from all neighbors of the triangulation's nearest vert
+	*/
+	NdArray<float>* data;
+
+	/**
 	* pick a seed point for the triangulation
 	*
 	* @return A pointer to a MeshTriple to begin triangulation
@@ -113,29 +118,6 @@ private:
 	void insertVert(Triple* v);
 
 	/**
-	* do what needs to be done to remove a triangle
-	*
-	* @param t pointer to triangle being removed
-	*/
-	void removeTri(Triangle* t);
-
-	/**
-	* get a list of a vertex's neighboring vertices
-	*
-	* @param t point to find neighbors from
-	* @return vector of neighboring points
-	*/
-	static std::vector<MeshTriple*> getNeighbors(MeshTriple* t);
-
-	/**
-	* get a list of a triangle's neighboring triangles
-	*
-	* @param t triangle to find neighbors from
-	* @return vector of neighboring Triangles
-	*/
-	static std::vector<Triangle*> getNeighbors(Triangle* t);
-
-	/**
 	* determines if one triple is "visible" to another through the hull (does a line between them intersect the hull lines)
 	*
 	* @param a first Triple
@@ -156,12 +138,12 @@ private:
 	/**
 	* TODO better description
 	*/
-	static bool onSegment(Triple p, Triple q, Triple r);
+	static int orientation(Triple p, Triple q, Triple r);
 
 	/**
 	* TODO better description
 	*/
-	static int orientation(Triple p, Triple q, Triple r);
+	static bool onSegment(Triple p, Triple q, Triple r);
 
 	bool goodTri(Triple* t0, Triple* t1, Triple* t2);
 
@@ -169,16 +151,34 @@ private:
 
 	static float sign (Triple* p1, Triple* p2, Triple* p3);
 
+	int flip(Triangle* t);
+
+	/**
+	* get a list of a triangle's neighboring triangles
+	*
+	* @param t triangle to find neighbors from
+	* @return vector of neighboring Triangles
+	*/
+	static std::vector<Triangle*> getNeighbors(Triangle* t);
+
 	static bool inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p);
 
 	static float det(float** in_matrix, int n);
 
-	int flip(Triangle* t);
+	/**
+	* do what needs to be done to remove a triangle
+	*
+	* @param t pointer to triangle being removed
+	*/
+	void removeTri(Triangle* t);
 
 	/**
-	* populated with data from all neighbors of the triangulation's nearest vert
+	* get a list of a vertex's neighboring vertices
+	*
+	* @param t point to find neighbors from
+	* @return vector of neighboring points
 	*/
-	NdArray<float>* data;
+	static std::vector<MeshTriple*> getNeighbors(MeshTriple* t);
 
 	MeshTriple* getNearest(Triple &t);
 
