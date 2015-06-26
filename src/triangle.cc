@@ -39,6 +39,14 @@ Triangle::Triangle(MeshTriple *v0, MeshTriple *v1, MeshTriple *v2) {
 	v2 -> triangles.push_back(this);
 }
 
+Triple Triangle::getCenter() {
+	Triple returned;
+	returned.x = (points[0] -> triple -> x + points[1] -> triple -> x + points[2] -> triple -> x)/3;
+	returned.y = (points[0] -> triple -> y + points[1] -> triple -> y + points[2] -> triple -> y)/3;
+	returned.z = (points[0] -> triple -> z + points[1] -> triple -> z + points[2] -> triple -> z)/3;
+	return returned;
+}
+
 bool Triangle::operator==(const Triangle& tri1) {
 	bool arr[3] = {false};
 	bool alreadyfound[3] = {false};

@@ -32,6 +32,7 @@
 #ifndef SRC_TRIANGLE_H_
 #define SRC_TRIANGLE_H_
 
+#include "triple.h"
 #include "mesh_triple.h"
 
 class Triangle {
@@ -40,6 +41,7 @@ class Triangle {
 		MeshTriple* points[3];
 		bool operator==(const Triangle& t1);
 		bool operator!=(const Triangle& t1);
+		Triple getCenter();
 };
 
 #endif  // SRC_TRIANGLE_H_
