@@ -49,17 +49,26 @@
 
 class Mesh {
 public:
+
 	/**
 	* makes the triangulation. boom.
+	*
 	* @param cList pointer to a CoordinateList
+	* @return
 	*/
 	Mesh(CoordinateList* cList);
 
 	/**
-	* result of the triangulation: an image full of interpolation ranges
+	* result of the triangulation: a 2d array full of interpolation ranges
 	*/
 	NdArray<float>* result;
 
+	/**
+	* converts a u-coordinate to a pixel x-value
+	*
+	* @param x u-coordinate to be converted
+	* @return pixel x-value equivalent of parameter
+	*/
 	static int toPixelX(float x);
 
 	static int toPixelY(float y);
@@ -85,12 +94,12 @@ private:
 	std::vector<Triangle*> tris;
 
 	/**
-	* all coordinates that are
+	* all coordinates that are to be added to the triangulation
 	*/
 	CoordinateList* list;
 
 	/**
-	* populated with data from all neighbors of the triangulation's nearest vert
+	* populated with per-pixel data from all neighbors of the triangulation's vert that is closest to each pixel
 	*/
 	NdArray<float>* data;
 
@@ -136,21 +145,33 @@ private:
 	static bool testIntersect(Triple p1, Triple q1, Triple p2, Triple q2);
 
 	/**
-	* TODO better description
+	* not really sure what this does. helps testIntersect
 	*/
 	static int orientation(Triple p, Triple q, Triple r);
 
 	/**
-	* TODO better description
+	* tests whether a point is on the line defined by two other points. not sure which is which. helps testIntersect
 	*/
 	static bool onSegment(Triple p, Triple q, Triple r);
 
+	/**
+	* tests whether a hypothetical triangle spanning the parameters is 'good' (i.e. it contains no points in the mesh)
+	*/
 	bool goodTri(Triple* t0, Triple* t1, Triple* t2);
 
+	/**
+	* tests whether the point p lies in the triangle spanned by t0, t1, and t2
+	*/
 	static bool inTri(Triple* t0, Triple* t1, Triple* t2, Triple* p);
 
+	/**
+	* no idea what this thing does. helps inTri
+	*/
 	static float sign (Triple* p1, Triple* p2, Triple* p3);
 
+	/**
+	* flips at most one edge of a triangle if there are any non-locally-delaunay edges. returns the number of edges flipped (0 or 1)
+	*/
 	int flip(Triangle* t);
 
 	/**
@@ -161,12 +182,15 @@ private:
 	*/
 	static std::vector<Triangle*> getNeighbors(Triangle* t);
 
+	/**
+	* tests whethera point p is in the circumcircle of the triangle spanned by t0, t1, and t2
+	*/
 	static bool inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p);
 
 	static float det(float** in_matrix, int n);
 
 	/**
-	* do what needs to be done to remove a triangle
+	* removes a triangle from the mesh's list of triangles as well as the meshtriples that reference it (its corners)
 	*
 	* @param t pointer to triangle being removed
 	*/
@@ -180,7 +204,14 @@ private:
 	*/
 	static std::vector<MeshTriple*> getNeighbors(MeshTriple* t);
 
+	/**
+	* returns a reference to the nearest point in the mesh to the parameter
+	*/
 	MeshTriple* getNearest(Triple &t);
 
+	/**
+	* returns the squared distance between two points. this is slightly easier than the distance because you dont have to take square roots,
+	* and because distance squared is strictly increasing with distance, if you're going to compare distances you might as well compare squared distances
+	*/
 	static float dist2(Triple &a, Triple &b);
 };
