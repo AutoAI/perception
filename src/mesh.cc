@@ -94,7 +94,7 @@ Mesh::Mesh(CoordinateList* cList) {
 
 	// iteratively 'flip' triangles until no more triangles need be flipped
 	if(debug) {
-		ROS_INFO("flipping triangles...");
+		ROS_INFO("flipping edges...");
 	}
 	int maxIterations = 12;
 	int sumFlips;
@@ -108,7 +108,7 @@ Mesh::Mesh(CoordinateList* cList) {
 		}
 	}
 	if(debug) {
-		ROS_INFO("\ttriangles flipped");
+		ROS_INFO("\ttriangleedges");
 	}
 
 	// set up the data array - first, find max number of vert neighbors
@@ -309,24 +309,71 @@ void Mesh::insertVert(Triple* v) {
 	hull.insert(hull.begin()+cc, t);
 }
 
-void Mesh::removeTri(Triangle* t) {
-	// remove references to t from all its verts
-	for(char i = 0; i < 3; i++) {
-		for(int j = 0; j < t -> points[i] -> triangles.size(); j++) {
-			if(t -> points[i] -> triangles[j] == t) {
-				t -> points[i] -> triangles.erase(t -> points[i] -> triangles.begin()+j);
-				break;
-			}
-		}
+// is a point 'visible' from another? that is, does the line between them pass through the hull? this function answers these questions
+bool Mesh::isVisible(Triple& a, Triple& d) {
+	if(!((a == *(hull[hull.size()-1] -> triple)) || ((d == *(hull[hull.size()-1] -> triple))) || (a == *(hull[0] -> triple)) || ((d == *(hull[0] -> triple)))) && testIntersect(*(hull[hull.size()-1] -> triple), *(hull[0] -> triple), a, d)) {
+		return false;
+	}
 
-	}
-	// remove reference to t from this mesh
-	for(unsigned long i = 0; i < tris.size(); i++) {
-		if(tris[i] == t) {
-			tris.erase(tris.begin()+i);
-			return;
+	for(unsigned long i = 1; i < hull.size(); i++) {
+		if(!((a == *(hull[i-1] -> triple)) || ((d == *(hull[i-1] -> triple))) || (a == *(hull[i] -> triple)) || ((d == *(hull[i] -> triple)))) && testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)) { 
+			return false;
 		}
 	}
+	return true;
+}
+
+// helper function to find if line segments p1q1 and p2q2 intersect
+// got this baby from www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+bool Mesh::testIntersect(Triple p1, Triple q1, Triple p2, Triple q2) {
+	// Find some orientations
+	int o1 = orientation(p1, q1, p2);
+	int o2 = orientation(p1, q1, q2);
+	int o3 = orientation(p2, q2, p1);
+	int o4 = orientation(p2, q2, q1);
+
+	// If you want to know what this does just go to the website where I got it they have more readable code
+	return (o1 != o2 && o3 != o4)||(o1 == 0 && onSegment(p1, p2, q1))||(o2 == 0 && onSegment(p1, q2, q1))||(o3 == 0 && onSegment(p2, p1, q2))||(o4 == 0 && onSegment(p2, q1, q2));
+}
+
+// don't worry about this one either
+int Mesh::orientation(Triple p, Triple q, Triple r) {
+	int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+	if (val == 0) {
+		return 0;
+	}
+	return (val > 0)? 1: 2;
+}
+
+// helper-helper function. dont worry about this one
+bool Mesh::onSegment(Triple p, Triple q, Triple r) {
+	return q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) && q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y);
+}
+
+// is this tri good?
+bool Mesh::goodTri(Triple* t0, Triple* t1, Triple* t2){
+	for(int i = 0; i < verts.size(); i++) {
+		if(inTri(t0, t1, t2, verts[i] -> triple)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+// code I grabbed from http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
+bool Mesh::inTri(Triple* t0, Triple* t1, Triple* t2, Triple* p){
+	bool b1, b2, b3;
+
+    b1 = sign(p, t0, t1) < 0.0f;
+    b2 = sign(p, t1, t2) < 0.0f;
+    b3 = sign(p, t2, t0) < 0.0f;
+
+    return ((b1 == b2) && (b2 == b3));
+}
+
+// helper function for inTri
+float Mesh::sign (Triple* p1, Triple* p2, Triple* p3){
+    return (p1 -> x - p3 -> x) * (p2 -> y - p3 -> y) - (p2 -> x - p3 -> x) * (p1 -> y - p3 -> y);
 }
 
 // flips necessary edges of a triangle, returns number of edges flipped
@@ -405,39 +452,6 @@ int Mesh::flip(Triangle* t) {
 	return 0;
 }
 
-vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
-	vector<Triangle*> neighborTriangles = t -> triangles;
-	vector<MeshTriple*> result;
-	// iterate over triangles
-	for (int i = 0; i < neighborTriangles.size(); i++) {
-		Triangle* tri = neighborTriangles[i];
-		// iterate over each triangle's points
-		for(int j = 0; j < 3; j++) {
-			bool good = true;
-			// check if we already have that point
-			for(int k = 0; k < result.size(); k++) {
-				if(result[k] == tri -> points[j]) {
-					good = false;
-					break;
-				}
-			}
-
-			// if we don't, okay, let's add it
-			if(good) {
-				result.push_back(tri -> points[j]);
-			}
-		}
-	}
-	// remove this meshtriple from the result
-	for(int i = 0; i < result.size(); i++){
-		if(result[i] == t){
-			result.erase(result.begin()+i);
-			break;
-		}
-	}
-	return result;
-}
-
 vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 	MeshTriple** points = t -> points;
 	vector<Triangle*> data;
@@ -478,73 +492,6 @@ vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
 		}
 	}
 	return data;
-}
-
-// is a point 'visible' from another? that is, does the line between them pass through the hull? this function answers these questions
-bool Mesh::isVisible(Triple& a, Triple& d) {
-	if(!((a == *(hull[hull.size()-1] -> triple)) || ((d == *(hull[hull.size()-1] -> triple))) || (a == *(hull[0] -> triple)) || ((d == *(hull[0] -> triple)))) && testIntersect(*(hull[hull.size()-1] -> triple), *(hull[0] -> triple), a, d)) {
-		return false;
-	}
-
-	for(unsigned long i = 1; i < hull.size(); i++) {
-		if(!((a == *(hull[i-1] -> triple)) || ((d == *(hull[i-1] -> triple))) || (a == *(hull[i] -> triple)) || ((d == *(hull[i] -> triple)))) && testIntersect(*(hull[i-1] -> triple), *(hull[i] -> triple), a, d)) { 
-			return false;
-		}
-	}
-	return true;
-}
-
-// helper function to find if line segments p1q1 and p2q2 intersect
-// got this baby from www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
-bool Mesh::testIntersect(Triple p1, Triple q1, Triple p2, Triple q2) {
-	// Find some orientations
-	int o1 = orientation(p1, q1, p2);
-	int o2 = orientation(p1, q1, q2);
-	int o3 = orientation(p2, q2, p1);
-	int o4 = orientation(p2, q2, q1);
-
-	// If you want to know what this does just go to the website where I got it they have more readable code
-	return (o1 != o2 && o3 != o4)||(o1 == 0 && onSegment(p1, p2, q1))||(o2 == 0 && onSegment(p1, q2, q1))||(o3 == 0 && onSegment(p2, p1, q2))||(o4 == 0 && onSegment(p2, q1, q2));
-}
-
-// helper-helper function. dont worry about this one
-bool Mesh::onSegment(Triple p, Triple q, Triple r) {
-	return q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) && q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y);
-}
-
-// don't worry about this one either
-int Mesh::orientation(Triple p, Triple q, Triple r) {
-	int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-	if (val == 0) {
-		return 0;
-	}
-	return (val > 0)? 1: 2;
-}
-
-// is this tri good?
-bool Mesh::goodTri(Triple* t0, Triple* t1, Triple* t2){
-	for(int i = 0; i < verts.size(); i++) {
-		if(inTri(t0, t1, t2, verts[i] -> triple)) {
-			return false;
-		}
-	}
-	return true;
-}
-
-// code I grabbed from http://stackoverflow.com/questions/2049582/how-to-determine-a-point-in-a-triangle
-bool Mesh::inTri(Triple* t0, Triple* t1, Triple* t2, Triple* p){
-	bool b1, b2, b3;
-
-    b1 = sign(p, t0, t1) < 0.0f;
-    b2 = sign(p, t1, t2) < 0.0f;
-    b3 = sign(p, t2, t0) < 0.0f;
-
-    return ((b1 == b2) && (b2 == b3));
-}
-
-// helper function for inTri
-float Mesh::sign (Triple* p1, Triple* p2, Triple* p3){
-    return (p1 -> x - p3 -> x) * (p2 -> y - p3 -> y) - (p2 -> x - p3 -> x) * (p1 -> y - p3 -> y);
 }
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
@@ -631,6 +578,59 @@ float Mesh::det(float** m, int n) {
 	return sum;
 }
 
+void Mesh::removeTri(Triangle* t) {
+	// remove references to t from all its verts
+	for(char i = 0; i < 3; i++) {
+		for(int j = 0; j < t -> points[i] -> triangles.size(); j++) {
+			if(t -> points[i] -> triangles[j] == t) {
+				t -> points[i] -> triangles.erase(t -> points[i] -> triangles.begin()+j);
+				break;
+			}
+		}
+
+	}
+	// remove reference to t from this mesh
+	for(unsigned long i = 0; i < tris.size(); i++) {
+		if(tris[i] == t) {
+			tris.erase(tris.begin()+i);
+			return;
+		}
+	}
+}
+
+vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
+	vector<Triangle*> neighborTriangles = t -> triangles;
+	vector<MeshTriple*> result;
+	// iterate over triangles
+	for (int i = 0; i < neighborTriangles.size(); i++) {
+		Triangle* tri = neighborTriangles[i];
+		// iterate over each triangle's points
+		for(int j = 0; j < 3; j++) {
+			bool good = true;
+			// check if we already have that point
+			for(int k = 0; k < result.size(); k++) {
+				if(result[k] == tri -> points[j]) {
+					good = false;
+					break;
+				}
+			}
+
+			// if we don't, okay, let's add it
+			if(good) {
+				result.push_back(tri -> points[j]);
+			}
+		}
+	}
+	// remove this meshtriple from the result
+	for(int i = 0; i < result.size(); i++){
+		if(result[i] == t){
+			result.erase(result.begin()+i);
+			break;
+		}
+	}
+	return result;
+}
+
 // returns a pointer to the nearest MeshTriple to a Triple
 MeshTriple* Mesh::getNearest(Triple &t) {
 	MeshTriple* nearest = verts[0];
@@ -642,7 +642,6 @@ MeshTriple* Mesh::getNearest(Triple &t) {
 	return nearest;
 }
 
-//TODO Not dist2, travis that's not okay
 // returns the squared 2d distance between two Triples
 float Mesh::dist2(Triple &a, Triple &b) {
 	return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
