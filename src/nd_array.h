@@ -41,13 +41,13 @@
 
 template <typename T>
 class NdArray {
- public:
-	T* array;
-	uint64_t* sizes;
-	uint64_t length;
-	char numDimensions;
+public:
 
 	NdArray(char numDimensions, uint64_t* dimensions);
+
+	char getNumDimensions();
+	uint64_t* getDimensions();
+	uint64_t size();
 
 	void set(uint64_t* dimensions, T value);
 	void set(uint64_t index, T value);
@@ -58,8 +58,14 @@ class NdArray {
 	T get(uint64_t index);
 	T get(uint64_t i, uint64_t j);
 	T get(uint64_t i, uint64_t j, uint64_t k);
-	// TODO: make things that should be private private and make
-	// necessary setters + getters
+	
+private:
+
+	T* array;
+	uint64_t* sizes;
+	uint64_t* dimensions;
+	uint64_t length;
+	char numDimensions;
 };
 
 #endif  // SRC_ND_ARRAY_H_

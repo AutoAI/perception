@@ -44,6 +44,7 @@
 
 template<typename T>
 NdArray<T>::NdArray(char numDimensions, uint64_t* dimensions) {
+	this -> dimensions = dimensions;
 	sizes = new uint64_t[numDimensions];
 	length = 1;
 	for (char i = 0; i < numDimensions; i++) {
@@ -56,6 +57,22 @@ NdArray<T>::NdArray(char numDimensions, uint64_t* dimensions) {
 	}
 	this->numDimensions = numDimensions;
 	array = new T[length];
+}
+
+
+template<typename T>
+char NdArray<T>::getNumDimensions() {
+	return numDimensions;
+}
+
+template<typename T>
+uint64_t* NdArray<T>::getDimensions() {
+	return dimensions;
+}
+
+template<typename T>
+uint64_t NdArray<T>::size() {
+	return length;
 }
 
 template<typename T>

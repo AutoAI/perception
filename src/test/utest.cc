@@ -96,6 +96,8 @@ TEST(NdArray, testCase1) {
 
     EXPECT_EQ(value, array.get(location));
     EXPECT_EQ(value, array.get(0, 2, 0));
+    EXPECT_EQ(3, array.getNumDimensions());
+    EXPECT_EQ(27, array.size());
 }
 
 TEST(NdArray, testCase2){
@@ -108,6 +110,7 @@ TEST(NdArray, testCase2){
 
     EXPECT_LT(abs(value - array.get(location)), 0.0001);
     EXPECT_LT(abs(value - array.get(location)), 0.0001);
+    EXPECT_EQ(100, array.getDimensions()[1]);
 }
 
 TEST(CoordinateList, toCartesian) {
@@ -229,7 +232,7 @@ TEST(CoordinateList, testSort2) {
     }
     Triple c (float(rand()) / rand(), float(rand()) / rand(), float(rand()) / rand());
 
-    test.sortThatDoesntWorkYet(c);
+    test.bucketSort(c);
 
     bool good = true;
 
