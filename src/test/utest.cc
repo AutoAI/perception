@@ -71,7 +71,7 @@ TEST(Triple, inequalityFalse) {
 	EXPECT_FALSE(a!=b);
 }
 
-TEST(Triangle, eqTrue) {
+TEST(Triangle, equalityTrue) {
 	MeshTriple t1(new Triple(1, 1, 1));
 	MeshTriple t2(new Triple(1, 1, 2));
 	MeshTriple t3(new Triple(1, 2, 2));
@@ -86,7 +86,39 @@ TEST(Triangle, eqTrue) {
 	EXPECT_TRUE(tri1 == tri2);
 }
 
-TEST(NdArray, testCase1) {
+TEST(Triangle, getCircumCenter) {
+    // right triangle - circumcenter on hypotenuse
+    MeshTriple t1(new Triple(0, 0, 0));
+    MeshTriple t2(new Triple(0, 1, 0));
+    MeshTriple t3(new Triple(1, 0, 0));
+    Triple c1(.5, .5, 0);
+
+    Triangle tri1(&t1, &t2, &t3);
+
+    EXPECT_TRUE(tri1.getCircumCenter() == c1);
+
+    // acute triangle - circumcenter inside
+    MeshTriple t4(new Triple(-1, 0, 0));
+    MeshTriple t5(new Triple(1, 0, 0));
+    MeshTriple t6(new Triple(0, 1.5, 0));
+    Triple c2(0, 5.0/12.0, 0);
+
+    Triangle tri2(&t4, &t5, &t6);
+
+    EXPECT_TRUE(tri2.getCircumCenter() == c2);
+
+    // obtuse triangle - circumcenter outside
+    MeshTriple t7(new Triple(-1, 1, 0));
+    MeshTriple t8(new Triple(0, 0, 0));
+    MeshTriple t9(new Triple(1, 0, 0));
+    Triple c3(.5, 1.5, 0);
+
+    Triangle tri3(&t7, &t8, &t9);
+
+    EXPECT_TRUE(tri3.getCircumCenter() == c3);
+}
+
+TEST(NdArray, generalTest1) {
     unsigned long bounds[3] = {3, 3, 3};
     NdArray<float> array(3, bounds);
 
@@ -100,7 +132,7 @@ TEST(NdArray, testCase1) {
     EXPECT_EQ(27, array.size());
 }
 
-TEST(NdArray, testCase2){
+TEST(NdArray, generalTest2){
     unsigned long bounds[3] = {200, 100, 6};
     NdArray<float> array(3, bounds);
 
@@ -113,7 +145,7 @@ TEST(NdArray, testCase2){
     EXPECT_EQ(100, array.getDimensions()[1]);
 }
 
-TEST(CoordinateList, toCartesian) {
+TEST(CoordinateList, toType_Cartesian) {
     CoordinateList list(CoordinateList::SPHERICAL, 1);
 
     Triple coordinate1(1, 3.14159, 0);
@@ -129,7 +161,7 @@ TEST(CoordinateList, toCartesian) {
     EXPECT_LT(abs(a.z-1), 0.0001);
 }
 
-TEST(CoordinateList, toSpherical) {
+TEST(CoordinateList, toType_Spherical) {
     CoordinateList list(CoordinateList::CARTESIAN, 2);
 
     Triple coordinate1(1, 0, 10);
@@ -152,7 +184,7 @@ TEST(CoordinateList, toSpherical) {
     EXPECT_LT(abs(a.z-acos(1/sqrt(3))), 0.0001);
 }
 
-TEST(CoordinateList, toPerspective) {
+TEST(CoordinateList, toType_Perspective) {
     CoordinateList list(CoordinateList::CARTESIAN, 2);
 
     Triple coordinate1(1, 0, 10);
@@ -216,7 +248,7 @@ TEST(CoordinateList, testSort) {
     EXPECT_TRUE(good);
 }
 
-TEST(CoordinateList, testSort2) {
+TEST(CoordinateList, testBucketSort) {
     unsigned long t_length = 1000;
     Triple t[t_length];
 
@@ -248,15 +280,15 @@ TEST(CoordinateList, testSort2) {
     EXPECT_TRUE(good);
 }
 
-TEST(Mesh, testConstructor) {
+TEST(Mesh, testConstructorInvalidArgument) {
 	EXPECT_THROW(Mesh(NULL), std::invalid_argument);
 }
 
-TEST(Mesh, testConstructor2) {
+TEST(Mesh, testConstructorInvalidArgument2) {
 	EXPECT_THROW(Mesh(new CoordinateList(CoordinateList::CARTESIAN, 0)), std::invalid_argument);
 }
 
-TEST(Mesh, det2x2) {
+TEST(Mesh, determinant_2x2) {
     float** matrix = new float*[2];
     for(int i = 0; i < 2; i++)
         matrix[i] = new float[2];
@@ -271,7 +303,7 @@ TEST(Mesh, det2x2) {
 	EXPECT_LT(abs(out - ans), 0.0001);
 }
 
-TEST(Mesh, det3x3) {
+TEST(Mesh, determinant_3x3) {
     float** matrix = new float*[3];
     for(int i = 0; i < 3; i++)
         matrix[i] = new float[3];
@@ -291,7 +323,7 @@ TEST(Mesh, det3x3) {
 	EXPECT_LT(abs(out - ans), 0.0001);
 }
 
-TEST(Mesh, det4x4) {
+TEST(Mesh, determinant_4x4) {
     float** matrix = new float*[4];
     for(int i = 0; i < 4; i++)
         matrix[i] = new float[4];
@@ -340,20 +372,16 @@ TEST(Mesh, dist2) {
 	Triple t2(0, 0, 1);
 
 	EXPECT_EQ(Mesh::dist2(t1, t2), 0);
-}
 
-TEST(Mesh, dist23) {
-	Triple t1(2, 2, 2);
-	Triple t2(0, 0, 0);
+    Triple t3(2, 2, 2);
+    Triple t4(0, 0, 0);
 
-	EXPECT_EQ(Mesh::dist2(t1, t2), 8);
-}
+    EXPECT_EQ(Mesh::dist2(t3, t4), 8);
 
-TEST(Mesh, dist24) {
-	Triple t1(3, 4, 9);
-	Triple t2(0, 0, 0);
+    Triple t5(3, 4, 9);
+    Triple t6(0, 0, 0);
 
-	EXPECT_EQ(Mesh::dist2(t1, t2), 25);
+    EXPECT_EQ(Mesh::dist2(t5, t6), 25);
 }
 
 TEST(Mesh, inCircumCirc) {

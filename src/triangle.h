@@ -41,7 +41,7 @@ class Triangle {
 		MeshTriple* points[3];
 		bool operator==(const Triangle& t1);
 		bool operator!=(const Triangle& t1);
-		Triple getCenter();
+		Triple getCircumCenter();
 };
 
 #endif  // SRC_TRIANGLE_H_

@@ -550,7 +550,6 @@ float Mesh::det(float** m, int n) {
 			if(j == i) {
 				s++;
 			}
-
 			for(int k = 1; k < n; k++) {
 				sub[i][j][k-1] = m[s][k];
 			}

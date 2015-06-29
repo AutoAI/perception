@@ -110,7 +110,7 @@ void CoordinateList::toType(ListType newType, Triple offset) {
 				pow(coordinates[i].x, 2) +
 				pow(coordinates[i].y, 2) +
 				pow(coordinates[i].z, 2));
-			theta = atan(coordinates[i].y/coordinates[i].x);
+			theta = atan2(coordinates[i].y, coordinates[i].x);
 			phi = acos(coordinates[i].z/r);
 
 			coordinates[i].x = r;
@@ -148,8 +148,7 @@ uint64_t CoordinateList::getLength() {
 }
 
 void CoordinateList::bucketSort(Triple origin) {
-	uint64_t avg_per_bucket = 50;
-	uint64_t num_buckets = length/avg_per_bucket;
+	uint64_t num_buckets = (uint64_t)sqrt(length);
 	// Pre-calculate all distances (so we dont have to do it every comparison)
 	float distances[length];
 	for(uint64_t i = 0; i < length; i++)
