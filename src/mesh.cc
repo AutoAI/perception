@@ -80,65 +80,48 @@ Mesh::Mesh(CoordinateList* cList) {
 	if(debug) {
 		ROS_INFO("\thull initialized");
 	}
-
-	// Insert each vert, flipping after each
+	
+	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
 	if(debug) {
 		ROS_INFO("inserting points...");
 	}
 	for(unsigned long i = 3; i < list -> getLength(); i++) {
 		insertVert(list -> getPtr(i));
-		// definitely flip the triangles of the most recently added meshtriple
-		vector<Triangle*> trisToFlip = verts[verts.size()-1] -> triangles;
-		// as long as we have tris to flip...
-		while(trisToFlip.size() > 0) {
-			// flip the most recent triangle we set out to flip, and if we had to flip it,
-			// add its neighbors to the tris we might have to flip and we'll come back to it again when we're done with those
-			if(flip(trisToFlip[trisToFlip.size()-1]) == 1) {
-				vector<Triangle*> trisToAdd = trisToFlip[trisToFlip.size()-1] -> getNeighbors();
-				for(int j = 0; j < trisToAdd.size(); j++) {
-					trisToFlip.push_back(trisToAdd[j]);
-				}
-			// otherwise, remove it from our list 
-			} else {
-				trisToFlip.erase(trisToFlip.begin()+trisToFlip.size()-1);
-			}
-		}
-		// TODO: use a stack instead, because that's basically what the list is
 	}
 	if(debug) {
 		ROS_INFO("\tpoints inserted");
 	}
-	// INSERT THEN FLIP
-	// // sequentially insert points, adding edges from new point to 'visible' points on the convex hull
-	// if(debug) {
-	// 	ROS_INFO("inserting points...");
-	// }
-	// for(unsigned long i = 3; i < list -> getLength(); i++) {
-	// 	insertVert(list -> getPtr(i));
-	// }
-	// if(debug) {
-	// 	ROS_INFO("\tpoints inserted");
-	// }
 
-	// // iteratively 'flip' triangles until no more triangles need be flipped
-	// if(debug) {
-	// 	ROS_INFO("flipping edges...");
-	// }
-	// int maxIterations = 12;
-	// int sumFlips;
-	// for(int i = 0; sumFlips != 0; i++) {
-	// 	sumFlips = 0;
-	// 	for(int j = 0; j < tris.size(); j++) {
-	// 		sumFlips += flip(tris[j]);
-	// 	}
-	// 	ROS_INFO("flipped: %d", sumFlips);
-	// 	if(i == maxIterations - 1){
-	// 		// break;
-	// 	}
-	// }
-	// if(debug) {
-	// 	ROS_INFO("\tedges flipped");
-	// }
+	// iteratively 'flip' triangles
+	if(debug) {
+		ROS_INFO("flipping edges...");
+	}
+	int maxConsecutiveEqualFlips = 4;
+	int consecutiveEqualFlips = 0;
+	int lastFlips = -1;
+	int sumFlips;
+	// flip until we make no more flips
+	while(sumFlips != 0) {
+		sumFlips = 0;
+		for(int j = 0; j < tris.size(); j++) {
+			sumFlips += flip(tris[j]);
+		}
+		ROS_INFO("flipped: %d", sumFlips);
+		// maintain some information
+		if(sumFlips == lastFlips){
+			consecutiveEqualFlips++;
+		} else {
+			consecutiveEqualFlips = 0;
+		}
+		// if do the same number of flips <maxConsecutiveEqualFlips> times in a row, just stop
+		if(consecutiveEqualFlips == maxConsecutiveEqualFlips) {
+			break;
+		}
+		lastFlips = sumFlips;
+	}
+	if(debug) {
+		ROS_INFO("\tedges flipped");
+	}
 
 	// set up the data array - first, find max number of vert neighbors
 	if(debug) {
@@ -458,7 +441,7 @@ int Mesh::flip(Triangle* t) {
 			}
 		}
 
-		// if the pair is not locally delaunay, flip it and stop (we'll come back for the rest in the next iteration)
+		// if the pair is not locally delaunay, flip it and stop (this triangle no longer exists)
 		if(inCircumCirc(allPoints[i1] -> triple, allPoints[i2] -> triple, allPoints[i3] -> triple, allPoints[i4] -> triple)) {
 			removeTri(t);
 			removeTri(neighbor);
@@ -466,7 +449,6 @@ int Mesh::flip(Triangle* t) {
 			Triangle* new2 = new Triangle(allPoints[i2], allPoints[i3], allPoints[i4]);
 			tris.push_back(new1);
 			tris.push_back(new2);
-
 			return 1;
 		}
 	}
