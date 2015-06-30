@@ -39,9 +39,11 @@ class Triangle {
 	public:
 		Triangle(MeshTriple *v0, MeshTriple *v1, MeshTriple *v2);
 		MeshTriple* points[3];
+		Triple getCircumCenter();
+		bool isNeighbor(Triangle* t);
+		std::vector<Triangle*> getNeighbors();
 		bool operator==(const Triangle& t1);
 		bool operator!=(const Triangle& t1);
-		Triple getCircumCenter();
 };
 
 #endif  // SRC_TRIANGLE_H_

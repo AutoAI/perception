@@ -23,55 +23,79 @@
 
 using namespace std;
 
-TEST(Triple, equalityTrue) {
-	Triple a;
-	Triple b;
-	
-	a.x = 1;
-	a.y = 1;
-	a.z = 1;
-
-	b.x = 1;
-	b.y = 1;
-	b.z = 1;
+TEST(Triple, equalityOperators) {
+	Triple a(1, 1, 1);
+	Triple b(1, 1, 1);
 
 	EXPECT_TRUE(a==b);
+    EXPECT_FALSE(a!=b);
+
+    b.y = 2;
+
+    EXPECT_FALSE(a==b);
+    EXPECT_TRUE(a!=b);
 }
 
-TEST(Triple, equalityFalse) {
-	Triple a;
-	Triple b;
-	
-	a.x = 1;
-	a.y = 1;
-	a.z = 1;
+TEST(MeshTriple, equalityOperators) {
+    MeshTriple a(new Triple(1, 1, 1));
+    MeshTriple b(new Triple(1, 1, 1));
 
-	b.x = 1;
-	b.y = 2;
-	b.z = 1;
+    EXPECT_TRUE(a==b);
+    EXPECT_FALSE(a!=b);
 
-	EXPECT_FALSE(a==b);
+    b.triple -> y = 2;
+
+    EXPECT_FALSE(a==b);
+    EXPECT_TRUE(a!=b);
 }
 
-TEST(Triple, inequalityTrue) {
-	Triple a(1, 1, 3);
-	Triple b;
-
-	b.x = 1;
-	b.y = 1;
-	b.z = 1;
-
-	EXPECT_TRUE(a!=b);
+TEST(MeshTriple, isNeighbor_GetNeighbors) {
+    // some triples
+    Triple* t1 = new Triple(0, 0, 1);
+    Triple* t2 = new Triple(0, 2, 2);
+    Triple* t3 = new Triple(2, 2, 3);
+    Triple* t4 = new Triple(2, 0, 4);
+    Triple* t5 = new Triple(1, 1, 5);
+    // their meshtriples
+    MeshTriple* m1 = new MeshTriple(t1);
+    MeshTriple* m2 = new MeshTriple(t2);
+    MeshTriple* m3 = new MeshTriple(t3);
+    MeshTriple* m4 = new MeshTriple(t4);
+    MeshTriple* m5 = new MeshTriple(t5);
+    // some triangles
+    Triangle* tri1 = new Triangle(m1, m2, m5);
+    Triangle* tri2 = new Triangle(m2, m3, m5);
+    Triangle* tri3 = new Triangle(m3, m4, m5);
+    Triangle* tri4 = new Triangle(m4, m1, m5);
+    // tests
+    EXPECT_TRUE(m1 -> isNeighbor(m4));
+    EXPECT_TRUE(m1 -> isNeighbor(m2));
+    EXPECT_TRUE(m1 -> isNeighbor(m5));
+    EXPECT_TRUE(m2 -> isNeighbor(m1));
+    EXPECT_TRUE(m2 -> isNeighbor(m3));
+    EXPECT_TRUE(m2 -> isNeighbor(m5));
+    EXPECT_TRUE(m3 -> isNeighbor(m2));
+    EXPECT_TRUE(m3 -> isNeighbor(m4));
+    EXPECT_TRUE(m3 -> isNeighbor(m5));
+    EXPECT_TRUE(m4 -> isNeighbor(m3));
+    EXPECT_TRUE(m4 -> isNeighbor(m1));
+    EXPECT_TRUE(m4 -> isNeighbor(m5));
+    EXPECT_TRUE(m5 -> isNeighbor(m1));
+    EXPECT_TRUE(m5 -> isNeighbor(m2));
+    EXPECT_TRUE(m5 -> isNeighbor(m3));
+    EXPECT_TRUE(m5 -> isNeighbor(m4));
+    EXPECT_FALSE(m1 -> isNeighbor(m3));
+    EXPECT_FALSE(m2 -> isNeighbor(m4));
+    EXPECT_FALSE(m3 -> isNeighbor(m1));
+    EXPECT_FALSE(m4 -> isNeighbor(m2));
+    EXPECT_EQ(m1 -> getNeighbors().size(), 3);
+    EXPECT_EQ(m2 -> getNeighbors().size(), 3);
+    EXPECT_EQ(m3 -> getNeighbors().size(), 3);
+    EXPECT_EQ(m4 -> getNeighbors().size(), 3);
+    EXPECT_EQ(m5 -> getNeighbors().size(), 4);
 }
 
-TEST(Triple, inequalityFalse) {
-	Triple a(1, 2, 2);
-	Triple b(1, 2, 2);
-
-	EXPECT_FALSE(a!=b);
-}
-
-TEST(Triangle, equalityTrue) {
+TEST(Triangle, equalityOperators) {
 	MeshTriple t1(new Triple(1, 1, 1));
 	MeshTriple t2(new Triple(1, 1, 2));
 	MeshTriple t3(new Triple(1, 2, 2));
@@ -84,6 +108,49 @@ TEST(Triangle, equalityTrue) {
 	Triangle tri2(&t4, &t5, &t6);
 
 	EXPECT_TRUE(tri1 == tri2);
+    EXPECT_FALSE(tri1 != tri2);
+
+    t1.triple -> x = 69;
+
+    EXPECT_FALSE(tri1 == tri2);
+    EXPECT_TRUE(tri1 != tri2);
+}
+
+TEST(Triangle, isNeighbor_GetNeighbors) {
+    // some triples
+    Triple* t1 = new Triple(0, 0, 1);
+    Triple* t2 = new Triple(0, 2, 2);
+    Triple* t3 = new Triple(2, 2, 3);
+    Triple* t4 = new Triple(2, 0, 4);
+    Triple* t5 = new Triple(1, 1, 5);
+    // their meshtriples
+    MeshTriple* m1 = new MeshTriple(t1);
+    MeshTriple* m2 = new MeshTriple(t2);
+    MeshTriple* m3 = new MeshTriple(t3);
+    MeshTriple* m4 = new MeshTriple(t4);
+    MeshTriple* m5 = new MeshTriple(t5);
+    // some triangles
+    Triangle* tri1 = new Triangle(m1, m2, m5);
+    Triangle* tri2 = new Triangle(m2, m3, m5);
+    Triangle* tri3 = new Triangle(m3, m4, m5);
+    Triangle* tri4 = new Triangle(m4, m1, m5);
+    // tests
+    EXPECT_TRUE(tri1 -> isNeighbor(tri4));
+    EXPECT_TRUE(tri1 -> isNeighbor(tri2));
+    EXPECT_TRUE(tri2 -> isNeighbor(tri1));
+    EXPECT_TRUE(tri2 -> isNeighbor(tri3));
+    EXPECT_TRUE(tri3 -> isNeighbor(tri2));
+    EXPECT_TRUE(tri3 -> isNeighbor(tri4));
+    EXPECT_TRUE(tri4 -> isNeighbor(tri3));
+    EXPECT_TRUE(tri4 -> isNeighbor(tri1));
+    EXPECT_FALSE(tri1 -> isNeighbor(tri3));
+    EXPECT_FALSE(tri2 -> isNeighbor(tri4));
+    EXPECT_FALSE(tri3 -> isNeighbor(tri1));
+    EXPECT_FALSE(tri4 -> isNeighbor(tri2));
+    EXPECT_EQ(tri1 -> getNeighbors().size(), 2);
+    EXPECT_EQ(tri2 -> getNeighbors().size(), 2);
+    EXPECT_EQ(tri3 -> getNeighbors().size(), 2);
+    EXPECT_EQ(tri4 -> getNeighbors().size(), 2);
 }
 
 TEST(Triangle, getCircumCenter) {
@@ -118,8 +185,8 @@ TEST(Triangle, getCircumCenter) {
     EXPECT_TRUE(tri3.getCircumCenter() == c3);
 }
 
-TEST(NdArray, generalTest1) {
-    unsigned long bounds[3] = {3, 3, 3};
+TEST(NdArray, generalTest) {
+    unsigned long bounds[3] = {200, 100, 6};
     NdArray<float> array(3, bounds);
 
     unsigned long location[3] = {0, 2, 0};
@@ -129,20 +196,8 @@ TEST(NdArray, generalTest1) {
     EXPECT_EQ(value, array.get(location));
     EXPECT_EQ(value, array.get(0, 2, 0));
     EXPECT_EQ(3, array.getNumDimensions());
-    EXPECT_EQ(27, array.size());
-}
-
-TEST(NdArray, generalTest2){
-    unsigned long bounds[3] = {200, 100, 6};
-    NdArray<float> array(3, bounds);
-
-    unsigned long location[3] = {0, 1, 0};
-    float value = 69.69;
-    array.set(0, 1, 0, value);
-
-    EXPECT_LT(abs(value - array.get(location)), 0.0001);
-    EXPECT_LT(abs(value - array.get(location)), 0.0001);
     EXPECT_EQ(100, array.getDimensions()[1]);
+    EXPECT_EQ(120000, array.size());
 }
 
 TEST(CoordinateList, toType_Cartesian) {
@@ -206,14 +261,6 @@ TEST(CoordinateList, toType_Perspective) {
     EXPECT_LT(abs(a.x-CameraConstants::F), 0.0001);
     EXPECT_LT(abs(a.y-CameraConstants::F), 0.00001);
     EXPECT_LT(abs(a.z-CameraConstants::K), 0.0001);
-}
-
-TEST(CoordinateList, testSize) {
-    unsigned long t_length = 20;
-    Triple t[t_length];
-
-    CoordinateList test(CoordinateList::CARTESIAN, t_length);
-    EXPECT_EQ(t_length, test.getLength());
 }
 
 TEST(CoordinateList, testSort) {
@@ -396,28 +443,6 @@ TEST(Mesh, inCircumCirc) {
     EXPECT_TRUE(Mesh::inCircumCirc(s1, s2, s3, t1));
     EXPECT_FALSE(Mesh::inCircumCirc(s1, s2, s3, t2));
     EXPECT_FALSE(Mesh::inCircumCirc(s1, s2, s3, t3));
-}
-
-TEST(Mesh, getNeighbors) {
-    MeshTriple* m1 = new MeshTriple(new Triple(0, 0, 0));
-    MeshTriple* m2 = new MeshTriple(new Triple(1, 1, 1));
-    MeshTriple* m3 = new MeshTriple(new Triple(2, 0, 2));
-    MeshTriple* m4 = new MeshTriple(new Triple(3, 1, 3));
-    MeshTriple* m5 = new MeshTriple(new Triple(4, 0, 4));
-
-    Triangle* t1 = new Triangle(m1, m2, m3);
-    Triangle* t2 = new Triangle(m2, m3, m4);
-    Triangle* t3 = new Triangle(m3, m4, m5);
-
-    EXPECT_EQ(Mesh::getNeighbors(m1).size(), 2);
-    EXPECT_EQ(Mesh::getNeighbors(m2).size(), 3);
-    EXPECT_EQ(Mesh::getNeighbors(m3).size(), 4);
-    EXPECT_EQ(Mesh::getNeighbors(m4).size(), 3);
-    EXPECT_EQ(Mesh::getNeighbors(m5).size(), 2);
-
-    EXPECT_EQ(Mesh::getNeighbors(t1).size(), 1);
-    EXPECT_EQ(Mesh::getNeighbors(t2).size(), 2);
-    EXPECT_EQ(Mesh::getNeighbors(t3).size(), 1);
 }
 
 TEST(Mesh, constructor){

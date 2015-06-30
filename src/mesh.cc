@@ -81,65 +81,93 @@ Mesh::Mesh(CoordinateList* cList) {
 		ROS_INFO("\thull initialized");
 	}
 
-	// sequentially insert points, adding edges from new point to 'visible' points on the convex hull
+	// Insert each vert, flipping after each
 	if(debug) {
 		ROS_INFO("inserting points...");
 	}
 	for(unsigned long i = 3; i < list -> getLength(); i++) {
 		insertVert(list -> getPtr(i));
+		// definitely flip the triangles of the most recently added meshtriple
+		vector<Triangle*> trisToFlip = verts[verts.size()-1] -> triangles;
+		// as long as we have tris to flip...
+		while(trisToFlip.size() > 0) {
+			// flip the most recent triangle we set out to flip, and if we had to flip it,
+			// add its neighbors to the tris we might have to flip and we'll come back to it again when we're done with those
+			if(flip(trisToFlip[trisToFlip.size()-1]) == 1) {
+				vector<Triangle*> trisToAdd = trisToFlip[trisToFlip.size()-1] -> getNeighbors();
+				for(int j = 0; j < trisToAdd.size(); j++) {
+					trisToFlip.push_back(trisToAdd[j]);
+				}
+			// otherwise, remove it from our list 
+			} else {
+				trisToFlip.erase(trisToFlip.begin()+trisToFlip.size()-1);
+			}
+		}
+		// TODO: use a stack instead, because that's basically what the list is
 	}
 	if(debug) {
 		ROS_INFO("\tpoints inserted");
 	}
+	// INSERT THEN FLIP
+	// // sequentially insert points, adding edges from new point to 'visible' points on the convex hull
+	// if(debug) {
+	// 	ROS_INFO("inserting points...");
+	// }
+	// for(unsigned long i = 3; i < list -> getLength(); i++) {
+	// 	insertVert(list -> getPtr(i));
+	// }
+	// if(debug) {
+	// 	ROS_INFO("\tpoints inserted");
+	// }
 
-	// iteratively 'flip' triangles until no more triangles need be flipped
-	if(debug) {
-		ROS_INFO("flipping edges...");
-	}
-	int maxIterations = 12;
-	int sumFlips;
-	for(int i = 0; sumFlips != 0; i++) {
-		sumFlips = 0;
-		for(int j = 0; j < tris.size(); j++) {
-			sumFlips += flip(tris[j]);
-		}
-		if(i == maxIterations - 1){
-			break;
-		}
-	}
-	if(debug) {
-		ROS_INFO("\tedges flipped");
-	}
+	// // iteratively 'flip' triangles until no more triangles need be flipped
+	// if(debug) {
+	// 	ROS_INFO("flipping edges...");
+	// }
+	// int maxIterations = 12;
+	// int sumFlips;
+	// for(int i = 0; sumFlips != 0; i++) {
+	// 	sumFlips = 0;
+	// 	for(int j = 0; j < tris.size(); j++) {
+	// 		sumFlips += flip(tris[j]);
+	// 	}
+	// 	ROS_INFO("flipped: %d", sumFlips);
+	// 	if(i == maxIterations - 1){
+	// 		// break;
+	// 	}
+	// }
+	// if(debug) {
+	// 	ROS_INFO("\tedges flipped");
+	// }
 
 	// set up the data array - first, find max number of vert neighbors
 	if(debug) {
-		ROS_INFO("generating data...");
+		ROS_INFO("allocating space for data...");
 	}
-	char maxNeighbors = 0;
+	int maxNeighbors = 0;
 	for(int i = 0; i < verts.size(); i++) {
-		maxNeighbors = (maxNeighbors > getNeighbors(verts[i]).size()) ? maxNeighbors : getNeighbors(verts[i]).size();
+		maxNeighbors = (maxNeighbors > verts[i] -> getNeighbors().size()) ? maxNeighbors : verts[i] -> getNeighbors().size();
 	}
-
+	if(debug) {
+		ROS_INFO("data array dimensions: %zu, %d, %d, %d", sizeof(float), CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1);
+		ROS_INFO("bytes to allocate: %zu", sizeof(float)*CameraConstants::XRES*CameraConstants::YRES*(maxNeighbors+1));
+	}
 	// init the data
 	unsigned long bounds[3] = {CameraConstants::XRES, CameraConstants::YRES, maxNeighbors+1};
 	data = new NdArray<float>(3, bounds);
+	if(debug) {
+		ROS_INFO("\tallocated space for data");
+	}
 
 	// populate data
-	for(int i = 0; i < CameraConstants::XRES; i++) {
-		if(i%10 == 0) {
-			ROS_INFO("progress: %d/%d", i, CameraConstants::XRES);
-		}
-		for(int j = 0; j < CameraConstants::YRES; j++) { 
-			MeshTriple* temp = getNearest(*(new Triple(toImageX(i), toImageY(j), 0)));
-			data -> set(i, j, 0, temp -> triple -> z);
-			for(int k = 1; k < maxNeighbors+1; k++) {
-				if(k-1 < getNeighbors(temp).size()) {
-					data -> set(i, j, k, getNeighbors(temp)[k-1] -> triple -> z);
-				} else {
-					data -> set(i, j, k, -1);
-				}
-			}
-		}
+	if(debug) {
+		ROS_INFO("generating data...");
+	}
+	for(int i = 0; i < verts.size(); i++) {
+		fillRegion(verts[i]);
+	}
+	if(debug) {
+		ROS_INFO("\tgenerated data");
 	}
 	if(debug) {
 		ROS_INFO("\tdata generated");
@@ -372,7 +400,7 @@ float Mesh::sign (Triple* p1, Triple* p2, Triple* p3){
 // flips necessary edges of a triangle, returns number of edges flipped
 int Mesh::flip(Triangle* t) {
 	// for each neighbor...
-	vector<Triangle*> neighbors = getNeighbors(t);
+	vector<Triangle*> neighbors = t -> getNeighbors();
 	for(int i = 0; i < neighbors.size(); i++) {
 		Triangle* neighbor = neighbors[i];
 
@@ -443,48 +471,6 @@ int Mesh::flip(Triangle* t) {
 		}
 	}
 	return 0;
-}
-
-vector<Triangle*> Mesh::getNeighbors(Triangle* t) {
-	MeshTriple** points = t -> points;
-	vector<Triangle*> data;
-	// iterate over points
-	for (int i = 0; i < 3; i++) {
-		MeshTriple* mtrip = points[i];
-		// iterate over each point's triangles
-		for(int j = 0; j < mtrip -> triangles.size(); j++) {
-			bool good = true;
-			// check if we already have that triangle
-			for(int k = 0; k < data.size(); k++) {
-				if(data[k] == mtrip -> triangles[j]) {
-					good = false;
-					break;
-				}
-			}
-			
-			// if we don't, okay, let's add it
-			if(good) {
-				data.push_back(mtrip -> triangles[j]);
-			}
-		}
-	}
-	// if any triangles don't share 2 points with the first, they are not a neighbor
-	for(int i = 0; i < data.size(); i++) {
-		Triangle* temp = data[i];
-		int numPoints = 0;
-		for(int j = 0; j < 3; j++) {
-			for(int k = 0; k < 3; k++) {
-				if(t -> points[j] == temp -> points[k]) {
-					numPoints++;
-				}
-			}
-		}
-		if(numPoints != 2) {
-			data.erase(data.begin()+i);
-			i--;
-		}
-	}
-	return data;
 }
 
 // formula I grabbed from https://www.cs.duke.edu/courses/fall08/cps230/Lectures/L-21.pdf
@@ -590,39 +576,6 @@ void Mesh::removeTri(Triangle* t) {
 	}
 }
 
-vector<MeshTriple*> Mesh::getNeighbors(MeshTriple* t) {
-	vector<Triangle*> neighborTriangles = t -> triangles;
-	vector<MeshTriple*> result;
-	// iterate over triangles
-	for (int i = 0; i < neighborTriangles.size(); i++) {
-		Triangle* tri = neighborTriangles[i];
-		// iterate over each triangle's points
-		for(int j = 0; j < 3; j++) {
-			bool good = true;
-			// check if we already have that point
-			for(int k = 0; k < result.size(); k++) {
-				if(result[k] == tri -> points[j]) {
-					good = false;
-					break;
-				}
-			}
-
-			// if we don't, okay, let's add it
-			if(good) {
-				result.push_back(tri -> points[j]);
-			}
-		}
-	}
-	// remove this meshtriple from the result
-	for(int i = 0; i < result.size(); i++){
-		if(result[i] == t){
-			result.erase(result.begin()+i);
-			break;
-		}
-	}
-	return result;
-}
-
 // returns a pointer to the nearest MeshTriple to a Triple
 MeshTriple* Mesh::getNearest(Triple &t) {
 	MeshTriple* nearest = verts[0];
@@ -637,6 +590,75 @@ MeshTriple* Mesh::getNearest(Triple &t) {
 // returns the squared 2d distance between two Triples
 float Mesh::dist2(Triple &a, Triple &b) {
 	return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
+}
+
+// fill in the triangles spanned by the meshtriple and the circumcenters of two neighboring triangles containing the meshtriple
+// does not fill anything in for meshtriples on the hull
+void Mesh::fillRegion(MeshTriple* m) {
+	// if its on the hull, like, just, no.
+	for(int i = 0; i < hull.size(); i++) {
+		if(m == hull[i]) {
+			return;
+		}
+	}
+	int n = m -> triangles.size();
+	// find pairs of neighboring triangles and fill them
+	for(int i = 0; i < n; i++) {
+		for(int j = i+1; j < n; j++) {
+			if(m -> triangles[i] -> isNeighbor(m -> triangles[j])) {
+				Triple temp1 = m -> triangles[i] -> getCircumCenter();
+            	Triple temp2 = m -> triangles[j] -> getCircumCenter();
+            	fillTri(*(m -> triple), temp1, temp2, m);
+			}
+		}
+	}
+}
+
+void Mesh::fillTri(Triple &a, Triple &b, Triple &c, MeshTriple* m) {
+	int minx, miny, maxx, maxy;
+	vector<MeshTriple*> neighbors = m -> getNeighbors();
+	int n = neighbors.size();
+	float tempData[n];
+	for(int i = 0; i < n; i++) {
+		tempData[i] = neighbors[i] -> triple -> z;
+	}
+	minx = (int)std::min(std::min(a.x, b.x), c.x);
+	miny = (int)std::min(std::min(a.y, b.y), c.y);
+	maxx = (int)std::max(std::max(a.x, b.x), c.x);
+	maxy = (int)std::max(std::max(a.y, b.y), c.y);
+	int start = minx;
+	for(int i = miny; i < maxy; i++) {
+		int j = start;
+		int temp = j-1;
+		while(j >= minx && !inTri(a, b, c, temp, i)) {
+			j--;
+		}
+		start = j;
+		while(j < maxx && inTri(a, b, c, j, i)) {
+			for(int k = 0; k < n; k++) {
+				data -> set(j, i, k, tempData[k]);
+			}
+			for(int k = n; k < data -> getDimensions()[2]; k++) {
+				data -> set(j, i, k, -1);
+			}
+		}
+	}
+}
+
+// overloaded from above for faster use of pixel values rather than triples
+bool Mesh::inTri(Triple &t0, Triple &t1, Triple &t2, int x, int y){
+	bool b1, b2, b3;
+
+    b1 = sign(x, y, t0, t1) < 0.0f;
+    b2 = sign(x, y, t1, t2) < 0.0f;
+    b3 = sign(x, y, t2, t0) < 0.0f;
+
+    return ((b1 == b2) && (b2 == b3));
+}
+
+// helper function for inTri above
+float Mesh::sign (int x, int y, Triple &p2, Triple &p3){
+    return (toImageX(x) - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (toImageY(y) - p3.y);
 }
 
 int Mesh::toPixelX(float x) {

@@ -53,6 +53,52 @@ Triple Triangle::getCircumCenter() {
 	return ret;
 }
 
+bool Triangle::isNeighbor(Triangle* t) {
+	// check if they have exactly two points in common
+	int common = 0;
+	for(int i = 0; i < 3; i++) {
+		for(int j = 0; j < 3; j++) {
+			if (points[i] == t -> points[j]) {
+				common++;
+				break;
+			}
+		}
+	}
+	return common == 2;
+}
+
+std::vector<Triangle*> Triangle::getNeighbors() {
+	std::vector<Triangle*> data;
+	// iterate over points
+	for (int i = 0; i < 3; i++) {
+		MeshTriple* mtrip = points[i];
+		// iterate over each point's triangles
+		for(int j = 0; j < mtrip -> triangles.size(); j++) {
+			bool good = true;
+			// check if we already have that triangle
+			for(int k = 0; k < data.size(); k++) {
+				if(data[k] == mtrip -> triangles[j]) {
+					good = false;
+					break;
+				}
+			}
+			
+			// if we don't, okay, let's add it
+			if(good) {
+				data.push_back(mtrip -> triangles[j]);
+			}
+		}
+	}
+	// if any triangles don't share 2 points with the first, they are not a neighbor
+	for(int i = 0; i < data.size(); i++) {
+		if(!isNeighbor(data[i])) {
+			data.erase(data.begin()+i);
+			i--;
+		}
+	}
+	return data;
+}
+
 bool Triangle::operator==(const Triangle& tri1) {
 	bool arr[3] = {false};
 	bool alreadyfound[3] = {false};

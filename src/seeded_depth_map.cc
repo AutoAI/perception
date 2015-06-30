@@ -66,7 +66,7 @@ void SeededDepthMap::doCorrespondence(){
 	int xres = left.width();
 	int yres = left.height();
 
-	CoordinateList c = getLidarData(10000);
+	CoordinateList c = getLidarData(1000);
 
 	Mesh mesh(&c);
 

@@ -34,6 +34,49 @@ MeshTriple::MeshTriple(Triple* triple) {
 	this -> triple = triple;
 }
 
+bool MeshTriple::isNeighbor(MeshTriple* m) {
+	for(int i = 0; i < triangles.size(); i++) {
+		for(int j = 0; j < m -> triangles.size(); j++) {
+			if (triangles[i] == m -> triangles[j]) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+std::vector<MeshTriple*> MeshTriple::getNeighbors() {
+	std::vector<MeshTriple*> result;
+	// iterate over triangles
+	for (int i = 0; i < triangles.size(); i++) {
+		Triangle* tri = triangles[i];
+		// iterate over each triangle's points
+		for(int j = 0; j < 3; j++) {
+			bool good = true;
+			// check if we already have that point
+			for(int k = 0; k < result.size(); k++) {
+				if(result[k] == tri -> points[j]) {
+					good = false;
+					break;
+				}
+			}
+
+			// if we don't, okay, let's add it
+			if(good) {
+				result.push_back(tri -> points[j]);
+			}
+		}
+	}
+	// remove this meshtriple from the result
+	for(int i = 0; i < result.size(); i++){
+		if(result[i] == this){
+			result.erase(result.begin()+i);
+			break;
+		}
+	}
+	return result;
+}
+
 bool MeshTriple::operator==(const MeshTriple &t1) {
 	return (*(this->triple) == *(t1.triple));
 }

@@ -210,6 +210,24 @@ private:
 	MeshTriple* getNearest(Triple &t);
 
 	/**
+	* fills in the voronoi region of the MeshTriple (the region of all points closer to this MeshTriple than any other)
+	*/
+	void fillRegion(MeshTriple* m);
+
+	/**
+	* fills in a triangle of the data NdArray with the z-values of a MeshTriple and its neighbors
+	*/
+	void fillTri(Triple &a, Triple &b, Triple &c, MeshTriple* m);
+
+	/*
+	* determines whether an x,y pixel is in the triangle spanned by 3 triples
+	*/
+	bool inTri(Triple &t0, Triple &t1, Triple &t2, int x, int y);
+
+	// helper function for inTri above
+	float sign (int x, int y, Triple &p2, Triple &p3);
+
+	/**
 	* returns the squared distance between two points. this is slightly easier than the distance because you dont have to take square roots,
 	* and because distance squared is strictly increasing with distance, if you're going to compare distances you might as well compare squared distances
 	*/

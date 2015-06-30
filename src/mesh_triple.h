@@ -37,7 +37,7 @@
 #include "triple.h"
 
 // forward declaration. Triangle references MeshTriple, so we can't just
-// #include (reinstate after removing superh.h)
+// #include
 class Triangle;
 
 class MeshTriple {
@@ -45,6 +45,8 @@ class MeshTriple {
 	explicit MeshTriple(Triple* triple);
 	std::vector<Triangle*> triangles;
 	Triple* triple;
+	bool isNeighbor(MeshTriple* m);
+	std::vector<MeshTriple*> getNeighbors();
 	bool operator==(const MeshTriple &t1);
 	bool operator!=(const MeshTriple &t1);
 };
