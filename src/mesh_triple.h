@@ -47,8 +47,8 @@ class MeshTriple {
 	Triple* triple;
 	bool isNeighbor(MeshTriple* m);
 	std::vector<MeshTriple*> getNeighbors();
-	bool operator==(const MeshTriple &t1);
-	bool operator!=(const MeshTriple &t1);
+	// bool operator==(const MeshTriple &t1);
+	// bool operator!=(const MeshTriple &t1);
 };
 
 #endif  // SRC_MESH_TRIPLE_H_

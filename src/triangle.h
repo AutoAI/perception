@@ -42,8 +42,8 @@ class Triangle {
 		Triple getCircumCenter();
 		bool isNeighbor(Triangle* t);
 		std::vector<Triangle*> getNeighbors();
-		bool operator==(const Triangle& t1);
-		bool operator!=(const Triangle& t1);
+		// bool operator==(const Triangle& t1);
+		// bool operator!=(const Triangle& t1);
 };
 
 #endif  // SRC_TRIANGLE_H_

@@ -150,11 +150,6 @@ class CoordinateList {
 		* helper function to compute squared distance between two points in 2D
 		*/
 		float dist2(Triple a, Triple b);
-
-		/**
-		* function to print distances (for sort debugging)
-		*/
-		void log_distances(Triple origin);
 };
 
 #endif  // SRC_COORDINATE_LIST_H_

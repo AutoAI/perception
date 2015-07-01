@@ -99,28 +99,28 @@ std::vector<Triangle*> Triangle::getNeighbors() {
 	return data;
 }
 
-bool Triangle::operator==(const Triangle& tri1) {
-	bool arr[3] = {false};
-	bool alreadyfound[3] = {false};
-	for (int ours = 0; ours < 3; ours++) {
-		if (*points[ours] == *tri1.points[0] && !alreadyfound[0]) {
-			arr[ours] = true;
-			alreadyfound[0]= true;
-		}
-		else if(*points[ours] == *tri1.points[1] && !alreadyfound[1]){
-			arr[ours] = true;
-			alreadyfound[1] = true;
-		}
-		else if(*points[ours] == *tri1.points[2] && !alreadyfound[2]){
-			arr[ours] = true;
-			alreadyfound[2] = true;
-		}
-	}
+// bool Triangle::operator==(const Triangle& tri1) {
+// 	bool arr[3] = {false};
+// 	bool alreadyfound[3] = {false};
+// 	for (int ours = 0; ours < 3; ours++) {
+// 		if (*points[ours] == *tri1.points[0] && !alreadyfound[0]) {
+// 			arr[ours] = true;
+// 			alreadyfound[0]= true;
+// 		}
+// 		else if(*points[ours] == *tri1.points[1] && !alreadyfound[1]){
+// 			arr[ours] = true;
+// 			alreadyfound[1] = true;
+// 		}
+// 		else if(*points[ours] == *tri1.points[2] && !alreadyfound[2]){
+// 			arr[ours] = true;
+// 			alreadyfound[2] = true;
+// 		}
+// 	}
 
-	return arr[0] && arr[1] && arr[2];
-}
+// 	return arr[0] && arr[1] && arr[2];
+// }
 
 
-bool Triangle::operator!=(const Triangle& tri1){
-	return !(*this == tri1);
-}
+// bool Triangle::operator!=(const Triangle& tri1){
+// 	return !(*this == tri1);
+// }

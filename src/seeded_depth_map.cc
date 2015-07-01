@@ -53,7 +53,7 @@ void SeededDepthMap::saveImage(NdArray<float> &c, std::string filename) {
 		for (int y = 0; y < height; y++) {
 			float r = c.get(x, y, 0);
 			float g = c.get(x, y, 1);
-			image.set_pixel(x, y, char(1/r), char(1/g), 0);
+			image.set_pixel(x, y, char(r), char(g), 0);
 		}
 	}
 	image.save_image(filename);
@@ -66,9 +66,9 @@ void SeededDepthMap::doCorrespondence(){
 	int xres = left.width();
 	int yres = left.height();
 
-	CoordinateList c = getLidarData(1000);
+	CoordinateList* c = getLidarData(1000);
 
-	Mesh mesh(&c);
+	Mesh mesh(c);
 
 	NdArray<float> bounds = *(mesh.result);
 
@@ -126,7 +126,7 @@ int SeededDepthMap::calcBadness(bitmap_image left, bitmap_image right, int v, in
 	return ((int)red1-(int)red2)*((int)red1-(int)red2)+((int)blu1-(int)blu2)*((int)blu1-(int)blu2)+((int)grn1-(int)grn2)*((int)grn1-(int)grn2);
 }
 
-CoordinateList SeededDepthMap::getLidarData(int num_samples){
+CoordinateList* SeededDepthMap::getLidarData(int num_samples){
 	bitmap_image depth_map(fileConstants::depth);
 	int xres = depth_map.width();
 	int yres = depth_map.height();
@@ -145,9 +145,9 @@ CoordinateList SeededDepthMap::getLidarData(int num_samples){
 
 		xrand = Mesh::toImageX(xrand);
 		yrand = Mesh::toImageY(yrand);
-		Triple coord(xrand, yrand, 1.0/float(red));
+		Triple coord(xrand, yrand, float(red));
 		list.set(i, coord);
 	}
 
-	return list;
+	return &list;
 }

@@ -45,7 +45,7 @@ class SeededDepthMap {
 		void doCorrespondence();
 	private:
 		// gets the lidar data
-		CoordinateList getLidarData(int resolution);
+		CoordinateList* getLidarData(int resolution);
 
 		// calculates how bad a match between pixels is (higher values = more bad)
 		int calcBadness(bitmap_image left, bitmap_image right, int v, int ul, int ur);

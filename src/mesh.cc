@@ -55,7 +55,7 @@ Mesh::Mesh(CoordinateList* cList) {
 
 	if (cList == NULL) {
 		throw std::invalid_argument("CoordinateList must not be null");
-	} else if(cList->getLength() < 3) {
+	} else if(cList -> getLength() < 3) {
 		throw std::invalid_argument("CoordinateList must contain at least 3 points");
 	}
 	list = cList;
@@ -147,10 +147,10 @@ Mesh::Mesh(CoordinateList* cList) {
 		ROS_INFO("generating data...");
 	}
 	for(int i = 0; i < verts.size(); i++) {
+		if(debug && i % 20 == 0) {
+			ROS_INFO("progress: %d of %zu", i, verts.size());
+		}
 		fillRegion(verts[i]);
-	}
-	if(debug) {
-		ROS_INFO("\tgenerated data");
 	}
 	if(debug) {
 		ROS_INFO("\tdata generated");
@@ -173,6 +173,7 @@ Mesh::Mesh(CoordinateList* cList) {
 				if(data -> get(i, j, k) == -1) {
 					break;
 				}
+				ROS_INFO("data: %f", data -> get(i, j, k));
 				min = (min < data -> get(i, j, k)) ? min : data -> get(i, j, k);
 				max = (max > data -> get(i, j, k)) ? max : data -> get(i, j, k);
 			}
@@ -492,7 +493,7 @@ bool Mesh::inCircumCirc(Triple* t0, Triple* t1, Triple* t2, Triple* p) {
 	gamma[2][1] = t1 -> y;
 	gamma[2][2] = t2 -> y;
 
-	return det(delta, 4) * det(gamma, 3) < 0;
+	return det(delta, 4) * det(gamma, 3) < -.1;
 }
 
 // computes a determinant using cofactor expansion (n!)
@@ -556,6 +557,8 @@ void Mesh::removeTri(Triangle* t) {
 			return;
 		}
 	}
+	// destroy t
+	delete t;
 }
 
 // returns a pointer to the nearest MeshTriple to a Triple
@@ -604,27 +607,40 @@ void Mesh::fillTri(Triple &a, Triple &b, Triple &c, MeshTriple* m) {
 	for(int i = 0; i < n; i++) {
 		tempData[i] = neighbors[i] -> triple -> z;
 	}
-	minx = (int)std::min(std::min(a.x, b.x), c.x);
-	miny = (int)std::min(std::min(a.y, b.y), c.y);
-	maxx = (int)std::max(std::max(a.x, b.x), c.x);
-	maxy = (int)std::max(std::max(a.y, b.y), c.y);
-	int start = minx;
-	for(int i = miny; i < maxy; i++) {
-		int j = start;
-		int temp = j-1;
-		while(j >= minx && !inTri(a, b, c, temp, i)) {
-			j--;
-		}
-		start = j;
-		while(j < maxx && inTri(a, b, c, j, i)) {
-			for(int k = 0; k < n; k++) {
-				data -> set(j, i, k, tempData[k]);
-			}
-			for(int k = n; k < data -> getDimensions()[2]; k++) {
-				data -> set(j, i, k, -1);
+	minx = toPixelX(std::min(std::min(a.x, b.x), c.x));
+	miny = toPixelY(std::min(std::min(a.y, b.y), c.y));
+	maxx = toPixelX(std::max(std::max(a.x, b.x), c.x));
+	maxy = toPixelY(std::max(std::max(a.y, b.y), c.y));
+	for(int i = minx; i < maxx; i++) {
+		for(int j = miny; j < maxy; j++) {
+			if(inTri(a, b, c, i, j)) {
+				for(int k = 0; k < n; k++) {
+					data -> set(i, j, k, tempData[k]);
+				}
+				for(int k = n; k < data -> getDimensions()[2]; k++) {
+					data -> set(j, i, k, -1);
+				}
 			}
 		}
 	}
+	// int start = minx;
+	// for(int i = miny; i < maxy; i++) {
+	// 	int j = start;
+	// 	int temp = j-1;
+	// 	while(j >= minx && !inTri(a, b, c, temp, i)) {
+	// 		j--;
+	// 	}
+	// 	start = j;
+	// 	while(j < maxx && inTri(a, b, c, j, i)) {
+	// 		for(int k = 0; k < n; k++) {
+	// 			data -> set(j, i, k, tempData[k]);
+	// 			ROS_INFO("set %f", tempData[k]);
+	// 		}
+	// 		for(int k = n; k < data -> getDimensions()[2]; k++) {
+	// 			data -> set(j, i, k, -1);
+	// 		}
+	// 	}
+	// }
 }
 
 // overloaded from above for faster use of pixel values rather than triples

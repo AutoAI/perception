@@ -77,10 +77,10 @@ std::vector<MeshTriple*> MeshTriple::getNeighbors() {
 	return result;
 }
 
-bool MeshTriple::operator==(const MeshTriple &t1) {
-	return (*(this->triple) == *(t1.triple));
-}
+// bool MeshTriple::operator==(const MeshTriple &t1) {
+// 	return (*(this->triple) == *(t1.triple));
+// }
 
-bool MeshTriple::operator!=(const MeshTriple &t1) {
-	return !(*this == t1);
-}
+// bool MeshTriple::operator!=(const MeshTriple &t1) {
+// 	return !(*this == t1);
+// }

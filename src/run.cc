@@ -40,8 +40,9 @@ int main(int argc, char **argv) {
 	ros::spinOnce();
 
 	if (ros::ok()) {
-		srand(time(NULL));
-		ROS_INFO("Running...");
+		uint64_t seed = time(NULL);
+		srand(seed);
+		ROS_INFO("Running with seed %zu...", seed);
 		ROS_INFO("==========");
 		SeededDepthMap seed;
 		seed.doCorrespondence();

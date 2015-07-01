@@ -215,10 +215,3 @@ void CoordinateList::sort(Triple origin) {
 		}
 	}
 }
-
-// void CoordinateList::log_distances(Triple origin){
-//   stringstream out;
-//   out << dist2(coordinates[0], origin);
-//   for(uint64_t i = 1; i < length; i++)
-//   out << " " << dist2(coordinates[i],origin);
-// }

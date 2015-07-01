@@ -23,31 +23,31 @@
 
 using namespace std;
 
-TEST(Triple, equalityOperators) {
-	Triple a(1, 1, 1);
-	Triple b(1, 1, 1);
+// TEST(Triple, equalityOperators) {
+// 	Triple a(1, 1, 1);
+// 	Triple b(1, 1, 1);
 
-	EXPECT_TRUE(a==b);
-    EXPECT_FALSE(a!=b);
+// 	EXPECT_TRUE(a==b);
+//     EXPECT_FALSE(a!=b);
 
-    b.y = 2;
+//     b.y = 2;
 
-    EXPECT_FALSE(a==b);
-    EXPECT_TRUE(a!=b);
-}
+//     EXPECT_FALSE(a==b);
+//     EXPECT_TRUE(a!=b);
+// }
 
-TEST(MeshTriple, equalityOperators) {
-    MeshTriple a(new Triple(1, 1, 1));
-    MeshTriple b(new Triple(1, 1, 1));
+// TEST(MeshTriple, equalityOperators) {
+//     MeshTriple a(new Triple(1, 1, 1));
+//     MeshTriple b(new Triple(1, 1, 1));
 
-    EXPECT_TRUE(a==b);
-    EXPECT_FALSE(a!=b);
+//     EXPECT_TRUE(a==b);
+//     EXPECT_FALSE(a!=b);
 
-    b.triple -> y = 2;
+//     b.triple -> y = 2;
 
-    EXPECT_FALSE(a==b);
-    EXPECT_TRUE(a!=b);
-}
+//     EXPECT_FALSE(a==b);
+//     EXPECT_TRUE(a!=b);
+// }
 
 TEST(MeshTriple, isNeighbor_GetNeighbors) {
     // some triples
@@ -95,26 +95,26 @@ TEST(MeshTriple, isNeighbor_GetNeighbors) {
     EXPECT_EQ(m5 -> getNeighbors().size(), 4);
 }
 
-TEST(Triangle, equalityOperators) {
-	MeshTriple t1(new Triple(1, 1, 1));
-	MeshTriple t2(new Triple(1, 1, 2));
-	MeshTriple t3(new Triple(1, 2, 2));
+// TEST(Triangle, equalityOperators) {
+// 	MeshTriple t1(new Triple(1, 1, 1));
+// 	MeshTriple t2(new Triple(1, 1, 2));
+// 	MeshTriple t3(new Triple(1, 2, 2));
 
-	MeshTriple t4(new Triple(1, 1, 1));
-	MeshTriple t5(new Triple(1, 1, 2));
-	MeshTriple t6(new Triple(1, 2, 2));
+// 	MeshTriple t4(new Triple(1, 1, 1));
+// 	MeshTriple t5(new Triple(1, 1, 2));
+// 	MeshTriple t6(new Triple(1, 2, 2));
 
-	Triangle tri1(&t1, &t2, &t3);
-	Triangle tri2(&t4, &t5, &t6);
+// 	Triangle tri1(&t1, &t2, &t3);
+// 	Triangle tri2(&t4, &t5, &t6);
 
-	EXPECT_TRUE(tri1 == tri2);
-    EXPECT_FALSE(tri1 != tri2);
+// 	EXPECT_TRUE(tri1 == tri2);
+//     EXPECT_FALSE(tri1 != tri2);
 
-    t1.triple -> x = 69;
+//     t1.triple -> x = 69;
 
-    EXPECT_FALSE(tri1 == tri2);
-    EXPECT_TRUE(tri1 != tri2);
-}
+//     EXPECT_FALSE(tri1 == tri2);
+//     EXPECT_TRUE(tri1 != tri2);
+// }
 
 TEST(Triangle, isNeighbor_GetNeighbors) {
     // some triples
